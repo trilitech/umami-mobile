@@ -1,7 +1,7 @@
 open Paper
 
 @react.component
-let make = (~onSubmit) => {
+let make = (~onSubmit, ~loading=false) => {
   let (value1, setValue1) = React.useState(_ => "")
   let (value2, setValue2) = React.useState(_ => "")
   <>
@@ -24,7 +24,10 @@ let make = (~onSubmit) => {
       onChangeText={s => setValue2(_ => s)}
     />
     <Button
-      style={FormStyles.styles["verticalMargin"]} mode=#contained onPress={_ => onSubmit(value1)}>
+      loading
+      style={FormStyles.styles["verticalMargin"]}
+      mode=#contained
+      onPress={_ => onSubmit(value1)}>
       {React.string("Submit")}
     </Button>
   </>

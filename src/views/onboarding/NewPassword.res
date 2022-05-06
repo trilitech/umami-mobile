@@ -22,7 +22,11 @@ let make = (~navigation as _, ~route as _) => {
   let (_, setSelectedAccount) = Store.useSelectedAccount()
 
   let (mnemonic, _) = OnboardingMnemonicState.useMnemonic()
+
+  let (loading, setLoading) = React.useState(_ => false)
+
   let handlePasswordSubmit = password => {
+    setLoading(_ => true)
     let mnemonic = mnemonic->Js.Array2.joinWith(" ")
     BackupPhraseStorage.save(mnemonic, password)
     ->Promise.then(() =>
@@ -36,6 +40,14 @@ let make = (~navigation as _, ~route as _) => {
         setSelectedAccount(0)
       })
     )
+    ->Promise.catch(err => {
+      Js.Console.error(err)
+      Promise.resolve()
+    })
+    ->Promise.finally(() => {
+      setLoading(_ => false)
+      ()
+    })
     ->ignore
   }
 
@@ -48,7 +60,7 @@ let make = (~navigation as _, ~route as _) => {
     <Background>
       <Caption> {React.string("Enter passcode")} </Caption>
       // <PasswordConfirm.PurePasswordConfirm value=password onChange={d => setPassword(_ => d)} />
-      <PasswordCreate onSubmit={handlePasswordSubmit} />
+      <PasswordCreate loading onSubmit={handlePasswordSubmit} />
       // <TextInput
       //   style={ReactNative.Style.style(~display=#none, ())}
       //   onChangeText={t => setPassword(_ => t)}
