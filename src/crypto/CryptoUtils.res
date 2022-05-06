@@ -11,6 +11,7 @@ let mnemonicToSK = (~mnemonic, ~derivationPathIndex=0, ~passphrase, ()) => {
 
   let secretKey = ED25519.derivePath(derivationPath, seedHex)["key"]
 
+  // This is very slow
   EncryptSK.encryptSK(secretKey, passphrase)
 }
 

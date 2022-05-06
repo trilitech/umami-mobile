@@ -24,6 +24,7 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
 
   let notify = SnackBar.useNotification()
   let derivationIndex = useLastDerivationIndex()
+  let (loading, setLooading) = React.useState(_ => false)
 
   <Background>
     {switch step {
@@ -40,7 +41,9 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
       </>
     | #confirm =>
       <PasswordConfirm
+        loading
         onSubmit={p => {
+          setLooading(_ => true)
           addNewAccount(~name=accountName, ~passphrase=p, ~derivationIndex)
           ->Promise.thenResolve(a => {
             setAccounts(_ => Belt.Array.concat(accounts, [a]))
@@ -52,6 +55,9 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
           ->Promise.catch(_ => {
             notify("Failed to create account")
             Promise.resolve()
+          })
+          ->Promise.finally(() => {
+            setLooading(_ => false)
           })
           ->ignore
           ()

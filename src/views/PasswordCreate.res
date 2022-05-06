@@ -7,6 +7,7 @@ let make = (~onSubmit, ~loading=false) => {
   <>
     <TextInput
       style={FormStyles.styles["verticalMargin"]}
+      disabled=loading
       secureTextEntry=true
       placeholder="Passcode"
       value=value1
@@ -16,6 +17,7 @@ let make = (~onSubmit, ~loading=false) => {
     />
     <TextInput
       style={FormStyles.styles["verticalMargin"]}
+      disabled=loading
       secureTextEntry=true
       placeholder="Confirm passcode"
       value=value2
