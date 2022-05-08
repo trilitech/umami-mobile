@@ -79,7 +79,7 @@ module Confirm = {
   @react.component
   let make = (~passphrase, ~onChange, ~isLoading, ~onSubmit) => {
     <>
-      <PasswordConfirm.PurePasswordConfirm value=passphrase onChange />
+      <PasswordConfirm.PurePasswordConfirm loading=isLoading value=passphrase onChange />
       <Button
         loading=isLoading
         style={style(~marginTop=10.->dp, ())}
