@@ -1,13 +1,14 @@
 open NavStacks.OffBoard
 @react.component
 let make = () => {
+  let headerStyles = HeaderStyle.useHeaderStyle()
   <Navigator>
     <Group>
-      <Screen name="Welcome" component=Welcome.make />
-      <Screen name="ImportSecret" component=ImportSecret.make />
-      <Screen name="NewSecret" component=NewSecret.make />
-      <Screen name="RecordRecoveryPhrase" component=RecordSecret.make />
-      <Screen name="NewPassword" component=NewPassword.make />
+      <Screen name="Welcome" options=headerStyles component=Welcome.make />
+      <Screen name="ImportSecret" options=headerStyles component=ImportSecret.make />
+      <Screen name="NewSecret" options=headerStyles component=NewSecret.make />
+      <Screen name="RecordRecoveryPhrase" options=headerStyles component=RecordSecret.make />
+      <Screen name="NewPassword" options=headerStyles component=NewPassword.make />
     </Group>
   </Navigator>
 }
