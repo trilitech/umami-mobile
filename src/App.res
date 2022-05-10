@@ -20,9 +20,11 @@ module MemoizedRouter = {
   open ReactNavigation
   @react.component
   let make = React.memo((~hasAccount) => {
-    <Native.NavigationContainer>
-      {hasAccount ? <OnboardRouter /> : <OffboardRouter />}
-    </Native.NavigationContainer>
+    <SnackbarDisplayer>
+      <Native.NavigationContainer>
+        {hasAccount ? <OnboardRouter /> : <OffboardRouter />}
+      </Native.NavigationContainer>
+    </SnackbarDisplayer>
   })
 }
 
@@ -40,9 +42,7 @@ module MemoizedApp = {
   @react.component
   let make = React.memo((~storeIsUpToDate) => {
     <ReactQuery.Provider client>
-      <ThemeProvider>
-        {storeIsUpToDate ? <SnackbarDisplayer> <Router /> </SnackbarDisplayer> : React.null}
-      </ThemeProvider>
+      <ThemeProvider> {storeIsUpToDate ? <Router /> : React.null} </ThemeProvider>
     </ReactQuery.Provider>
   })
 }
@@ -51,7 +51,7 @@ module MemoizedApp = {
 let app = () => {
   let storeIsUpToDate = Store.useInit()
 
-  // Prevent rerenders sinces useInit is hook to all the states
+  // Prevent rerenders sinces useInit is hooked to all the states
 
   <MemoizedApp storeIsUpToDate />
 }
