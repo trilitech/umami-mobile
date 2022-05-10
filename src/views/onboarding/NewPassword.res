@@ -41,9 +41,9 @@ let make = (~navigation as _, ~route as _) => {
       title="Set a passcode to secure your wallet"
       instructions="Please note that this password is not recorded anywhere and only applies to this machine. "
     />
-    <Background>
+    <Container>
       <Caption> {React.string("Enter passcode")} </Caption>
       <PasswordCreate loading onSubmit={handlePasswordSubmit} />
-    </Background>
+    </Container>
   </>
 }

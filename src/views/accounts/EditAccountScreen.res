@@ -14,16 +14,15 @@ let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
   let updateAccount = Store.useUpdateAccount()
 
   getAccount(route, accounts)->Belt.Option.mapWithDefault(React.null, a =>
-    <Background>
+    <Container>
       <Headline> {React.string("Edit account")} </Headline>
       <EditAccountForm
         name=a.name
         onSubmit={name => {
           updateAccount({...a, name: name})
-          navigation -> NavStacks.OnBoard.Navigation.goBack()
+          navigation->NavStacks.OnBoard.Navigation.goBack()
         }}
       />
-    </Background>
+    </Container>
   )
-
 }

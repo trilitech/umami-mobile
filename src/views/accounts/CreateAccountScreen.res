@@ -26,7 +26,7 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
   let derivationIndex = useLastDerivationIndex()
   let (loading, setLooading) = React.useState(_ => false)
 
-  <Background>
+  <Container>
     {switch step {
     | #edit => <>
         <Headline> {React.string("Create account")} </Headline>
@@ -64,5 +64,5 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
         }}
       />
     }}
-  </Background>
+  </Container>
 }

@@ -4,7 +4,7 @@ open Store
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let (_, setSecret) = Store.useAccounts()
-  <Background>
+  <Container>
     <Caption> {React.string("Recovery phrase")} </Caption>
     <TextInput
       style={ReactNative.Style.style(~height=130.->ReactNative.Style.dp, ())}
@@ -28,5 +28,5 @@ let make = (~navigation as _, ~route as _) => {
       mode=#contained>
       <Paper.Text> {React.string("Continue")} </Paper.Text>
     </Button>
-  </Background>
+  </Container>
 }

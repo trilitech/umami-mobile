@@ -72,7 +72,7 @@ module VerifySecret = {
         title="Record your recovery phrase"
         instructions=" We will now verify that you’ve properly recorded your recovery phrase. To demonstrate this, please select the word that corresponds to each sequence number."
       />
-      <Background>
+      <Container>
         <Caption> {React.string(caption)} </Caption>
         {allAnswsers
         ->Belt.Array.mapWithIndex((i, s) =>
@@ -88,7 +88,7 @@ module VerifySecret = {
         )
         ->React.array}
         <ContinueBtn onPress={_ => onSolved()} text="Next" />
-      </Background>
+      </Container>
     </>
   }
 }
@@ -110,6 +110,6 @@ let make = (~navigation, ~route as _) => {
   | Some(goodAnwser) =>
     let badAnswers = getRandomEls(~exclude=goodAnwser, ~amount=4, mnemonic)
     <VerifySecret goodAnwser badAnswers onSolved=guessed />
-  | None => <Background> {React.null} </Background>
+  | None => <Container> {React.null} </Container>
   }
 }

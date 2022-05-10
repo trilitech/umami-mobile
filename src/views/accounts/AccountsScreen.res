@@ -6,7 +6,7 @@ let make = (~navigation, ~route as _) => {
   let (accounts, _) = Store.useAccounts()
   let (selectedAccount, setSelectedAccount) = Store.useSelectedAccount()
 
-  <Background>
+  <Container>
     <CommonComponents.Wrapper flexDirection=#column alignItems=#center>
       {accounts
       ->Belt.Array.map(a => {
@@ -39,5 +39,5 @@ let make = (~navigation, ~route as _) => {
         }}
       />
     </CommonComponents.Wrapper>
-  </Background>
+  </Container>
 }

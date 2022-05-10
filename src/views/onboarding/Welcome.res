@@ -5,7 +5,7 @@ open NavStacks.OffBoard
 let make = (~navigation, ~route as _) => {
   open ReactNative.Style
 
-  <Background>
+  <Container>
     <ReactNative.View
       style={style(~display=#flex, ~flexDirection=#row, ~justifyContent=#center, ())}>
       <UmamiLogo size=70. style={style(~margin=30.->dp, ())} />
@@ -36,5 +36,5 @@ let make = (~navigation, ~route as _) => {
     //   iconName="twitter"
     //   iconColor="#00acee"
     // />
-  </Background>
+  </Container>
 }

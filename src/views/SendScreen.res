@@ -175,9 +175,9 @@ module ConnectedSend = {
       })->ignore
     }
 
-    <Background>
+    <Container>
       <SendAndConfirmForm isLoading=queryResult.isFetching trans setTrans onSubmit />
-    </Background>
+    </Container>
   }
 }
 

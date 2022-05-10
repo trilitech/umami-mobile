@@ -68,12 +68,12 @@ let make = (~navigation, ~route as _) => {
 
   <>
     <OnboardingIntructions step="Step 1 of 4" title="Record your recovery phrase" instructions />
-    <Background>
+    <Container>
       <Mnemonic mnemonic />
       <ContinueBtn
         onPress={_ => navigation->NavStacks.OffBoard.Navigation.navigate("RecordRecoveryPhrase")}
         text="Ok, I've recorded it"
       />
-    </Background>
+    </Container>
   </>
 }

@@ -1,4 +1,4 @@
 @react.component
 let make = (~account: Store.account) => {
-  <Background> <CurrentyBalanceDisplay balance=account.balance /> </Background>
+  <Container> <CurrentyBalanceDisplay balance=account.balance /> </Container>
 }

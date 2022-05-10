@@ -4,9 +4,9 @@ open Paper
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let makeRadio = value => <LabeledRadio onPress={_ => ()} label=value status={#unchecked} value />
-  <Background>
+  <Container>
     <List.Section title="Selected Network">
       {makeRadio("mainnet")} {makeRadio("hanghzounet")}
     </List.Section>
-  </Background>
+  </Container>
 }
