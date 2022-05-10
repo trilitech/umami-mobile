@@ -14,7 +14,3 @@ let mnemonicToSK = (~mnemonic, ~derivationPathIndex=0, ~passphrase, ()) => {
   // This is very slow
   EncryptSK.encryptSK(secretKey, passphrase)
 }
-
-let getTz1 = (~sk, ~passphrase) => {
-  Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => signer->Taquito.publicKeyHash())
-}

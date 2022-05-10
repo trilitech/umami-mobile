@@ -1,13 +1,9 @@
-open ReactNative
-
-include ReactNativeHelloWorldUtils
-
-let useIsDarkMode = () => {
-  Appearance.useColorScheme()
-  ->Js.Null.toOption
-  ->Belt.Option.map(scheme => scheme === #dark)
-  ->Belt.Option.getWithDefault(false)
-}
+// let useIsDarkMode = () => {
+//   Appearance.useColorScheme()
+//   ->Js.Null.toOption
+//   ->Belt.Option.map(scheme => scheme === #dark)
+//   ->Belt.Option.getWithDefault(false)
+// }
 
 let makeFonts = () => {
   open Paper.ThemeProvider.Theme.Fonts

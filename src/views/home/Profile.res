@@ -82,18 +82,19 @@ module PureProfile = {
 }
 
 @react.component
-let make = (~onPressToggle=?, ~onPressSend=?, ~hideButtons=false) => {
-  let (account, _) = Store.useAccounts()
-  let (selectedAccount, _) = Store.useSelectedAccount()
+let make = (~hideButtons=false) => {
+  let account = Store.useActiveAccount()
+  let navigate = NavUtils.useNavigate()
 
-  switch selectedAccount {
-  | Some(i) => {
-      let account = account->Belt.Array.get(i)
-      switch account {
-      | Some(account) => <PureProfile hideButtons ?onPressSend ?onPressToggle account />
-      | None => React.null
-      }
-    }
+  let onPressSend = () => {
+    navigate("Send")->ignore
+  }
+
+  let onPressToggle = () => {
+    navigate("Accounts")->ignore
+  }
+  switch account {
+  | Some(account) => <PureProfile hideButtons onPressSend onPressToggle account />
   | None => React.null
   }
 }

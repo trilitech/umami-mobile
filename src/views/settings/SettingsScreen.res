@@ -23,5 +23,6 @@ let make = (~navigation as _, ~route as _) => {
         <Paper.Text> {React.string("Erase secret")} </Paper.Text>
       </Button>
     </List.Section>
+    <Version />
   </Background>
 }

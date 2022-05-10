@@ -4,6 +4,7 @@ type account = {
   tz1: string,
   sk: string,
   derivationPathIndex: int,
+  tokens: array<Token.t>,
 }
 
 // bind to JS' JSON.parse

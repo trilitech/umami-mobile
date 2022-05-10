@@ -20,6 +20,7 @@ let make = (~navigation as _, ~route as _) => {
             derivationPathIndex: 9,
             name: "cool",
             balance: None,
+            tokens: [],
           },
         ])
       }}

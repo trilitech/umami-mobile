@@ -46,8 +46,10 @@
     "react-query": "^3.34.19",
     "readable-stream": "^3.6.0",
     "rescript": "^9.1.4",
+    "rescript-json": "^1.0.2",
     "rescript-react-native": "^0.64.3",
-    "rescript-react-navigation": "^6.0.1"
+    "rescript-react-navigation": "^6.0.1",
+    "use-interval": "^1.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

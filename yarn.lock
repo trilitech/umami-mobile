@@ -7469,6 +7469,11 @@ require-main-filename@^2.0.0:
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-2.0.0.tgz#d0b329ecc7cc0f61649f62215be69af54aa8989b"
   integrity sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==
 
+rescript-json@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/rescript-json/-/rescript-json-1.0.2.tgz#10e787007d7f16af619a2fca40c960ca2236df88"
+  integrity sha512-uaqZ5i6b9qlzYq3DKX4qzVfyrvy3uuhPpLgaF2i5r/g2eUijAaNgr+JHhB5n8Cht53xltDjfq/zqkRz2A0VAxw==
+
 rescript-react-native@^0.64.3:
   version "0.64.3"
   resolved "https://registry.yarnpkg.com/rescript-react-native/-/rescript-react-native-0.64.3.tgz#8fd11a2681cfdd65c02f0ff620186e5adf0c6854"
@@ -8460,6 +8465,11 @@ urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
+
+use-interval@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/use-interval/-/use-interval-1.4.0.tgz#d0d24a359664373c0ed3f64768c99022a59cfce3"
+  integrity sha512-1betIJun2rXKLxa30AFOBZCeZhsBJoJ/3+gkCeYbJ63lAR//EnAb1NjNeFqzgqeM7zQfR76rrCUaA8DvfgoOpA==
 
 "use-subscription@>=1.0.0 <1.6.0":
   version "1.5.1"

@@ -1,5 +1,9 @@
 // include ReactNativeHelloWorldUtils
 
+// %%raw(`
+// require('./nftTest')
+// `)
+
 // let useIsDarkMode = () => {
 //   Appearance.useColorScheme()
 //   ->Js.Null.toOption

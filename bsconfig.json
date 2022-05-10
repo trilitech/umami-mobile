@@ -25,6 +25,7 @@
     "@ryyppy/rescript-promise",
     "@rescriptbr/react-query",
     "@glennsl/rescript-jest",
-    "bs-fetch"
+    "bs-fetch",
+    "rescript-json"
   ]
 }

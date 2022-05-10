@@ -6,10 +6,10 @@ module UmaminiLogo = {
   let make = () => {
     let primary = ThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.primary
     <>
-      <Paper.Text>
-      // style={style(~fontFamily="Montserrat-Regular", ~fontWeight=#_600, ~fontSize=20., ())}
-        {React.string("uma")}
-      </Paper.Text>
+      // <Paper.Text>
+      // // style={style(~fontFamily="Montserrat-Regular", ~fontWeight=#_600, ~fontSize=20., ())}
+      //   {React.string("uma")}
+      // </Paper.Text>
       <Paper.Text
         style={style(
           // ~fontFamily="Montserrat-Regular",
@@ -18,7 +18,7 @@ module UmaminiLogo = {
           ~color=primary,
           (),
         )}>
-        {React.string("mini")}
+        {React.string("umami")}
       </Paper.Text>
     </>
   }
