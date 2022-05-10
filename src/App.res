@@ -16,12 +16,26 @@ let useHasAccount = () => {
   let account = accounts->Belt.Array.get(0)
   Belt.Option.isSome(account)
 }
+
+// Set bg color via react navigation theme otherwise we get glitches
+let useNavTheme = () => {
+  open Paper.ThemeProvider
+  let theme = useTheme()
+  let backgroundColor = Theme.colors(theme)->Theme.Colors.background
+
+  let theme = ReactNavigation.Native.useTheme()
+  let colors = {...theme.colors, background: backgroundColor}
+
+  {...theme, colors: colors}
+}
+
 module MemoizedRouter = {
   open ReactNavigation
   @react.component
   let make = React.memo((~hasAccount) => {
+    let navTheme = useNavTheme()
     <SnackbarDisplayer>
-      <Native.NavigationContainer>
+      <Native.NavigationContainer theme={navTheme}>
         {hasAccount ? <OnboardRouter /> : <OffboardRouter />}
       </Native.NavigationContainer>
     </SnackbarDisplayer>

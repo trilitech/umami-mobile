@@ -14,7 +14,7 @@ let make = (~navigation as _, ~route as _) => {
       value
     />
 
-  <>
+  <Container>
     <List.Section title="Theme">
       {makeRadio("dark")} {makeRadio("light")} {makeRadio("system")}
     </List.Section>
@@ -24,5 +24,5 @@ let make = (~navigation as _, ~route as _) => {
       </Button>
     </List.Section>
     <Version />
-  </>
+  </Container>
 }
