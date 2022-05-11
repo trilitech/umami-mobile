@@ -1,7 +1,5 @@
 open Paper
 
-open ReactNative.Style
-
 type formState = {recipient: string, amount: int, passphrase: string}
 let vMargin = FormStyles.styles["verticalMargin"]
 
@@ -75,22 +73,6 @@ module SendForm = {
   }
 }
 
-module Confirm = {
-  @react.component
-  let make = (~passphrase, ~onChange, ~isLoading, ~onSubmit) => {
-    <>
-      <PasswordConfirm.PurePasswordConfirm loading=isLoading value=passphrase onChange />
-      <Button
-        loading=isLoading
-        style={style(~marginTop=10.->dp, ())}
-        onPress={_ => onSubmit()}
-        mode=#contained>
-        {React.string("Confirm")}
-      </Button>
-    </>
-  }
-}
-
 module SendAndConfirmForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
@@ -98,23 +80,21 @@ module SendAndConfirmForm = {
 
     switch step {
     | #fill => <SendForm trans setTrans isLoading=false onSubmit={_ => {setStep(_ => #confirm)}} />
-    | #confirm =>
-      <Confirm
-        passphrase=trans.passphrase
-        onChange={p => {
-          setTrans(prev => {
-            recipient: prev.recipient,
-            amount: prev.amount,
-            passphrase: p,
-          })
-        }}
-        isLoading
-        onSubmit
-      />
+    | #confirm => <PasswordConfirm loading=isLoading onSubmit />
     }
   }
 }
 
+let makeNotif = hash => {
+  <CommonComponents.Wrapper alignItems=#center>
+    <Paper.Text> {React.string("Transaction successful!")} </Paper.Text>
+    <Paper.IconButton
+      onPress={_ => ReactNative.Linking.openURL("https://ithaca.tzstats.com/" ++ hash)->ignore}
+      icon={Paper.Icon.name("open-in-new")}
+      size={15}
+    />
+  </CommonComponents.Wrapper>
+}
 module ConnectedSend = {
   @react.component
   let make = (~secret: Store.account) => {
@@ -122,62 +102,67 @@ module ConnectedSend = {
     let notify = SnackBar.useNotification()
     let notifyAdvanced = SnackBar.useNotificationAdvanced()
     let navigate = NavUtils.useNavigate()
+    let (loading, setLoading) = React.useState(_ => false)
 
-    let queryResult = useSend(
-      ~recipient=trans.recipient,
-      ~amount=trans.amount,
-      ~passphrase=trans.passphrase,
-      ~sk=secret.sk,
-    )
-    let {refetch} = queryResult
-    let isError = queryResult.isError
+    // let queryResult = useSend(
+    //   ~recipient=trans.recipient,
+    //   ~amount=trans.amount,
+    //   ~passphrase=trans.passphrase,
+    //   ~sk=secret.sk,
+    // )
+    // let {refetch} = queryResult
+    // let isError = queryResult.isError
 
-    React.useEffect1(() => {
-      if isError {
-        notify("Failed to send")
-      }
-      None
-    }, [isError])
+    // React.useEffect1(() => {
+    //   if isError {
+    //     notify("Failed to send")
+    //   }
+    //   None
+    // }, [isError])
 
-    React.useEffect1(() => {
-      {
-        switch queryResult.data {
-        | Some({hash}) => {
-            let el =
-              <CommonComponents.Wrapper alignItems=#center>
-                <Paper.Text> {React.string("Transaction successful!")} </Paper.Text>
-                <Paper.IconButton
-                  onPress={_ =>
-                    ReactNative.Linking.openURL("https://ithaca.tzstats.com/" ++ hash)->ignore}
-                  icon={Paper.Icon.name("open-in-new")}
-                  size={15}
-                />
-              </CommonComponents.Wrapper>
+    // React.useEffect1(() => {
+    //   {
+    //     switch queryResult.data {
+    //     | Some({hash}) => {
+    //         let el = makeNotif(hash)
 
-            notifyAdvanced(Some(el))
+    //         notifyAdvanced(Some(el))
 
-            queryResult.remove()
-            navigate("Home")->ignore
-          }
-        | None => ()
-        }
-      }
+    //         queryResult.remove()
+    //         navigate("Home")->ignore
+    //       }
+    //     | None => ()
+    //     }
+    //   }
 
-      None
-    }, [queryResult.data])
+    //   None
+    // }, [queryResult.data])
 
-    let onSubmit = _ => {
-      refetch({
-        {
-          throwOnError: false,
-          cancelRefetch: false,
-        }
-      })->ignore
+    let onSubmit = (passphrase: string) => {
+      let {recipient, amount} = trans
+      setLoading(_ => true)
+
+      TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk=secret.sk)
+      ->Promise.thenResolve(({hash}) => {
+        let el = makeNotif(hash)
+
+        notifyAdvanced(Some(el))
+
+        // queryResult.remove()
+        navigate("Home")->ignore
+        ()
+      })
+      ->Promise.catch(_ => {
+        notify("Failed to send")->ignore
+        Promise.resolve()
+      })
+      ->Promise.finally(_ => {
+        setLoading(_ => false)
+      })
+      ->ignore
     }
 
-    <Container>
-      <SendAndConfirmForm isLoading=queryResult.isFetching trans setTrans onSubmit />
-    </Container>
+    <Container> <SendAndConfirmForm isLoading=loading trans setTrans onSubmit /> </Container>
   }
 }
 

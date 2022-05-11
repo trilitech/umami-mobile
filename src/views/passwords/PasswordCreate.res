@@ -5,6 +5,7 @@ let make = (~onSubmit, ~loading=false) => {
   let (value1, setValue1) = React.useState(_ => "")
   let (value2, setValue2) = React.useState(_ => "")
   <>
+    <Title> {React.string("Enter and confirm passphrase")} </Title>
     <TextInput
       style={FormStyles.styles["verticalMargin"]}
       disabled=loading

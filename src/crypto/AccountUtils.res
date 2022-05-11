@@ -14,3 +14,55 @@ let generateAccount = (~mnemonic, ~passphrase, ~derivationPathIndex=0, ~name=?, 
     })
   })
 }
+
+let checkExists = tz1 => {
+  let url = `https://ithacanet.umamiwallet.com/accounts/${tz1}/exists`
+  Fetch.fetch(url)
+  ->Promise.then(Fetch.Response.json)
+  ->Promise.thenResolve(Js.Json.decodeBoolean)
+  ->Promise.thenResolve(Belt.Option.getExn)
+}
+
+let rec restoreAccounts = (~mnemonic, ~passphrase, ~accounts=[], ~onDone, ()) => {
+  let derivationPathIndex = accounts->Array.length
+
+  generateAccount(~mnemonic, ~passphrase, ~derivationPathIndex, ())
+  ->Promise.then(account => {
+    checkExists(account.tz1)->Promise.thenResolve(exists => {
+      if exists {
+        restoreAccounts(
+          ~mnemonic,
+          ~passphrase,
+          ~accounts=Belt.Array.concat(accounts, [account]),
+          ~onDone,
+          (),
+        )
+        ()
+      } else {
+        onDone(Ok(accounts))
+        ()
+      }
+    })
+  })
+  ->Promise.catch(error => {
+    onDone(Error(error))->Promise.resolve
+  })
+  ->ignore
+}
+
+let restore = (~mnemonic, ~passphrase) => {
+  Promise.make((resolve, reject) => {
+    restoreAccounts(
+      ~mnemonic,
+      ~passphrase,
+      ~onDone=res => {
+        switch res {
+        | Ok(accounts) => resolve(. accounts)
+        | Error(error) => reject(. error)
+        }
+      },
+      (),
+    )
+    ()
+  })
+}

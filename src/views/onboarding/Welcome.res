@@ -36,5 +36,6 @@ let make = (~navigation, ~route as _) => {
     //   iconName="twitter"
     //   iconColor="#00acee"
     // />
+    <Version />
   </Container>
 }
