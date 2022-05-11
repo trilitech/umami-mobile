@@ -1800,7 +1800,7 @@
   resolved "https://registry.yarnpkg.com/@rescript-react-native/async-storage/-/async-storage-1.6.3.tgz#f47e95b3c5fb7b8e5ad867372f6de02c299a0861"
   integrity sha512-3GMvq2/kjPYg6fB9QjYj0r4OqmsNGM0cYn0MWb7FYMiBUij/A9l624QJfCfO2m5aCmJACvUlWMVdZjLwhVLSqw==
 
-"@rescript/react@^0.10.0":
+"@rescript/react@^0.10.3":
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/@rescript/react/-/react-0.10.3.tgz#a2a8bed6b017940ec26c2154764b350f50348889"
   integrity sha512-Lf9rzrR3bQPKJjOK3PBRa/B3xrJ7CqQ1HYr9VHPVxJidarIJJFZBhj0Dg1uZURX+Wg/xiP0PHFxXmdj2bK8Vxw==
@@ -7474,10 +7474,10 @@ rescript-json@^1.0.2:
   resolved "https://registry.yarnpkg.com/rescript-json/-/rescript-json-1.0.2.tgz#10e787007d7f16af619a2fca40c960ca2236df88"
   integrity sha512-uaqZ5i6b9qlzYq3DKX4qzVfyrvy3uuhPpLgaF2i5r/g2eUijAaNgr+JHhB5n8Cht53xltDjfq/zqkRz2A0VAxw==
 
-rescript-react-native@^0.64.3:
-  version "0.64.3"
-  resolved "https://registry.yarnpkg.com/rescript-react-native/-/rescript-react-native-0.64.3.tgz#8fd11a2681cfdd65c02f0ff620186e5adf0c6854"
-  integrity sha512-PjGDkV3RYiCTk4hCZyaKtZJV69By0AmJuzWyuHZONdeCB0q3DwjVJtA73gu6+jBrdl0OWon6UdXaVRXhhR47cQ==
+rescript-react-native@^0.68.1:
+  version "0.68.1"
+  resolved "https://registry.yarnpkg.com/rescript-react-native/-/rescript-react-native-0.68.1.tgz#8fd0f1913aa39323d5135a80e4388736133926d8"
+  integrity sha512-NmycJPLJCQt2m9FeHiPBKG84aeKBWJ3hDkNZHdtW01w/l3FurpyrYkdw3cWrLlHZdXd565axwqLjGyIhoxTEOQ==
 
 rescript-react-navigation@^6.0.1:
   version "6.0.3"
