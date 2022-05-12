@@ -170,3 +170,13 @@ module CustomListItem = {
     </TouchableRipple>
   }
 }
+
+module Image = {
+  @react.component
+  let make = (~url: string, ~style, ~resizeMode) => {
+    let source = ReactNative.Image.uriSource(~uri=url, ())
+    <ReactNative.Image
+      resizeMode style key=url source={source->ReactNative.Image.Source.fromUriSource}
+    />
+  }
+}

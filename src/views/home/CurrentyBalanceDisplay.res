@@ -1,9 +1,8 @@
 open CommonComponents
-open ReactNative
 open ReactNative.Style
 
-let tezLogoImagePath = Image.Source.fromRequired(
-  Packager.require("../../assets/icon_currency_tezos.png"),
+let tezLogoImagePath = ReactNative.Image.Source.fromRequired(
+  ReactNative.Packager.require("../../assets/icon_currency_tezos.png"),
 )
 
 @react.component

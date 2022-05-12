@@ -25,7 +25,10 @@ let make = (~navigation, ~route as _) => {
           onPressEdit={_ => {
             navigation->NavStacks.OnBoard.Navigation.navigateWithParams(
               "EditAccount",
-              {derivationIndex: a.derivationPathIndex},
+              {
+                derivationIndex: a.derivationPathIndex,
+                token: None,
+              },
             )
           }}
         />

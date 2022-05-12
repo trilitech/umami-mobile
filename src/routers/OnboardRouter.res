@@ -8,6 +8,7 @@ let make = () => {
       <Screen
         name="Home" options={props => options(~headerShown=false, ())} component=HomeScreen.make
       />
+      <Screen name="NFT" options={headerStyles} component=DisplayNFTScreen.make />
       <Screen name="Network" options={headerStyles} component=NetworkScreen.make />
       <Screen name="Accounts" options={headerStyles} component=AccountsScreen.make />
       <Screen name="EditAccount" options={headerStyles} component=EditAccountScreen.make />

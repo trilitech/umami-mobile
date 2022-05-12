@@ -1,15 +1,16 @@
 open Paper
+open SendAmount
 
-type formState = {recipient: string, amount: int, passphrase: string}
+type formState = {recipient: string, amount: SendAmount.t, passphrase: string}
 let vMargin = FormStyles.styles["verticalMargin"]
 
-let useSend = (~recipient: string, ~amount: int, ~passphrase, ~sk) => {
-  ReactQuery.useQuery(ReactQuery.queryOptions(~queryFn=_ => {
-      TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk)
-    }, ~queryKey="send", ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(
-      #bool(false),
-    ), ~enabled=false, ~retry=ReactQuery.retry(#number(0)), ()))
-}
+// let useSend = (~recipient: string, ~amount: int, ~passphrase, ~sk) => {
+//   ReactQuery.useQuery(ReactQuery.queryOptions(~queryFn=_ => {
+//       TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk)
+//     }, ~queryKey="send", ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(
+//       #bool(false),
+//     ), ~enabled=false, ~retry=ReactQuery.retry(#number(0)), ()))
+// }
 
 module Sender = {
   @react.component
@@ -27,31 +28,78 @@ module Sender = {
   }
 }
 
+let validTrans = trans => {
+  trans.recipient->Js.String2.length > 10 &&
+    switch trans.amount {
+    | Tez(amount) => amount > 0
+    | _ => true
+    }
+}
+
+module TezInput = {
+  @react.component
+  let make = (~value, ~onChangeText) => {
+    <TextInput
+      keyboardType="number-pad" value onChangeText style={vMargin} label="amount" mode=#flat
+    />
+  }
+}
+module NFTInput = {
+  open CommonComponents
+  open ReactNative.Style
+  @react.component
+  let make = (~imageUrl, ~name) => {
+    <CustomListItem
+      left={<Image
+        url=imageUrl resizeMode=#contain style={style(~height=40.->dp, ~width=40.->dp, ())}
+      />}
+      center={<Text> {React.string(name)} </Text>}
+    />
+  }
+}
+
+let matchNftData = (token: Token.t) => {
+  let {displayUri, thumbnailUri, description} = token.token.metadata
+  switch (displayUri, thumbnailUri, description) {
+  | (Some(displayUri), Some(thumbnailUri), Some(description)) =>
+    Some((displayUri, thumbnailUri, description))
+  | _ => None
+  }
+}
 module SendForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
     let {recipient} = trans
 
-    let disabled = trans.recipient->Js.String2.length < 10 || trans.amount == 0
-    <>
-      <TextInput
-        keyboardType="number-pad"
-        onChangeText={e => {
-          e
+    let disabled = !validTrans(trans)
+
+    let amountInput = switch trans.amount {
+    | Tez(amount) =>
+      <TezInput
+        value={Js.Int.toString(amount)}
+        onChangeText={t => {
+          t
           ->Belt.Int.fromString
           ->Belt.Option.map(amount => {
             setTrans(prev => {
               recipient: prev.recipient,
-              amount: amount,
+              amount: Tez(amount),
               passphrase: prev.passphrase,
             })
           })
           ->ignore
         }}
-        style={vMargin}
-        label="amount"
-        mode=#flat
       />
+    | Token(token) =>
+      switch matchNftData(token) {
+      | Some((displayUri, _, _)) =>
+        <NFTInput imageUrl={Token.getNftUrl(displayUri)} name=token.token.metadata.name />
+      | None => React.null
+      }
+    }
+
+    <>
+      {amountInput}
       <Sender />
       <TextInput
         value=recipient
@@ -97,8 +145,13 @@ let makeNotif = hash => {
 }
 module ConnectedSend = {
   @react.component
-  let make = (~secret: Store.account) => {
-    let (trans, setTrans) = React.useState(_ => {recipient: "", amount: 0, passphrase: ""})
+  let make = (~sender: Store.account, ~token: option<Token.t>) => {
+    let amount = switch token {
+    | Some(token) => Token(token)
+    | _ => Tez(0)
+    }
+
+    let (trans, setTrans) = React.useState(_ => {recipient: "", amount: amount, passphrase: ""})
     let notify = SnackBar.useNotification()
     let notifyAdvanced = SnackBar.useNotificationAdvanced()
     let navigate = NavUtils.useNavigate()
@@ -142,7 +195,21 @@ module ConnectedSend = {
       let {recipient, amount} = trans
       setLoading(_ => true)
 
-      TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk=secret.sk)
+      let send = switch amount {
+      | Tez(amount) => TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
+      | Token(token) =>
+        TaquitoUtils.signAndSendToken(
+          ~passphrase,
+          ~sk=sender.sk,
+          ~contractAddress=token.token.contract.address,
+          ~amount=1,
+          ~recipientTz1=recipient,
+          ~tokenId=token.token.tokenId,
+          ~senderTz1=sender.tz1,
+        )
+      }
+
+      send
       ->Promise.thenResolve(({hash}) => {
         let el = makeNotif(hash)
 
@@ -167,11 +234,12 @@ module ConnectedSend = {
 }
 
 @react.component
-let make = (~navigation as _, ~route as _) => {
+let make = (~navigation as _, ~route) => {
   let account = Store.useActiveAccount()
+  let token = NavUtils.getToken(route)
 
   switch account {
-  | Some(account) => <ConnectedSend secret=account />
+  | Some(account) => <ConnectedSend sender=account token />
   | None => React.null
   }
 }

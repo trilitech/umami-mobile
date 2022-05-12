@@ -1,6 +1,3 @@
-let getNftUrl = (ipfsUrl: string) => ipfsUrl->Js.String2.replace("ipfs://", "https://ipfs.io/ipfs/")
-
-let hasNfts = (tokens: array<Token.t>) => tokens->Belt.Array.length != 0
 
 module NftCard = {
   open Paper
@@ -9,18 +6,21 @@ module NftCard = {
 
   open ReactNative.Style
   @react.component
-  let make = (~url, ~name) => {
-    let url = getNftUrl(url)
+  let make = (~url, ~name, ~onPress) => {
+    let url = Token.getNftUrl(url)
     let source = Image.uriSource(~uri=url, ())
-    <Surface style={array([unsafeStyle({"width": "45%"}), style(~height=200.->dp, ())])}>
-      {<Image
-        resizeMode=#contain
-        style={style(~flex=1., ~height=200.->dp, ())}
-        key=url
-        source={source->ReactNative.Image.Source.fromUriSource}
-      />}
-      <Title> {name->React.string} </Title>
-    </Surface>
+    <TouchableRipple
+      style={array([unsafeStyle({"width": "45%"}), style(~height=200.->dp, ())])} onPress>
+      <Surface style={array([unsafeStyle({"width": "100%"}), style(~height=240.->dp, ())])}>
+        {<Image
+          resizeMode=#contain
+          style={style(~flex=1., ())}
+          key=url
+          source={source->ReactNative.Image.Source.fromUriSource}
+        />}
+        <Title> {name->React.string} </Title>
+      </Surface>
+    </TouchableRipple>
   }
 }
 
@@ -30,14 +30,24 @@ open CommonComponents
 module NftGallery = {
   @react.component
   let make = (~tokens: array<Token.t>) => {
+    let navigate = NavUtils.useNavigateWithParams()
+
     <>
       <Paper.Searchbar value="search" style={FormStyles.styles["verticalMargin"]} />
       <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
         {tokens
-        ->Belt.Array.map(d => {
-          let metadata = d.token.metadata
+        ->Belt.Array.map(t => {
+          let metadata = t.token.metadata
           switch (metadata.thumbnailUri, metadata.description) {
-          | (Some(url), Some(_description)) => <NftCard key=url url name=metadata.name />
+          | (Some(url), Some(_description)) =>
+            <NftCard
+              onPress={_ => {
+                navigate("NFT", {derivationIndex: 0, token: Some(t)})->ignore
+              }}
+              key=url
+              url
+              name=metadata.name
+            />
           | _ => React.null
           }
         })
@@ -50,7 +60,7 @@ module NftGallery = {
 module PureNfts = {
   @react.component
   let make = (~account: Store.account) => {
-    if hasNfts(account.tokens) {
+    if Token.hasNfts(account.tokens) {
       <NftGallery tokens=account.tokens />
     } else {
       <DefaultView icon="diamond-stone" title="NFT" subTitle="You have no nfts yet..." />
