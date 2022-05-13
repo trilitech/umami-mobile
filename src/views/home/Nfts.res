@@ -33,25 +33,27 @@ module NftGallery = {
 
     <>
       <Paper.Searchbar value="search" style={FormStyles.styles["verticalMargin"]} />
-      <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
-        {tokens
-        ->Belt.Array.map(t => {
-          switch Token.matchNftData(t) {
-          | Some((displayUri, _, _, name)) =>
-            <NftCard
-              onPress={_ => {
-                navigate("NFT", {derivationIndex: 0, token: Some(t)})->ignore
-              }}
-              key=displayUri
-              url=displayUri
-              name
-            />
+      <ScrollView>
+        <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
+          {tokens
+          ->Belt.Array.map(t => {
+            switch Token.matchNftData(t) {
+            | Some((displayUri, _, _, name)) =>
+              <NftCard
+                onPress={_ => {
+                  navigate("NFT", {derivationIndex: 0, token: Some(t)})->ignore
+                }}
+                key=displayUri
+                url=displayUri
+                name
+              />
 
-          | None => React.null
-          }
-        })
-        ->React.array}
-      </Wrapper>
+            | None => React.null
+            }
+          })
+          ->React.array}
+        </Wrapper>
+      </ScrollView>
     </>
   }
 }
