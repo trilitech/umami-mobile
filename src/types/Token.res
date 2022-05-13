@@ -10,7 +10,7 @@ type token = {
   id: int,
   tokenId: string,
   contract: address,
-  metadata: metadata,
+  metadata: option<metadata>,
 }
 
 type t = {
@@ -31,3 +31,17 @@ let hasNfts = (tokens: array<t>) =>
     }
   })
   ->Belt.Array.length > 0
+
+let matchNftData = (token: t) => {
+  switch token.token.metadata {
+  | Some(metadata) => {
+      let {displayUri, thumbnailUri, description} = metadata
+      switch (displayUri, thumbnailUri, description) {
+      | (Some(displayUri), Some(thumbnailUri), Some(description)) =>
+        Some((displayUri, thumbnailUri, description, metadata.name))
+      | _ => None
+      }
+    }
+  | None => None
+  }
+}

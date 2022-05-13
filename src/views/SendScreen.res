@@ -58,14 +58,6 @@ module NFTInput = {
   }
 }
 
-let matchNftData = (token: Token.t) => {
-  let {displayUri, thumbnailUri, description} = token.token.metadata
-  switch (displayUri, thumbnailUri, description) {
-  | (Some(displayUri), Some(thumbnailUri), Some(description)) =>
-    Some((displayUri, thumbnailUri, description))
-  | _ => None
-  }
-}
 module SendForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
@@ -91,9 +83,8 @@ module SendForm = {
         }}
       />
     | Token(token) =>
-      switch matchNftData(token) {
-      | Some((displayUri, _, _)) =>
-        <NFTInput imageUrl={Token.getNftUrl(displayUri)} name=token.token.metadata.name />
+      switch Token.matchNftData(token) {
+      | Some((displayUri, _, _, name)) => <NFTInput imageUrl={Token.getNftUrl(displayUri)} name />
       | None => React.null
       }
     }

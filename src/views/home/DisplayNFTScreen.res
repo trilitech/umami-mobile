@@ -8,16 +8,14 @@ module DisplayNFT = {
   @react.component
   let make = (~token: Token.t) => {
     let navigate = NavUtils.useNavigateWithParams()
-    let metadata = token.token.metadata
-    let {displayUri, description} = metadata
 
-    switch (displayUri, description) {
-    | (Some(url), Some(description)) => {
+    switch Token.matchNftData(token) {
+    | Some((url, _, description, name)) => {
         let url = Token.getNftUrl(url)
 
         <Container>
           <Wrapper flexDirection=#column justifyContent=#flexStart alignItems=#center>
-            <Title style=vMargin> {React.string(metadata.name)} </Title>
+            <Title style=vMargin> {React.string(name)} </Title>
             <Image
               url resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} key=url
             />
@@ -29,7 +27,7 @@ module DisplayNFT = {
           </Wrapper>
         </Container>
       }
-    | _ => React.null
+    | None => React.null
     }
     // let url = Token.getNftUrl(token.token.metadata.displayUri)
     // let source = Image.uriSource(~uri=url, ())
