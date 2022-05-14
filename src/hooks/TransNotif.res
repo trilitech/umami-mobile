@@ -1,6 +1,6 @@
 type update = {name: string, amount: int}
 
-let updatedAccounts = (prevAccounts: array<Store.account>, newAccounts: array<Store.account>) => {
+let getUpdates = (prevAccounts: array<Store.account>, newAccounts: array<Store.account>) => {
   prevAccounts->Belt.Array.reduce([], (acc, currentAccount) => {
     let newAccount = newAccounts->Belt.Array.getBy(a => a.tz1 == currentAccount.tz1)
 

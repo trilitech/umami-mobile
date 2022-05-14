@@ -35,19 +35,16 @@ let useBalancesSync = () => {
   }, [])
 
   useInterval(() => {
-    open Belt.Array
-    updateAccounts(accounts)->Promise.thenResolve(updatedAccounts => {
-      // let accountsAddedSince = accounts->length > updatedAccounts->length
-
+    updateAccounts(accounts)->Promise.thenResolve(newAccounts => {
+      // Need this to prevent setStates if promises resolve when logged out.
       if isMounted.current {
-        setAccounts(prev => {
-          let updates = TransNotif.updatedAccounts(prev, updatedAccounts)
-          updates->Belt.Array.forEach(notification => {
+        setAccounts(prevAccounts => {
+          TransNotif.getUpdates(prevAccounts, newAccounts)->Belt.Array.forEach(notification => {
             open TezHelpers
             notify(`${notification.name} received ${notification.amount->formatBalance}`)
           })
 
-          handleAccounts(prev, updatedAccounts)
+          handleAccounts(prevAccounts, newAccounts)
         })
       }
     })
