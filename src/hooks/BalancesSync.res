@@ -12,6 +12,16 @@ let updateAccounts = accounts => {
   Promise.all(updated)
 }
 
+let handleAccounts = (old: array<Store.account>, new_: array<Store.account>) => {
+  old->Belt.Array.map(oldA => {
+    let updated = new_->Belt.Array.getBy(acc => acc.tz1 == oldA.tz1)
+    switch updated {
+    | Some(account) => account
+    | None => oldA
+    }
+  })
+}
+
 @module("use-interval")
 external useInterval: ('a, int) => unit = "default"
 
@@ -27,18 +37,17 @@ let useBalancesSync = () => {
   useInterval(() => {
     open Belt.Array
     updateAccounts(accounts)->Promise.thenResolve(updatedAccounts => {
-      let accountsAddedSince = accounts->length > updatedAccounts->length
+      // let accountsAddedSince = accounts->length > updatedAccounts->length
 
-      if isMounted.current && !accountsAddedSince {
+      if isMounted.current {
         setAccounts(prev => {
-          let updated = TransNotif.updatedAccounts(prev, updatedAccounts)
-
-          updated->Belt.Array.forEach(notification => {
+          let updates = TransNotif.updatedAccounts(prev, updatedAccounts)
+          updates->Belt.Array.forEach(notification => {
             open TezHelpers
             notify(`${notification.name} received ${notification.amount->formatBalance}`)
           })
 
-          updatedAccounts
+          handleAccounts(prev, updatedAccounts)
         })
       }
     })
