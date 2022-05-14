@@ -18,20 +18,29 @@ external useInterval: ('a, int) => unit = "default"
 let useBalancesSync = () => {
   let (accounts, setAccounts) = Store.useAccounts()
   let notify = SnackBar.useNotification()
+  let isMounted = React.useRef(true)
+
+  React.useEffect1(() => {
+    Some(() => isMounted.current = false)
+  }, [])
+
   useInterval(() => {
-    updateAccounts(accounts)
-    ->Promise.thenResolve(accounts =>
-      setAccounts(prev => {
-        let updated = TransNotif.updatedAccounts(prev, accounts)
+    open Belt.Array
+    updateAccounts(accounts)->Promise.thenResolve(updatedAccounts => {
+      let accountsAddedSince = accounts->length > updatedAccounts->length
 
-        updated->Belt.Array.forEach(notification => {
-          open TezHelpers
-          notify(`${notification.name} received ${notification.amount->formatBalance}`)
+      if isMounted.current && !accountsAddedSince {
+        setAccounts(prev => {
+          let updated = TransNotif.updatedAccounts(prev, updatedAccounts)
+
+          updated->Belt.Array.forEach(notification => {
+            open TezHelpers
+            notify(`${notification.name} received ${notification.amount->formatBalance}`)
+          })
+
+          updatedAccounts
         })
-
-        accounts
-      })
-    )
-    ->ignore
+      }
+    })
   }, 2000)
 }
