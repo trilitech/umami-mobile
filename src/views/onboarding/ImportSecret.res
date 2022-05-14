@@ -32,16 +32,21 @@ module ImportSecret = {
 let make = (~navigation as _, ~route as _) => {
   let (backupPhrase, setBackupPhrase) = React.useState(_ => "")
   let (_, setAccounts) = Store.useAccounts()
+  let notify = SnackBar.useNotification()
 
   let (loading, setLoading) = React.useState(_ => false)
   let hoc = (~onSubmit) => <ImportSecret backupPhrase setBackupPhrase onSubmit />
 
   let handleAccounts = (accounts: array<Store.account>, passphrase) => {
-    BackupphraseCrypto.encrypt(backupPhrase, passphrase)
-    ->Promise.thenResolve(_ => {
-      setAccounts(_ => accounts)
-    })
-    ->ignore
+    if accounts == [] {
+      notify("No accounts revealed for this secret...")
+    } else {
+      BackupphraseCrypto.encrypt(backupPhrase, passphrase)
+      ->Promise.thenResolve(_ => {
+        setAccounts(_ => accounts)
+      })
+      ->ignore
+    }
   }
   let onConfirm = passphrase => {
     setLoading(_ => true)
