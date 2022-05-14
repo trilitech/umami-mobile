@@ -53,6 +53,7 @@ module PureProfile = {
     ~account: Store.account,
     ~onPressToggle=_ => (),
     ~onPressSend=_ => (),
+    ~onPressReceive=_ => (),
     ~hideButtons=false,
   ) => {
     let {tz1, name, derivationPathIndex} = account
@@ -74,7 +75,9 @@ module PureProfile = {
               <TransactionIcon
                 onPress={_ => onPressSend()} iconName="arrow-top-right-thin" label="Send"
               />
-              <TransactionIcon iconName="arrow-bottom-left-thin" label="Receive" />
+              <TransactionIcon
+                onPress={_ => onPressReceive()} iconName="arrow-bottom-left-thin" label="Receive"
+              />
             </Wrapper>}
       </Wrapper>
     </Surface>
@@ -93,8 +96,13 @@ let make = (~hideButtons=false) => {
   let onPressToggle = () => {
     navigate("Accounts")->ignore
   }
+
+  let onPressReceive = () => {
+    navigate("Receive")->ignore
+  }
+
   switch account {
-  | Some(account) => <PureProfile hideButtons onPressSend onPressToggle account />
+  | Some(account) => <PureProfile hideButtons onPressSend onPressToggle onPressReceive account />
   | None => React.null
   }
 }

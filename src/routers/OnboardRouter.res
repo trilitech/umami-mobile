@@ -1,4 +1,5 @@
 open NavStacks.OnBoard
+open ReactNative.Style
 @react.component
 let make = () => {
   let headerStyles = HeaderStyle.useHeaderStyle()
@@ -18,7 +19,14 @@ let make = () => {
     </Group>
     // theses views open in modal
     <Group screenOptions={_optionsProps => options(~presentation=#modal, ())}>
-      <ScreenWithCallback name="Notifications">
+      <ScreenWithCallback
+        name="Receive"
+        options={props =>
+          options(
+            ~headerShown=false,
+            ~cardStyle=style(~backgroundColor="transparent", ~opacity=0.99, ()),
+            (),
+          )}>
         {({navigation, route}) => <ModalScreen navigation route />}
       </ScreenWithCallback>
     </Group>
