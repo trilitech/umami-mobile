@@ -1,3 +1,4 @@
+open ReactNative.Style
 module type StyleModule = {
   let style: ReactNative.Style.t
 }
@@ -10,7 +11,6 @@ module MakeWrapper = (Style: StyleModule) => {
 
 module Wrapper = {
   open ReactNative
-  open Style
   @react.component
   let make = (
     ~children,
@@ -54,7 +54,6 @@ let makeListItem = (
 
   open ThemeProvider
   open Theme
-  open ReactNative.Style
   <Surface
     key=title
     style={style(
@@ -92,7 +91,6 @@ module Icon = {
     open Paper
     open ThemeProvider
     open Theme
-    open ReactNative.Style
     let defaultIconColor = theme->colors->Colors.text
     <Paper.Avatar.Icon
       size
@@ -142,7 +140,6 @@ module ListItemCustomIcon = {
 module CustomListItem = {
   open Paper
   open Paper.ThemeProvider
-  open ReactNative.Style
   @react.component
   let make = (
     ~left=React.null,
@@ -177,6 +174,20 @@ module Image = {
     let source = ReactNative.Image.uriSource(~uri=url, ())
     <ReactNative.Image
       resizeMode style key=url source={source->ReactNative.Image.Source.fromUriSource}
+    />
+  }
+}
+
+module NicerIconBtn = {
+  @react.component
+  let make = (~onPress, ~small=true, ~iconName, ~style as extraStyle=style()) => {
+    let textColor = ThemeProvider.useTextColor()
+    <Paper.FAB
+      style={array([extraStyle, style(~backgroundColor="transparent", ())])}
+      color={textColor}
+      small
+      onPress
+      icon={Paper.Icon.name(iconName)}
     />
   }
 }

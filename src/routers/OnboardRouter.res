@@ -16,6 +16,7 @@ let make = () => {
       <Screen name="CreateAccount" options={headerStyles} component=CreateAccountScreen.make />
       <Screen name="Settings" options={headerStyles} component=SettingsScreen.make />
       <Screen name="Send" options={headerStyles} component=SendScreen.make />
+      <Screen name="ScanQR" options={headerStyles} component=ScanQRScreen.make />
     </Group>
     // theses views open in modal
     <Group screenOptions={_optionsProps => options(~presentation=#modal, ())}>
@@ -27,7 +28,7 @@ let make = () => {
             ~cardStyle=style(~backgroundColor="transparent", ~opacity=0.99, ()),
             (),
           )}>
-        {({navigation, route}) => <ModalScreen navigation route />}
+        {({navigation, route}) => <ReceiveModal navigation route />}
       </ScreenWithCallback>
     </Group>
   </Navigator>

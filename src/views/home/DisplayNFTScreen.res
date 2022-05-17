@@ -21,7 +21,15 @@ module DisplayNFT = {
             />
             <Text style=vMargin> {description->React.string} </Text>
             <Paper.FAB
-              onPress={_ => navigate("Send", {token: Some(token), derivationIndex: 0})->ignore}
+              onPress={_ =>
+                navigate(
+                  "Send",
+                  {
+                    token: Some(token),
+                    derivationIndex: 0,
+                    tz1FromQr: None,
+                  },
+                )->ignore}
               icon={Paper.Icon.name("arrow-top-right-thin")}
             />
           </Wrapper>

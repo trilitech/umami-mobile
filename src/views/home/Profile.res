@@ -7,8 +7,7 @@ module Tz1Display = {
     let color = ThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.disabled
 
     let formatted = TezHelpers.formatTz1(tz1)
-
-    let notify = SnackBar.useNotification()
+    let copy = ClipboardCopy.useCopy()
 
     <Wrapper>
       <Wrapper
@@ -19,11 +18,7 @@ module Tz1Display = {
           ~marginTop=12.->dp,
           (),
         )}>
-        <Paper.TouchableRipple
-          onPress={_ => {
-            Clipboard.setString(tz1)
-            notify("Address copied to clipbloard")
-          }}>
+        <Paper.TouchableRipple onPress={_ => copy(tz1)}>
           <Paper.Caption> {React.string(formatted)} </Paper.Caption>
         </Paper.TouchableRipple>
       </Wrapper>
@@ -54,7 +49,6 @@ module PureProfile = {
     ~onPressToggle=_ => (),
     ~onPressSend=_ => (),
     ~onPressReceive=_ => (),
-    ~hideButtons=false,
   ) => {
     let {tz1, name, derivationPathIndex} = account
     <Surface>
@@ -68,24 +62,22 @@ module PureProfile = {
         <UmamiLogoMulti size=60. colorIndex=derivationPathIndex />
         <Headline> {React.string(name)} </Headline>
         <Tz1Display tz1 />
-        {hideButtons
-          ? React.null
-          : <Wrapper>
-              <TransactionIcon iconName="storefront-outline" label="Buy tez" />
-              <TransactionIcon
-                onPress={_ => onPressSend()} iconName="arrow-top-right-thin" label="Send"
-              />
-              <TransactionIcon
-                onPress={_ => onPressReceive()} iconName="arrow-bottom-left-thin" label="Receive"
-              />
-            </Wrapper>}
+        <Wrapper>
+          <TransactionIcon iconName="storefront-outline" label="Buy tez" />
+          <TransactionIcon
+            onPress={_ => onPressSend()} iconName="arrow-top-right-thin" label="Send"
+          />
+          <TransactionIcon
+            onPress={_ => onPressReceive()} iconName="arrow-bottom-left-thin" label="Receive"
+          />
+        </Wrapper>
       </Wrapper>
     </Surface>
   }
 }
 
 @react.component
-let make = (~hideButtons=false) => {
+let make = () => {
   let account = Store.useActiveAccount()
   let navigate = NavUtils.useNavigate()
 
@@ -102,7 +94,7 @@ let make = (~hideButtons=false) => {
   }
 
   switch account {
-  | Some(account) => <PureProfile hideButtons onPressSend onPressToggle onPressReceive account />
+  | Some(account) => <PureProfile onPressSend onPressToggle onPressReceive account />
   | None => React.null
   }
 }

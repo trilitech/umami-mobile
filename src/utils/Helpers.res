@@ -9,3 +9,5 @@ let both = (o1: option<'a>, o2: option<'b>): option<('a, 'b)> =>
   | (_, None) =>
     None
   }
+
+let reactFold = (o, fn) => o->Belt.Option.mapWithDefault(React.null, fn)

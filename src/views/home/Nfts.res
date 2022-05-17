@@ -41,7 +41,14 @@ module NftGallery = {
             | Some((displayUri, _, _, name)) =>
               <NftCard
                 onPress={_ => {
-                  navigate("NFT", {derivationIndex: 0, token: Some(t)})->ignore
+                  navigate(
+                    "NFT",
+                    {
+                      derivationIndex: 0,
+                      token: Some(t),
+                      tz1FromQr: None,
+                    },
+                  )->ignore
                 }}
                 key=displayUri
                 url=displayUri

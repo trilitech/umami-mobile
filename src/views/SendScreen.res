@@ -1,8 +1,10 @@
 open Paper
 open SendAmount
 
+open CommonComponents
 type formState = {recipient: string, amount: SendAmount.t, passphrase: string}
 let vMargin = FormStyles.styles["verticalMargin"]
+open ReactNative.Style
 
 // let useSend = (~recipient: string, ~amount: int, ~passphrase, ~sk) => {
 //   ReactQuery.useQuery(ReactQuery.queryOptions(~queryFn=_ => {
@@ -45,8 +47,6 @@ module TezInput = {
   }
 }
 module NFTInput = {
-  open CommonComponents
-  open ReactNative.Style
   @react.component
   let make = (~imageUrl, ~name) => {
     <CustomListItem
@@ -64,6 +64,7 @@ module SendForm = {
     let {recipient} = trans
 
     let disabled = !validTrans(trans)
+    let navigate = NavUtils.useNavigate()
 
     let amountInput = switch trans.amount {
     | Tez(amount) =>
@@ -92,19 +93,44 @@ module SendForm = {
     <>
       {amountInput}
       <Sender />
-      <TextInput
-        value=recipient
-        onChangeText={e => {
-          setTrans(prev => {
-            recipient: e,
-            amount: prev.amount,
-            passphrase: prev.passphrase,
-          })
-        }}
-        style={vMargin}
-        label="recipient"
-        mode=#flat
-      />
+      <Wrapper>
+        <TextInput
+          value=recipient
+          onChangeText={e => {
+            setTrans(prev => {
+              recipient: e,
+              amount: prev.amount,
+              passphrase: prev.passphrase,
+            })
+          }}
+          style={array([vMargin, style(~flex=1., ())])}
+          label="recipient"
+          mode=#flat
+        />
+        <NicerIconBtn
+          onPress={_ => {
+            navigate("ScanQR")->ignore
+            ()
+          }}
+          iconName="qrcode-scan"
+          style={FormStyles.styles["hMargin"]}
+        />
+        <NicerIconBtn
+          onPress={_ => {
+            Clipboard.getString()
+            ->Promise.thenResolve(recipient => {
+              setTrans(prev => {
+                recipient: recipient,
+                amount: prev.amount,
+                passphrase: prev.passphrase,
+              })
+            })
+            ->ignore
+          }}
+          iconName="content-copy"
+          style={FormStyles.styles["hMargin"]}
+        />
+      </Wrapper>
       <Button disabled loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>
         {React.string("send")}
       </Button>
@@ -136,7 +162,7 @@ let makeNotif = hash => {
 }
 module ConnectedSend = {
   @react.component
-  let make = (~sender: Store.account, ~token: option<Token.t>) => {
+  let make = (~sender: Store.account, ~token: option<Token.t>, ~tz1FromQr: option<string>) => {
     let amount = switch token {
     | Some(token) => Token(token)
     | _ => Tez(0)
@@ -148,6 +174,20 @@ module ConnectedSend = {
     let navigate = NavUtils.useNavigate()
     let (loading, setLoading) = React.useState(_ => false)
 
+    // let tz1FromQr = NavUtils.useT
+
+    React.useEffect1(() => {
+      tz1FromQr
+      ->Belt.Option.map(tz1 => {
+        setTrans(prev => {
+          ...prev,
+          recipient: tz1,
+        })
+      })
+      ->ignore
+
+      None
+    }, [tz1FromQr])
     // let queryResult = useSend(
     //   ~recipient=trans.recipient,
     //   ~amount=trans.amount,
@@ -228,9 +268,10 @@ module ConnectedSend = {
 let make = (~navigation as _, ~route) => {
   let account = Store.useActiveAccount()
   let token = NavUtils.getToken(route)
+  let tz1FromQr = NavUtils.getTz1FromQr(route)
 
   switch account {
-  | Some(account) => <ConnectedSend sender=account token />
+  | Some(account) => <ConnectedSend tz1FromQr sender=account token />
   | None => React.null
   }
 }
