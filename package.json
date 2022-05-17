@@ -1,6 +1,6 @@
 {
   "name": "umamimobile",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -18,13 +18,13 @@
     "@react-navigation/stack": "^6.1.1",
     "@taquito/signer": "^12.0.1",
     "@taquito/taquito": "^12.0.1",
-    "custom-signer": "link:./src/vendors/custom-signer",
     "assert": "^2.0.0",
     "base64-js": "^1.5.1",
     "bip39": "^3.0.4",
     "bs-fetch": "^0.6.2",
     "bs-platform": "^9.0.2",
     "bs58check": "^2.1.2",
+    "custom-signer": "link:./src/vendors/custom-signer",
     "events": "^3.3.0",
     "jotai": "^1.6.1",
     "react": "17.0.2",
