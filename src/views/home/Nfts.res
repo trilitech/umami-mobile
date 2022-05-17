@@ -8,8 +8,7 @@ module NftCard = {
   let make = (~url, ~name, ~onPress) => {
     let url = Token.getNftUrl(url)
     let source = Image.uriSource(~uri=url, ())
-    <TouchableRipple
-      style={array([unsafeStyle({"width": "45%"}), style(~height=200.->dp, ())])} onPress>
+    <TouchableRipple style={array([unsafeStyle({"width": "45%"})])} onPress>
       <Surface style={array([unsafeStyle({"width": "100%"}), style(~height=240.->dp, ())])}>
         {<Image
           resizeMode=#contain
@@ -26,6 +25,13 @@ module NftCard = {
 open ReactNative
 open Style
 open CommonComponents
+
+let positiveBalance = (s: string) => {
+  switch Belt.Int.fromString(s) {
+  | Some(b) => b > 0
+  | None => false
+  }
+}
 module NftGallery = {
   @react.component
   let make = (~tokens: array<Token.t>) => {
@@ -36,6 +42,7 @@ module NftGallery = {
       <ScrollView>
         <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
           {tokens
+          ->Belt.Array.keep(t => positiveBalance(t.balance))
           ->Belt.Array.map(t => {
             switch Token.matchNftData(t) {
             | Some((displayUri, _, _, name)) =>
