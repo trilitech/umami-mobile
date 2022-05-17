@@ -1,0 +1,7 @@
+{
+  "name": "custom-signer",
+  "version": "1.0.0",
+  "description": "Fix for taquito signer",
+  "main": "index.js",
+  "license": "MIT"
+}

@@ -19,7 +19,7 @@ module Toolkit = {
 @module("@taquito/taquito") @new
 external create: string => Toolkit.toolkit = "TezosToolkit"
 
-@module("@taquito/signer") @scope("InMemorySigner")
+@module("custom-signer") @scope("InMemorySigner")
 external fromSecretKey: (string, string) => Promise.t<signer> = "fromSecretKey"
 
 @send external publicKeyHash: (signer, unit) => Promise.t<string> = "publicKeyHash"
