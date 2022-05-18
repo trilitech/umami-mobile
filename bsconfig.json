@@ -24,7 +24,6 @@
     "@rescript-react-native/async-storage",
     "@ryyppy/rescript-promise",
     "@rescriptbr/react-query",
-    "@glennsl/rescript-jest",
     "bs-fetch",
     "rescript-json"
   ]
