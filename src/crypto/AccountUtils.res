@@ -1,7 +1,7 @@
 let generateAccount = (~mnemonic, ~passphrase, ~derivationPathIndex=0, ~name=?, ()) => {
   CryptoUtils.mnemonicToSK(~mnemonic, ~passphrase, ~derivationPathIndex, ())->Promise.then(sk => {
     TaquitoUtils.getTz1(~sk, ~passphrase)->Promise.thenResolve(tz1 => {
-      let account: Store.account = {
+      let account: Account.t = {
         name: name->Belt.Option.getWithDefault("Account " ++ Js.Int.toString(derivationPathIndex)),
         tz1: tz1,
         sk: sk,

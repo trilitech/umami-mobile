@@ -19,7 +19,7 @@ module Tz1Display = {
           (),
         )}>
         <Paper.TouchableRipple onPress={_ => copy(tz1)}>
-          <Paper.Caption> {React.string(formatted)} </Paper.Caption>
+          <Paper.Caption testID="tez-display"> {React.string(formatted)} </Paper.Caption>
         </Paper.TouchableRipple>
       </Wrapper>
     </Wrapper>
@@ -45,7 +45,7 @@ open Paper
 module PureProfile = {
   @react.component
   let make = (
-    ~account: Store.account,
+    ~account: Account.t,
     ~onPressToggle=_ => (),
     ~onPressSend=_ => (),
     ~onPressReceive=_ => (),

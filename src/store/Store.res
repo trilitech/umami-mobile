@@ -1,11 +1,5 @@
-type account = {
-  name: string,
-  balance: option<int>,
-  tz1: string,
-  sk: string,
-  derivationPathIndex: int,
-  tokens: array<Token.t>,
-}
+open Account
+type account = t
 
 // bind to JS' JSON.parse
 @scope("JSON") @val

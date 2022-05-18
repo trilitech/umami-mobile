@@ -1,4 +1,4 @@
-let updateAccountBalance = (a: Store.account) => {
+let updateAccountBalance = (a: Account.t) => {
   Promise.all2((
     TaquitoUtils.safeGetBalance(a.tz1),
     TaquitoUtils.getTokens(a.tz1),

@@ -1,7 +1,7 @@
 open CommonComponents
 open Paper
 @react.component
-let make = (~account: Store.account, ~selected=false, ~onPress, ~onPressEdit=?) => {
+let make = (~account: Account.t, ~selected=false, ~onPress, ~onPressEdit=?) => {
   let {tz1, derivationPathIndex, name, balance} = account
   <CustomListItem
     selected
