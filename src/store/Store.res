@@ -89,9 +89,9 @@ let useSelectedAccount = () => {
 let useActiveAccount = () => {
   let (i, _) = useSelectedAccount()
 
-  let (account, _) = useAccounts()
+  let (accounts, _) = useAccounts()
 
-  i->Belt.Option.flatMap(i => account->Belt.Array.get(i))
+  i->Belt.Option.flatMap(i => accounts->Belt.Array.get(i))
 }
 
 let useUpdateAccount = () => {
@@ -105,5 +105,14 @@ let useUpdateAccount = () => {
       setAccounts(_ => newAccounts)
     })
     ->ignore
+  }
+}
+
+let useResetAccounts = () => {
+  let (_, setAccounts) = useAccounts()
+  let (_, setSelectedAccount) = useSelectedAccount()
+  () => {
+    setSelectedAccount(0)
+    setAccounts(_ => [])
   }
 }

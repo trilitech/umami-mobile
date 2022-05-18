@@ -5,7 +5,7 @@ open Paper
 let make = (~navigation as _, ~route as _) => {
   let (theme, setTheme) = Store.useTheme()
 
-  let (_, setSecret) = Store.useAccounts()
+  let reset = Store.useResetAccounts()
   let makeRadio = value =>
     <LabeledRadio
       onPress={_ => setTheme(value)}
@@ -19,7 +19,7 @@ let make = (~navigation as _, ~route as _) => {
       {makeRadio("dark")} {makeRadio("light")} {makeRadio("system")}
     </List.Section>
     <List.Section title="Storage">
-      <Button mode=#contained onPress={_ => setSecret(_ => [])}>
+      <Button mode=#contained onPress={_ => reset()}>
         <Paper.Text> {React.string("Erase secret")} </Paper.Text>
       </Button>
     </List.Section>
