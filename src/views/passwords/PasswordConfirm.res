@@ -17,7 +17,12 @@ let make = (~onSubmit, ~loading=false) => {
       onChangeText={t => setValue(_ => t)}
       style=vMargin
     />
-    <Button loading style={vMargin} mode=#contained onPress={_ => onSubmit(value)}>
+    <Button
+      disabled={!PasswordUtils.isMinLength(value)}
+      loading
+      style={vMargin}
+      mode=#contained
+      onPress={_ => onSubmit(value)}>
       {React.string("Submit")}
     </Button>
   </>

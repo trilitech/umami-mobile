@@ -1,5 +1,9 @@
 open Paper
 
+let formValid = (s1: string, s2: string) => {
+  s1 == s2 && s1->PasswordUtils.isMinLength
+}
+
 @react.component
 let make = (~onSubmit, ~loading=false) => {
   let (value1, setValue1) = React.useState(_ => "")
@@ -27,6 +31,7 @@ let make = (~onSubmit, ~loading=false) => {
       onChangeText={s => setValue2(_ => s)}
     />
     <Button
+      disabled={!formValid(value1, value2)}
       loading
       style={FormStyles.styles["verticalMargin"]}
       mode=#contained
