@@ -1,7 +1,11 @@
 open Paper
 
 let backupPharseIsValid = (s: string) =>
-  s->Js.String2.trim->Js.String2.split(" ")->Array.length == 24
+  s
+  ->Js.String2.trim
+  ->Js.String2.replaceByRe(%re("/\\n+/"), "")
+  ->Js.String2.splitByRe(%re("/\s+/"))
+  ->Array.length == 24
 
 module ImportSecret = {
   @react.component
