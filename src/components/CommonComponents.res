@@ -148,13 +148,17 @@ module CustomListItem = {
     ~height=50.,
     ~selected=false,
     ~onPress=?,
+    ~disabled=false,
   ) => {
     let theme = useTheme()
 
     let backgroundColor = selected ? Colors.Light.scrim : theme->Theme.colors->Theme.Colors.surface
 
     <TouchableRipple
-      rippleColor="red" style={style(~alignSelf=#stretch, ~marginVertical=4.->dp, ())} ?onPress>
+      disabled
+      rippleColor="red"
+      style={style(~alignSelf=#stretch, ~marginVertical=4.->dp, ())}
+      ?onPress>
       <Surface style={style(~borderRadius=4., ~backgroundColor, ())}>
         <Wrapper alignItems=#center style={style(~height=height->dp, ())}>
           <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>

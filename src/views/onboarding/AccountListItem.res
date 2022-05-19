@@ -1,9 +1,10 @@
 open CommonComponents
 open Paper
 @react.component
-let make = (~account: Account.t, ~selected=false, ~onPress, ~onPressEdit=?) => {
+let make = (~account: Account.t, ~selected=false, ~onPress, ~onPressEdit=?, ~disabled=false) => {
   let {tz1, derivationPathIndex, name, balance} = account
   <CustomListItem
+    disabled
     selected
     onPress
     height=80.

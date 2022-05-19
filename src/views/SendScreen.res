@@ -16,14 +16,12 @@ open ReactNative.Style
 
 module Sender = {
   @react.component
-  let make = () => {
+  let make = (~onPress, ~disabled) => {
     let account = Store.useActiveAccount()
 
-    let navigate = NavUtils.useNavigate()
     switch account {
     | Some(account) => <>
-        <Caption> {React.string("sender")} </Caption>
-        <AccountListItem account onPress={_ => {navigate("Accounts")->ignore}} />
+        <Caption> {React.string("sender")} </Caption> <AccountListItem account onPress disabled />
       </>
     | None => React.null
     }
@@ -58,6 +56,12 @@ module NFTInput = {
   }
 }
 
+let isTez = amount =>
+  switch amount {
+  | Tez(_) => true
+  | _ => false
+  }
+
 module SendForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
@@ -90,9 +94,12 @@ module SendForm = {
       }
     }
 
+    let handleSenderPress = _ => navigate("Accounts")->ignore
+
     <>
       {amountInput}
-      <Sender />
+      // Only allow sender change when sending Tez
+      <Sender onPress=handleSenderPress disabled={!isTez(trans.amount)} />
       <Wrapper>
         <TextInput
           value=recipient
