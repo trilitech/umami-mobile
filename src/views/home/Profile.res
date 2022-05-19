@@ -47,7 +47,7 @@ module PureProfile = {
     ~onPressSend=_ => (),
     ~onPressReceive=_ => (),
   ) => {
-    let {tz1, name, derivationPathIndex} = account
+    let {tz1, name} = account
     <Surface>
       <Wrapper style={style(~marginVertical=16.->dp, ())}>
         <Wrapper
@@ -55,7 +55,7 @@ module PureProfile = {
           alignItems=#flexStart
           style={style(~flex=1., ~alignSelf=#stretch, ())}>
           <Wrapper style={style(~marginVertical=10.->dp, ())}>
-            <UmamiLogoMulti size=60. colorIndex=derivationPathIndex />
+            <UmamiLogoMulti size=60. tz1 />
           </Wrapper>
         </Wrapper>
         <Wrapper flexDirection=#column style={style(~flex=3., ())}>

@@ -2,13 +2,13 @@ open CommonComponents
 open Paper
 @react.component
 let make = (~account: Account.t, ~selected=false, ~onPress, ~onPressEdit=?, ~disabled=false) => {
-  let {tz1, derivationPathIndex, name, balance} = account
+  let {tz1, name, balance} = account
   <CustomListItem
     disabled
     selected
     onPress
     height=80.
-    left={<UmamiLogoMulti size=40. colorIndex=derivationPathIndex />}
+    left={<UmamiLogoMulti size=40. tz1 />}
     center={<>
       <Title> {React.string(name)} </Title>
       <Text>

@@ -25,6 +25,7 @@
     "bs-fetch": "^0.6.2",
     "bs-platform": "^9.0.2",
     "bs58check": "^2.1.2",
+    "color-hash": "^2.0.1",
     "custom-signer": "link:./src/vendors/custom-signer",
     "events": "^3.3.0",
     "jotai": "^1.6.1",
