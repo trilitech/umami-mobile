@@ -44,6 +44,7 @@ let makeListItem = (
   ~title,
   ~left=?,
   ~right=?,
+  ~testID=?,
   ~description=?,
   ~selected=false,
   ~height,
@@ -67,6 +68,7 @@ let makeListItem = (
       (),
     )}>
     <List.Item
+      ?testID
       style={style(
         ~alignItems=#center,
         ~flexDirection=#row,
@@ -110,14 +112,14 @@ module PressableIcon = {
 
 module ListItem = {
   @react.component
-  let make = (~onPress=_ => (), ~title, ~iconName=?, ~iconColor=?, ~selected=false) => {
+  let make = (~onPress=_ => (), ~title, ~iconName=?, ~iconColor=?, ~selected=false, ~testID=?) => {
     let theme = Paper.ThemeProvider.useTheme()
 
     let icon = _ =>
       iconName->Belt.Option.mapWithDefault(React.null, n => {
         <Icon name=n color=?iconColor />
       })
-    makeListItem(~theme, ~onPress, ~title, ~left=icon, ~selected, ~height=50., ())
+    makeListItem(~theme, ~onPress, ~title, ~left=icon, ~selected, ~height=50., ~testID?, ())
   }
 }
 
@@ -131,9 +133,10 @@ module ListItemCustomIcon = {
     ~selected=false,
     ~height=50.,
     ~description=?,
+    ~testID=?
   ) => {
     let theme = Paper.ThemeProvider.useTheme()
-    makeListItem(~theme, ~onPress, ~title, ~left, ~right?, ~selected, ~height, ~description?, ())
+    makeListItem(~theme, ~onPress, ~title, ~left, ~right?, ~selected, ~height, ~description?,~testID?, ())
   }
 }
 

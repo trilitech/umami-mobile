@@ -78,6 +78,7 @@ module VerifySecret = {
         {allAnswsers
         ->Belt.Array.mapWithIndex((i, s) =>
           <CommonComponents.ListItem
+            testID="mnemonic-word"
             key=s
             title=s
             selected={switch selected {
@@ -88,9 +89,35 @@ module VerifySecret = {
           />
         )
         ->React.array}
-        <ContinueBtn onPress={_ => onSolved()} text="Next" />
+        <ContinueBtn
+          onPress={_ => {
+            onSolved()
+          }}
+          text="Next"
+        />
       </Container>
     </>
+  }
+}
+
+module PureRecordSecret = {
+  @react.component
+  let make = (~onFinished, ~mnemonic) => {
+    let (toGuess, guessed) = mnemonic->getRandoms(3)->useStack
+
+    React.useEffect1(() => {
+      if toGuess->Belt.Option.isNone {
+        onFinished()
+      }
+      None
+    }, [toGuess])
+
+    switch toGuess {
+    | Some(goodAnwser) =>
+      let badAnswers = getRandomEls(~exclude=goodAnwser, ~amount=4, mnemonic)
+      <VerifySecret goodAnwser badAnswers onSolved=guessed />
+    | None => <Container> {React.null} </Container>
+    }
   }
 }
 
@@ -98,19 +125,10 @@ module VerifySecret = {
 let make = (~navigation, ~route as _) => {
   let (mnemonic, _) = OnboardingMnemonicState.useMnemonic()
 
-  let (toGuess, guessed) = mnemonic->getRandoms(3)->useStack
-
-  React.useEffect1(() => {
-    if toGuess->Belt.Option.isNone {
+  <PureRecordSecret
+    mnemonic
+    onFinished={() => {
       navigation->NavStacks.OffBoard.Navigation.navigate("NewPassword")
-    }
-    None
-  }, [toGuess])
-
-  switch toGuess {
-  | Some(goodAnwser) =>
-    let badAnswers = getRandomEls(~exclude=goodAnwser, ~amount=4, mnemonic)
-    <VerifySecret goodAnwser badAnswers onSolved=guessed />
-  | None => <Container> {React.null} </Container>
-  }
+    }}
+  />
 }

@@ -34,6 +34,7 @@ module Item = {
   }
   @module("react-native-paper") @scope("List") @react.component
   external make: (
+    ~testID: string=?,
     ~onPress: ReactNative.Event.pressEvent => unit=?,
     ~title: string,
     ~description: string=?,
