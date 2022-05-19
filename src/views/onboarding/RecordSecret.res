@@ -13,7 +13,7 @@ let useStack = randoms => {
   (head, pop)
 }
 
-let getRandomEls = (~exclude, ~amount, arr) => {
+let getRandomEls = (~exclude: string, ~amount, arr: array<string>) => {
   arr
   ->Js.Array2.filter(el => {el != exclude})
   ->Belt.Array.shuffle
@@ -41,7 +41,8 @@ module VerifySecret = {
   let make = (~badAnswers, ~goodAnwser, ~onSolved) => {
     let (selected, setSelected) = React.useState(_ => None)
     let wordIndex = useWordIndex(goodAnwser)
-    let caption = wordIndex->Belt.Option.mapWithDefault("", i => "Word " ++ Belt.Int.toString(i))
+    let caption =
+      wordIndex->Belt.Option.mapWithDefault("", i => "Word " ++ Belt.Int.toString(i + 1))
 
     let allAnswsers = React.useMemo2(() => {
       badAnswers->Belt.Array.concat([goodAnwser])->Belt.Array.shuffle
