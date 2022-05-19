@@ -43,7 +43,7 @@ let tokenToElement = (navigate, t: Token.t) => {
         navigate(
           "NFT",
           {
-            derivationIndex: 0,
+            derivationIndex: None,
             token: Some(t),
             tz1FromQr: None,
           },

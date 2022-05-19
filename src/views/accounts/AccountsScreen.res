@@ -26,7 +26,7 @@ let make = (~navigation, ~route as _) => {
             navigation->NavStacks.OnBoard.Navigation.navigateWithParams(
               "EditAccount",
               {
-                derivationIndex: a.derivationPathIndex,
+                derivationIndex: Some(a.derivationPathIndex),
                 token: None,
                 tz1FromQr: None,
               },

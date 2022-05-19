@@ -26,7 +26,7 @@ module DisplayNFT = {
                   "Send",
                   {
                     token: Some(token),
-                    derivationIndex: 0,
+                    derivationIndex: None,
                     tz1FromQr: None,
                   },
                 )->ignore}

@@ -15,7 +15,7 @@ let make = (~navigation as _, ~route as _) => {
     onRead={e => {
       navigateWithParams(
         "Send",
-        {derivationIndex: 0, token: None, tz1FromQr: Some(e["data"])},
+        {derivationIndex: None, token: None, tz1FromQr: Some(e["data"])},
       )->ignore
     }}
     topContent={<Headline> {React.string("Scan TZ1")} </Headline>}

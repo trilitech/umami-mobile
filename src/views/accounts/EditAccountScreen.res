@@ -2,7 +2,7 @@ open Paper
 
 let getAccount = (route: NavStacks.OnBoard.route, accounts: array<Account.t>) => {
   route.params
-  ->Belt.Option.map(p => p.derivationIndex)
+  ->Belt.Option.flatMap(p => p.derivationIndex)
   ->Belt.Option.flatMap(i => {
     accounts->Belt.Array.getBy(a => a.derivationPathIndex == i)
   })
