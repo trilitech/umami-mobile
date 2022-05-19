@@ -23,14 +23,16 @@ let checkExists = tz1 => {
   ->Promise.thenResolve(Belt.Option.getExn)
 }
 
-let rec restoreAccounts = (~mnemonic, ~passphrase, ~accounts=[], ~onDone, ()) => {
+let backupPhraseIsValid = s => s->Js.String2.splitByRe(%re("/\s+/"))->Array.length == 24
+
+let rec _restoreAccounts = (~mnemonic, ~passphrase, ~accounts=[], ~onDone, ()) => {
   let derivationPathIndex = accounts->Array.length
 
   generateAccount(~mnemonic, ~passphrase, ~derivationPathIndex, ())
   ->Promise.then(account => {
     checkExists(account.tz1)->Promise.thenResolve(exists => {
       if exists {
-        restoreAccounts(
+        _restoreAccounts(
           ~mnemonic,
           ~passphrase,
           ~accounts=Belt.Array.concat(accounts, [account]),
@@ -48,6 +50,11 @@ let rec restoreAccounts = (~mnemonic, ~passphrase, ~accounts=[], ~onDone, ()) =>
     onDone(Error(error))->Promise.resolve
   })
   ->ignore
+}
+
+let restoreAccounts = (~mnemonic, ~passphrase, ~accounts=[], ~onDone, ()) => {
+  assert backupPhraseIsValid(mnemonic)
+  _restoreAccounts(~mnemonic, ~passphrase, ~accounts, ~onDone, ())
 }
 
 let restore = (~mnemonic, ~passphrase) => {

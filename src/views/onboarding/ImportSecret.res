@@ -1,11 +1,13 @@
 open Paper
 
-let backupPharseIsValid = (s: string) =>
+let formatForMnemonic = (s: string) => {
   s
   ->Js.String2.trim
   ->Js.String2.replaceByRe(%re("/\\n+/"), "")
-  ->Js.String2.splitByRe(%re("/\s+/"))
-  ->Array.length == 24
+  ->Js.String2.replaceByRe(%re("/\s+/g"), " ")
+}
+
+let inputIsValid = (s: string) => s->formatForMnemonic->AccountUtils.backupPhraseIsValid
 
 module ImportSecret = {
   @react.component
@@ -20,7 +22,7 @@ module ImportSecret = {
         onChangeText={t => setBackupPhrase(_ => t)}
       />
       <Button
-        disabled={!backupPharseIsValid(backupPhrase)}
+        disabled={!inputIsValid(backupPhrase)}
         onPress={_ => {
           onSubmit(backupPhrase)
         }}
@@ -55,7 +57,7 @@ let make = (~navigation as _, ~route as _) => {
   let onConfirm = passphrase => {
     setLoading(_ => true)
     AccountUtils.restoreAccounts(
-      ~mnemonic=backupPhrase,
+      ~mnemonic=backupPhrase->formatForMnemonic,
       ~passphrase,
       ~onDone=accounts => {
         switch accounts {
