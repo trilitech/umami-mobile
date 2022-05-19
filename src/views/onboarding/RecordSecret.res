@@ -4,8 +4,8 @@ let getRandoms = (arr, amount) => {
   arr->Belt.Array.shuffle->Belt.Array.slice(~offset=0, ~len=amount)
 }
 
-let useStack = randoms => {
-  let (stack, setStack) = React.useState(_ => randoms)
+let useStack = arr => {
+  let (stack, setStack) = React.useState(_ => arr)
   let pop = _ => {
     setStack(prev => prev->Belt.Array.slice(~offset=0, ~len={prev->Belt.Array.length - 1}))
   }
