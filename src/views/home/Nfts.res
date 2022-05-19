@@ -104,7 +104,7 @@ module PureNfts = {
         subTitle="Umami will automatically discover any NFT you possess"
       />
     } else {
-      <NftGallery tokens=account.tokens />
+      <NftGallery tokens=nfts />
     }
   }
 }
