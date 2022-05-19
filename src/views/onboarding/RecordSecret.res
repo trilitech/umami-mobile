@@ -9,8 +9,8 @@ let useStack = arr => {
   let pop = _ => {
     setStack(prev => prev->Belt.Array.slice(~offset=0, ~len={prev->Belt.Array.length - 1}))
   }
-  let head = stack->Belt.Array.get(stack->Belt.Array.length - 1)
-  (head, pop)
+  let tail = stack->Belt.Array.get(stack->Belt.Array.length - 1)
+  (tail, pop)
 }
 
 let getRandomEls = (~exclude: string, ~amount, arr: array<string>) => {
