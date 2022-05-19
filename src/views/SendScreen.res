@@ -102,14 +102,15 @@ module SendForm = {
       <Sender onPress=handleSenderPress disabled={!isTez(trans.amount)} />
       <Wrapper>
         <TextInput
-          value=recipient
-          onChangeText={e => {
-            setTrans(prev => {
-              recipient: e,
-              amount: prev.amount,
-              passphrase: prev.passphrase,
-            })
-          }}
+          value={TezHelpers.formatTz1(recipient)}
+          disabled
+          // onChangeText={e => {
+          //   setTrans(prev => {
+          //     recipient: e,
+          //     amount: prev.amount,
+          //     passphrase: prev.passphrase,
+          //   })
+          // }}
           style={array([vMargin, style(~flex=1., ())])}
           label="recipient"
           mode=#flat
