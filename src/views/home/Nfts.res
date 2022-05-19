@@ -32,39 +32,58 @@ let positiveBalance = (s: string) => {
   | None => false
   }
 }
+
+let tokenToElement = (navigate, t: Token.t) => {
+  open NavStacks.OnboardParams
+
+  switch Token.matchNftData(t) {
+  | Some((displayUri, _, _, name)) =>
+    <NftCard
+      onPress={_ => {
+        navigate(
+          "NFT",
+          {
+            derivationIndex: 0,
+            token: Some(t),
+            tz1FromQr: None,
+          },
+        )->ignore
+      }}
+      key=displayUri
+      url=displayUri
+      name
+    />
+
+  | None => React.null
+  }
+}
+
+let tokenNameContainsStr = (token: Token.t, str: string) => {
+  open Js.String2
+  switch Token.matchNftData(token) {
+  | Some((_, _, _, name)) => name->toLowerCase->includes(str->toLowerCase)
+  | None => false
+  }
+}
 module NftGallery = {
   @react.component
   let make = (~tokens: array<Token.t>) => {
     let navigate = NavUtils.useNavigateWithParams()
+    let (search, setSearch) = React.useState(_ => "")
 
     <>
-      <Paper.Searchbar value="search" style={FormStyles.styles["verticalMargin"]} />
+      <Paper.Searchbar
+        placeholder="Search NFT"
+        onChangeText={t => setSearch(_ => t)}
+        value=search
+        style={FormStyles.styles["verticalMargin"]}
+        onIconPress={t => setSearch(_ => "")}
+      />
       <ScrollView>
         <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
           {tokens
-          ->Belt.Array.keep(t => positiveBalance(t.balance))
-          ->Belt.Array.map(t => {
-            switch Token.matchNftData(t) {
-            | Some((displayUri, _, _, name)) =>
-              <NftCard
-                onPress={_ => {
-                  navigate(
-                    "NFT",
-                    {
-                      derivationIndex: 0,
-                      token: Some(t),
-                      tz1FromQr: None,
-                    },
-                  )->ignore
-                }}
-                key=displayUri
-                url=displayUri
-                name
-              />
-
-            | None => React.null
-            }
-          })
+          ->Belt.Array.keep(token => search == "" || tokenNameContainsStr(token, search))
+          ->Belt.Array.map(tokenToElement(navigate))
           ->React.array}
         </Wrapper>
       </ScrollView>
@@ -75,10 +94,13 @@ module NftGallery = {
 module PureNfts = {
   @react.component
   let make = (~account: Store.account) => {
-    if Token.hasNfts(account.tokens) {
-      <NftGallery tokens=account.tokens />
-    } else {
+    let nfts =
+      account.tokens->Belt.Array.keep(Token.isNft)->Belt.Array.keep(t => positiveBalance(t.balance))
+
+    if nfts == [] {
       <DefaultView icon="diamond-stone" title="NFT" subTitle="You have no nfts yet..." />
+    } else {
+      <NftGallery tokens=account.tokens />
     }
   }
 }
