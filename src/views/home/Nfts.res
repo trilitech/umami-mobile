@@ -98,7 +98,11 @@ module PureNfts = {
       account.tokens->Belt.Array.keep(Token.isNft)->Belt.Array.keep(t => positiveBalance(t.balance))
 
     if nfts == [] {
-      <DefaultView icon="diamond-stone" title="NFT" subTitle="You have no nfts yet..." />
+      <DefaultView
+        icon="diamond-stone"
+        title="Your NFTs will appear here"
+        subTitle="Umami will automatically discover any NFT you possess"
+      />
     } else {
       <NftGallery tokens=account.tokens />
     }
