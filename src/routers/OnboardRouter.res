@@ -4,7 +4,7 @@ open ReactNative.Style
 let make = () => {
   let headerStyles = HeaderStyle.useHeaderStyle()
   BalancesSync.useBalancesSync()
-  <Navigator>
+  <Navigator initialRouteName="Home">
     <Group>
       <Screen
         name="Home" options={props => options(~headerShown=false, ())} component=HomeScreen.make
