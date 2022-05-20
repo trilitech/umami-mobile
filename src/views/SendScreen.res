@@ -103,8 +103,7 @@ module SendForm = {
       <Wrapper>
         <TextInput
           value={recipient == "" ? "" : TezHelpers.formatTz1(recipient)}
-          placeholder="hello"
-          disabled
+          disabled=true
           // onChangeText={e => {
           //   setTrans(prev => {
           //     recipient: e,
