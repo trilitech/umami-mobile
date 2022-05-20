@@ -1,8 +1,6 @@
-// include ReactNativeHelloWorldUtils
-
-// %%raw(`
-// require('./nftTest')
-// `)
+%%raw(`
+require('./ignoreWarnings')
+`)
 
 // let useIsDarkMode = () => {
 //   Appearance.useColorScheme()
