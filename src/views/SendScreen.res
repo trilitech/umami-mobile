@@ -88,7 +88,7 @@ module SendForm = {
         }}
       />
     | Token(token) =>
-      switch Token.matchNftData(token) {
+      switch Token.matchNftData(token.token.metadata) {
       | Some((displayUri, _, _, name)) => <NFTInput imageUrl={Token.getNftUrl(displayUri)} name />
       | None => React.null
       }

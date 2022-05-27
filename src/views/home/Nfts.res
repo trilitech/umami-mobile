@@ -36,7 +36,7 @@ let positiveBalance = (s: string) => {
 let tokenToElement = (navigate, t: Token.t) => {
   open NavStacks.OnboardParams
 
-  switch Token.matchNftData(t) {
+  switch Token.matchNftData(t.token.metadata) {
   | Some((displayUri, _, _, name)) =>
     <NftCard
       onPress={_ => {
@@ -60,7 +60,7 @@ let tokenToElement = (navigate, t: Token.t) => {
 
 let tokenNameContainsStr = (token: Token.t, str: string) => {
   open Js.String2
-  switch Token.matchNftData(token) {
+  switch Token.matchNftData(token.token.metadata) {
   | Some((_, _, _, name)) => name->toLowerCase->includes(str->toLowerCase)
   | None => false
   }

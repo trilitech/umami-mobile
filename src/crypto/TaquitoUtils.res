@@ -20,16 +20,6 @@ let getBalance = tz1 => {
   res->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
 }
 
-external unsafeParse: Js.Json.t => Token.t = "%identity"
-
-let getTokens = tz1 => {
-  Fetch.fetch("https://api.ithacanet.tzkt.io/v1/tokens/balances/?account=" ++ tz1)
-  ->Promise.then(Fetch.Response.json)
-  ->Promise.thenResolve(Js.Json.decodeArray)
-  ->Promise.thenResolve(Belt.Option.getExn)
-  ->Promise.thenResolve(Array.map(unsafeParse))
-}
-
 let safeGetBalance = tz1 =>
   getBalance(tz1)
   ->Promise.thenResolve(b => Belt.Int.fromString(b))

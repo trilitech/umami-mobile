@@ -9,7 +9,7 @@ module DisplayNFT = {
   let make = (~token: Token.t) => {
     let navigate = NavUtils.useNavigateWithParams()
 
-    switch Token.matchNftData(token) {
+    switch Token.matchNftData(token.token.metadata) {
     | Some((url, _, description, name)) => {
         let url = Token.getNftUrl(url)
 

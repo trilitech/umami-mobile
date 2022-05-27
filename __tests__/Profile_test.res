@@ -11,6 +11,7 @@ describe("<Profile />", () => {
       balance: Some(44),
       tokens: [],
       sk: "bar",
+      transactions: [],
     }
     let fixture = <Profile.PureProfile account />
 

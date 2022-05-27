@@ -8,6 +8,7 @@ let generateAccount = (~mnemonic, ~passphrase, ~derivationPathIndex=0, ~name=?, 
         derivationPathIndex: derivationPathIndex,
         balance: None,
         tokens: [],
+        transactions: [],
       }
 
       account

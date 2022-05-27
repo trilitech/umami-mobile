@@ -5,4 +5,5 @@ type t = {
   sk: string,
   derivationPathIndex: int,
   tokens: array<Token.t>,
+  transactions: array<Operation.t>,
 }

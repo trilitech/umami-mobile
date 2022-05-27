@@ -11,3 +11,11 @@ let both = (o1: option<'a>, o2: option<'b>): option<('a, 'b)> =>
   }
 
 let reactFold = (o, fn) => o->Belt.Option.mapWithDefault(React.null, fn)
+
+let filterNone = (arr: array<option<'a>>) =>
+  arr->Belt.Array.reduce([], (acc, curr) =>
+    switch curr {
+    | Some(val) => acc->Belt.Array.concat([val])
+    | None => acc
+    }
+  )

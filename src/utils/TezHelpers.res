@@ -4,6 +4,6 @@ let formatTz1 = (tz1: string) => {
 }
 
 let formatBalance = (balance: int) => {
-  let result = Belt.Int.toFloat(balance) /. 1000000.
-  result->Belt.Float.toString ++ " " ++ "tez"
+  let result = balance / Constants.currencyDivider
+  result->Belt.Int.toString ++ " " ++ "tez"
 }
