@@ -139,8 +139,8 @@ module HistoryDisplay = {
       <ScrollView>
         {els
         // ->Belt.Array.mapWithIndex((i, t) => <ListItem key={makeKey(t, i)} title=t.destination />)
-        ->Belt.Array.mapWithIndex((_, t) =>
-          <TransactionItem key={t.hash ++ t.date} transaction=t />
+        ->Belt.Array.mapWithIndex((i, t) =>
+          <TransactionItem key={t.hash ++ t.date ++ Js.Int.toString(i)} transaction=t />
         )
         ->React.array}
       </ScrollView>

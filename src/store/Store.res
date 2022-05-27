@@ -94,6 +94,25 @@ let useActiveAccount = () => {
   i->Belt.Option.flatMap(i => accounts->Belt.Array.get(i))
 }
 
+let useWithAccount0 = () => {
+  let account = useActiveAccount()
+
+  cb => {
+    switch account {
+    | Some(account) => cb(account)
+    | None => React.null
+    }
+  }
+}
+
+let useWithAccount = cb => {
+  let account = useActiveAccount()
+
+  switch account {
+  | Some(account) => cb(account)
+  | None => React.null
+  }
+}
 let useUpdateAccount = () => {
   let (accounts, setAccounts) = useAccounts()
 

@@ -14,17 +14,13 @@ open ReactNative.Style
 //     ), ~enabled=false, ~retry=ReactQuery.retry(#number(0)), ()))
 // }
 
+open Store
 module Sender = {
   @react.component
   let make = (~onPress, ~disabled) => {
-    let account = Store.useActiveAccount()
-
-    switch account {
-    | Some(account) => <>
-        <Caption> {React.string("sender")} </Caption> <AccountListItem account onPress disabled />
-      </>
-    | None => React.null
-    }
+    useWithAccount(account => <>
+      <Caption> {React.string("sender")} </Caption> <AccountListItem account onPress disabled />
+    </>)
   }
 }
 
@@ -274,12 +270,8 @@ module ConnectedSend = {
 
 @react.component
 let make = (~navigation as _, ~route) => {
-  let account = Store.useActiveAccount()
   let token = NavUtils.getToken(route)
   let tz1FromQr = NavUtils.getTz1FromQr(route)
 
-  switch account {
-  | Some(account) => <ConnectedSend tz1FromQr sender=account token />
-  | None => React.null
-  }
+  Store.useWithAccount(account => <ConnectedSend tz1FromQr sender=account token />)
 }

@@ -39,6 +39,7 @@ module PureReceiveModal = {
   }
 }
 
+open Store
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let goBack = NavUtils.useGoBack()
@@ -55,14 +56,13 @@ let make = (~navigation as _, ~route as _) => {
     goBack()->ignore
     ()
   }
-  let account = Store.useActiveAccount()
 
-  account->Helpers.reactFold(account =>
+  useWithAccount(account => {
     <PureReceiveModal
       handleCopy={_ => handleCopy(account.tz1)}
       handleShare={_ => handleShare(account.tz1)}
       tz1=account.tz1
       onClose={() => goBack()->ignore}
     />
-  )
+  })
 }

@@ -111,9 +111,5 @@ module PureNfts = {
 
 @react.component
 let make = () => {
-  let account = Store.useActiveAccount()
-  switch account {
-  | Some(account) => <PureNfts account />
-  | None => React.null
-  }
+  Store.useWithAccount(account => <PureNfts account />)
 }

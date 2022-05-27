@@ -52,11 +52,7 @@ module HomeCoreView = {
       />
     </>
 
-    let account = Store.useActiveAccount()
-    switch account {
-    | Some(account) => render(account)
-    | None => React.null
-    }
+    Store.useWithAccount(account => render(account))
   }
 }
 
