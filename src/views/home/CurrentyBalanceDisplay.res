@@ -9,17 +9,38 @@ let tokenLogoImagePath = ReactNative.Image.Source.fromRequired(
   ReactNative.Packager.require("../../assets/icon_currency_tzbtc.png"),
 )
 
+module FAStandard = {
+  @react.component
+  let make = (~standard) => {
+    let borderColor = ThemeProvider.useDisabledColor()
+    <ReactNative.View
+      style={style(
+        ~borderWidth=1.,
+        ~borderRadius=4.,
+        ~paddingHorizontal=4.->dp,
+        ~marginHorizontal=8.->dp,
+        ~borderColor,
+        (),
+      )}>
+      <Paper.Caption> {React.string(standard)} </Paper.Caption>
+    </ReactNative.View>
+  }
+}
 open Belt
 module CurrencyIem = {
   @react.component
-  let make = (~balance: int, ~symbol=?, ~onPress) => {
+  let make = (~balance: int, ~symbol=?, ~standard=?, ~onPress) => {
     let prettyCurrency = Js.Int.toString(balance) ++ " " ++ symbol->Option.getWithDefault("tez")
     <CustomListItem
       height=70.
       left={<CustomImage
         size=40. source={Option.isSome(symbol) ? tokenLogoImagePath : tezLogoImagePath}
       />}
-      center={<Paper.Title style={style()}> {React.string(prettyCurrency)} </Paper.Title>}
+      center={<Wrapper>
+        <Paper.Title style={style()}> {React.string(prettyCurrency)} </Paper.Title>
+        {standard->Option.mapWithDefault(React.null, standard => <FAStandard standard />)}
+        // <Paper.Chip mode=#outlined> {React.string("fa1")} </Paper.Chip>
+      </Wrapper>}
       onPress
       right={<Icon name="chevron-right" size=40 />}
     />
@@ -30,7 +51,6 @@ open Token
 @react.component
 let make = (~balance, ~onPress, ~tokens) => {
   let balance = balance->Belt.Option.mapWithDefault("", TezHelpers.formatBalance)
-  let tokens = tokens->Belt.Array.map(parseToken)->Helpers.filterNone
   <>
     <CurrencyIem onPress balance={Belt.Int.fromString(balance)->Option.getWithDefault(0)} />
     {tokens
@@ -38,10 +58,20 @@ let make = (~balance, ~onPress, ~tokens) => {
       switch t {
       | FA2((base, metadata)) =>
         <CurrencyIem
-          key={metadata.symbol} onPress balance={base.balance} symbol={metadata.symbol}
+          key={metadata.symbol}
+          onPress
+          balance={fromRaw(base.balance, metadata.decimals)}
+          symbol={metadata.symbol}
+          standard="fa2"
         />
       | FA1(base) =>
-        <CurrencyIem key={base.contract} onPress balance={base.balance} symbol={"fa1.2"} />
+        <CurrencyIem
+          key={base.contract}
+          onPress
+          balance={fromRaw(base.balance, 4)}
+          symbol={"KLD"}
+          standard="fa1.2"
+        />
       | NFT(_) => React.null
       }
     )
