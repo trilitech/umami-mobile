@@ -24,8 +24,9 @@ export default async (
   try {
     const op = await contract.methods.transfer(transfer_params).send();
 
-    let result = await op.confirmation();
-    return result;
+    return op;
+    // let result = await op.confirmation();
+    // return result;
   } catch (error) {
     console.log(error);
   }
