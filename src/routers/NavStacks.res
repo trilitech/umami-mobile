@@ -3,7 +3,11 @@ module OffBoard = ReactNavigation.Stack.Make({
 })
 
 module OnboardParams = {
-  type params = {derivationIndex: option<int>, token: option<Token.t>, tz1FromQr: option<string>}
+  type params = {
+    derivationIndex: option<int>,
+    token: option<Token.tokenNFT>,
+    tz1FromQr: option<string>,
+  }
 }
 
 module OnBoard = ReactNavigation.Stack.Make(OnboardParams)

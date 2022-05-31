@@ -4,6 +4,6 @@ type t = {
   tz1: string,
   sk: string,
   derivationPathIndex: int,
-  tokens: array<Token.t>,
+  tokens: array<Token.allTokens>,
   transactions: array<Operation.t>,
 }

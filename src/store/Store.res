@@ -94,6 +94,13 @@ let useActiveAccount = () => {
   i->Belt.Option.flatMap(i => accounts->Belt.Array.get(i))
 }
 
+let useTokens = () => {
+  switch useActiveAccount() {
+  | Some(account) => account.tokens
+  | None => []
+  }
+}
+
 let useWithAccount0 = () => {
   let account = useActiveAccount()
 

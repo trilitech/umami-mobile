@@ -77,6 +77,10 @@ let useTextColor = () => {
   useTheme()->Theme.colors->Theme.Colors.text
 }
 
+let useDisabledColor = () => {
+  open Paper.ThemeProvider
+  useTheme()->Theme.colors->Theme.Colors.disabled
+}
 let useBgColor = () => {
   open Paper.ThemeProvider
   useTheme()->Theme.colors->Theme.Colors.background

@@ -72,22 +72,33 @@ type nftMetadata = {
 type fa2TokenMetadata = {
   name: string,
   symbol: string,
-  decimals: string,
+  decimals: int,
 }
 
 type tokenNFT = (tokenBase, nftMetadata)
 type tokenFA2 = (tokenBase, fa2TokenMetadata)
 
+// type faTokens = FA2(tokenFA2) | FA1(tokenBase)
 type allTokens = FA2(tokenFA2) | NFT(tokenNFT) | FA1(tokenBase)
 
+let filterNFTs = (arr: array<allTokens>) =>
+  arr
+  ->Belt.Array.map(token =>
+    switch token {
+    | NFT(nftData) => Some(nftData)
+    | _ => None
+    }
+  )
+  ->Helpers.filterNone
+
 open Belt
-let parseToken = (token: t) => {
+let decodeJSON = (token: t) => {
   token.balance
   ->Int.fromString
   ->Option.flatMap(balance => {
     let base = {
       id: token.id,
-      balance: balance / Constants.currencyDivider,
+      balance: balance,
       account: token.account,
       contract: token.token.contract.address,
       tokenId: token.token.tokenId,
@@ -108,11 +119,35 @@ let parseToken = (token: t) => {
           },
         ))->Some
       | None =>
-        FA2((
-          base,
-          {name: metadata.name, symbol: metadata.symbol, decimals: metadata.decimals},
-        ))->Some
+        metadata.decimals
+        ->Int.fromString
+        ->Option.map(decimals => {
+          FA2((base, {name: metadata.name, symbol: metadata.symbol, decimals: decimals}))
+        })
       }
     )
   })
+}
+let decodeJsonArray = arr => arr->Belt.Array.map(decodeJSON)->Helpers.filterNone
+
+let matchBase = (t: allTokens) => {
+  switch t {
+  | FA2(base, _) => base
+  | FA1(base) => base
+  | NFT((base, _)) => base
+  }
+}
+
+let positiveBalance = (t: allTokens) => {
+  matchBase(t).balance > 0
+}
+
+let fromRaw = (amount: int, decimals: int) => {
+  let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)->Belt.Float.toInt
+  amount / divider
+}
+
+let toRaw = (amount: int, decimals: int) => {
+  let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)->Belt.Float.toInt
+  amount * divider
 }

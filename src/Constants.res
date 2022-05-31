@@ -1,1 +1,1 @@
-let currencyDivider = 1000000
+let tezCurrencyDivider = 1000000

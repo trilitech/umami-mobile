@@ -33,41 +33,36 @@ let positiveBalance = (s: string) => {
   }
 }
 
-let tokenToElement = (navigate, t: Token.t) => {
+let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
   open NavStacks.OnboardParams
+  let (_, metadata) = tokenNFT
 
-  switch Token.matchNftData(t.token.metadata) {
-  | Some((displayUri, _, _, name)) =>
-    <NftCard
-      onPress={_ => {
-        navigate(
-          "NFT",
-          {
-            derivationIndex: None,
-            token: Some(t),
-            tz1FromQr: None,
-          },
-        )->ignore
-      }}
-      key=displayUri
-      url=displayUri
-      name
-    />
-
-  | None => React.null
-  }
+  let {name, displayUri} = metadata
+  <NftCard
+    onPress={_ => {
+      navigate(
+        "NFT",
+        {
+          derivationIndex: None,
+          token: Some(tokenNFT),
+          tz1FromQr: None,
+        },
+      )->ignore
+    }}
+    key=displayUri
+    url=displayUri
+    name
+  />
 }
 
-let tokenNameContainsStr = (token: Token.t, str: string) => {
+let tokenNameContainsStr = ((_, metadata): Token.tokenNFT, str: string) => {
   open Js.String2
-  switch Token.matchNftData(token.token.metadata) {
-  | Some((_, _, _, name)) => name->toLowerCase->includes(str->toLowerCase)
-  | None => false
-  }
+  let name = metadata.name
+  name->toLowerCase->includes(str->toLowerCase)
 }
 module NftGallery = {
   @react.component
-  let make = (~tokens: array<Token.t>) => {
+  let make = (~tokens: array<Token.tokenNFT>) => {
     let navigate = NavUtils.useNavigateWithParams()
     let (search, setSearch) = React.useState(_ => "")
 
@@ -94,8 +89,7 @@ module NftGallery = {
 module PureNfts = {
   @react.component
   let make = (~account: Store.account) => {
-    let nfts =
-      account.tokens->Belt.Array.keep(Token.isNft)->Belt.Array.keep(t => positiveBalance(t.balance))
+    let nfts = account.tokens->Token.filterNFTs
 
     if nfts == [] {
       <DefaultView

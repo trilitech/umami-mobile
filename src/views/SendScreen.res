@@ -6,14 +6,6 @@ type formState = {recipient: string, amount: SendAmount.t, passphrase: string}
 let vMargin = FormStyles.styles["verticalMargin"]
 open ReactNative.Style
 
-// let useSend = (~recipient: string, ~amount: int, ~passphrase, ~sk) => {
-//   ReactQuery.useQuery(ReactQuery.queryOptions(~queryFn=_ => {
-//       TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk)
-//     }, ~queryKey="send", ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(
-//       #bool(false),
-//     ), ~enabled=false, ~retry=ReactQuery.retry(#number(0)), ()))
-// }
-
 open Store
 module Sender = {
   @react.component
@@ -34,12 +26,11 @@ let validTrans = trans => {
 
 module TezInput = {
   @react.component
-  let make = (~value, ~onChangeText) => {
-    <TextInput
-      keyboardType="number-pad" value onChangeText style={vMargin} label="amount" mode=#flat
-    />
+  let make = (~value, ~onChangeText, ~style) => {
+    <TextInput keyboardType="number-pad" value onChangeText style label="amount" mode=#flat />
   }
 }
+
 module NFTInput = {
   @react.component
   let make = (~imageUrl, ~name) => {
@@ -58,36 +49,175 @@ let isTez = amount =>
   | _ => false
   }
 
+let getCurrencies = (tokens: array<Token.allTokens>) => {
+  open Belt.Array
+  tokens
+  ->reduce([], (acc, curr) => {
+    switch curr {
+    | FA1(_) => concat(acc, ["FA1"])
+    | FA2(_, m) => concat(acc, [m.symbol])
+    | _ => acc
+    }
+  })
+  ->concat(["TEZ"])
+}
+module CurrencyPicker = {
+  @react.component
+  let make = (~value, ~onChange) => {
+    let tokens = Store.useTokens()
+    let currencies = getCurrencies(tokens)
+
+    let items = currencies->Belt.Array.map(currency => {"label": currency, "value": currency})
+
+    <StyledPicker items value onChange />
+  }
+}
+
+module MultiCurrencyInput = {
+  @react.component
+  let make = (~amount, ~onChangeAmount, ~symbol, ~onChangeSymbol) => {
+    <Wrapper>
+      <TextInput
+        style={style(~flex=1., ())}
+        keyboardType="number-pad"
+        value={amount->Belt.Int.toString}
+        onChangeText={t => {
+          Belt.Int.fromString(t)->Belt.Option.map(v => onChangeAmount(v))->ignore
+        }}
+        label="amount"
+        mode=#flat
+      />
+      <CurrencyPicker value=symbol onChange=onChangeSymbol />
+    </Wrapper>
+  }
+}
+
+let getSymbol = (t: SendAmount.t) => {
+  switch t {
+  | Tez(_) => "TEZ"
+  | FA1(_) => "FA1"
+  | FA2(_, m) => m.symbol
+  | NFT(_, m) => m.symbol
+  }
+}
+
+let getAmount = (t: SendAmount.t) => {
+  switch t {
+  | Tez(amount) => amount
+  | FA1(b) => b.balance
+  | FA2(b, _) => b.balance
+  | NFT(b, _) => b.balance
+  }
+}
+
+let updateAmount = (a: int, t: SendAmount.t) => {
+  switch t {
+  | Tez(_) => Tez(a)
+  | FA1(b) => FA1({...b, balance: a})
+  | FA2(b, m) => FA2({...b, balance: a}, m)
+  | NFT(b, m) => NFT({...b, balance: a}, m)
+  }
+}
+
+open Belt
+let getFA1Data = (tokens: array<Token.allTokens>) =>
+  tokens
+  ->Array.getBy(t =>
+    switch t {
+    | FA1(_) => true
+    | _ => false
+    }
+  )
+  ->Option.flatMap(t => {
+    switch t {
+    | FA1(d) => Some(d)
+    | _ => None
+    }
+  })
+
+let getFA2Data = (symbol: string, tokens: array<Token.allTokens>) =>
+  tokens
+  ->Array.getBy(t =>
+    switch t {
+    | FA2(_, meta) => meta.symbol === symbol
+    | _ => false
+    }
+  )
+  ->Option.flatMap(t => {
+    switch t {
+    | FA2(d) => Some(d)
+    | _ => None
+    }
+  })
+
+let updateCurrency = (symbol: string, t: SendAmount.t, tokens: array<Token.allTokens>): option<
+  SendAmount.t,
+> => {
+  let amount = getAmount(t)
+  if symbol == "TEZ" {
+    Tez(amount)->Some
+  } else if symbol == "FA1" {
+    getFA1Data(tokens)->Option.map(b => FA1({...b, balance: amount}))
+  } else {
+    getFA2Data(symbol, tokens)->Option.map(((b, m)) => {
+      FA2({...b, balance: amount}, m)
+    })
+  }
+}
+
 module SendForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
     let {recipient} = trans
 
-    let disabled = !validTrans(trans)
+    let tokens = Store.useTokens()
+    let disabled = !validTrans(trans) || isLoading
     let navigate = NavUtils.useNavigate()
 
+    let handleChangeAmount = (a: int) => {
+      setTrans(t => {
+        let amount = updateAmount(a, t.amount)
+        {...t, amount: amount}
+      })
+    }
+
+    let handleChangeSymbol = (s: string) => {
+      setTrans(t => {
+        let amount = updateCurrency(s, t.amount, tokens)
+        switch amount {
+        | Some(amount) => {...t, amount: amount}
+        | None => t
+        }
+      })
+      ()
+    }
+
     let amountInput = switch trans.amount {
+    | NFT((_, metadata)) =>
+      let {name, displayUri} = metadata
+
+      <NFTInput imageUrl={Token.getNftUrl(displayUri)} name />
     | Tez(amount) =>
-      <TezInput
-        value={Js.Int.toString(amount)}
-        onChangeText={t => {
-          t
-          ->Belt.Int.fromString
-          ->Belt.Option.map(amount => {
-            setTrans(prev => {
-              recipient: prev.recipient,
-              amount: Tez(amount),
-              passphrase: prev.passphrase,
-            })
-          })
-          ->ignore
-        }}
+      <MultiCurrencyInput
+        amount
+        onChangeAmount={handleChangeAmount}
+        symbol={getSymbol(trans.amount)}
+        onChangeSymbol=handleChangeSymbol
       />
-    | Token(token) =>
-      switch Token.matchNftData(token.token.metadata) {
-      | Some((displayUri, _, _, name)) => <NFTInput imageUrl={Token.getNftUrl(displayUri)} name />
-      | None => React.null
-      }
+    | FA1(b) =>
+      <MultiCurrencyInput
+        amount=b.balance
+        onChangeAmount={handleChangeAmount}
+        symbol={getSymbol(trans.amount)}
+        onChangeSymbol=handleChangeSymbol
+      />
+    | FA2((b, _)) =>
+      <MultiCurrencyInput
+        amount=b.balance
+        onChangeAmount={handleChangeAmount}
+        symbol={getSymbol(trans.amount)}
+        onChangeSymbol=handleChangeSymbol
+      />
     }
 
     let handleSenderPress = _ => navigate("Accounts")->ignore
@@ -166,9 +296,9 @@ let makeNotif = hash => {
 }
 module ConnectedSend = {
   @react.component
-  let make = (~sender: Store.account, ~token: option<Token.t>, ~tz1FromQr: option<string>) => {
-    let amount = switch token {
-    | Some(token) => Token(token)
+  let make = (~sender: Store.account, ~nft: option<Token.tokenNFT>, ~tz1FromQr: option<string>) => {
+    let amount = switch nft {
+    | Some(token) => NFT(token)
     | _ => Tez(0)
     }
 
@@ -177,8 +307,6 @@ module ConnectedSend = {
     let notifyAdvanced = SnackBar.useNotificationAdvanced()
     let navigate = NavUtils.useNavigate()
     let (loading, setLoading) = React.useState(_ => false)
-
-    // let tz1FromQr = NavUtils.useT
 
     React.useEffect1(() => {
       tz1FromQr
@@ -192,56 +320,27 @@ module ConnectedSend = {
 
       None
     }, [tz1FromQr])
-    // let queryResult = useSend(
-    //   ~recipient=trans.recipient,
-    //   ~amount=trans.amount,
-    //   ~passphrase=trans.passphrase,
-    //   ~sk=secret.sk,
-    // )
-    // let {refetch} = queryResult
-    // let isError = queryResult.isError
-
-    // React.useEffect1(() => {
-    //   if isError {
-    //     notify("Failed to send")
-    //   }
-    //   None
-    // }, [isError])
-
-    // React.useEffect1(() => {
-    //   {
-    //     switch queryResult.data {
-    //     | Some({hash}) => {
-    //         let el = makeNotif(hash)
-
-    //         notifyAdvanced(Some(el))
-
-    //         queryResult.remove()
-    //         navigate("Home")->ignore
-    //       }
-    //     | None => ()
-    //     }
-    //   }
-
-    //   None
-    // }, [queryResult.data])
 
     let onSubmit = (passphrase: string) => {
       let {recipient, amount} = trans
       setLoading(_ => true)
 
-      let send = switch amount {
-      | Tez(amount) => TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
-      | Token(token) =>
+      let makeSendToken = (base: Token.tokenBase, ~amount=base.balance, ()) =>
         TaquitoUtils.signAndSendToken(
           ~passphrase,
           ~sk=sender.sk,
-          ~contractAddress=token.token.contract.address,
-          ~amount=1,
+          ~contractAddress=base.contract,
+          ~amount,
           ~recipientTz1=recipient,
-          ~tokenId=token.token.tokenId,
+          ~tokenId=base.tokenId,
           ~senderTz1=sender.tz1,
         )
+
+      let send = switch amount {
+      | Tez(amount) => TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
+      | NFT((base, _)) => makeSendToken(base, ~amount=1, ())
+      | FA1(b) => makeSendToken(b, ())
+      | FA2(b, m) => makeSendToken(b, ~amount=Token.toRaw(b.balance, m.decimals), ())
       }
 
       send
@@ -270,8 +369,8 @@ module ConnectedSend = {
 
 @react.component
 let make = (~navigation as _, ~route) => {
-  let token = NavUtils.getToken(route)
+  let nft = NavUtils.getToken(route)
   let tz1FromQr = NavUtils.getTz1FromQr(route)
 
-  Store.useWithAccount(account => <ConnectedSend tz1FromQr sender=account token />)
+  Store.useWithAccount(account => <ConnectedSend tz1FromQr sender=account nft />)
 }

@@ -6,4 +6,6 @@ let getTokens = tz1 => {
   ->Promise.thenResolve(Js.Json.decodeArray)
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(Array.map(unsafeParse))
+  ->Promise.thenResolve(Token.decodeJsonArray)
+  ->Promise.thenResolve(arr => arr->Belt.Array.keep(Token.positiveBalance))
 }

@@ -31,13 +31,13 @@ let makeDisplayElement = (op: Operation.t, myAddress: string, indexorLevel: int)
 
   let date = makePrettyDate(op.timestamp)
 
-  let isTokenAmount = a => a < 10 // hack
-  let ajustAmount = a => isTokenAmount(a) ? a : a / Constants.currencyDivider
-
   let printAmount = (amount: Operation.amount) =>
     switch amount {
-    | Tez(amount) => `${Belt.Int.toString(amount->ajustAmount)} tez`
-    | FA2({amount, _}) => `${Belt.Int.toString(amount->ajustAmount)} token`
+    | Tez(amount) => {
+        let amount = Token.fromRaw(amount, 6)
+        `${Belt.Int.toString(amount)} tez`
+      }
+    | FA2({amount}) => `${Belt.Int.toString(Token.fromRaw(amount, 5))} token`
     }
 
   if op.destination == myAddress {

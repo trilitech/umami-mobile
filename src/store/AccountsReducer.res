@@ -1,6 +1,6 @@
 type balancePayload = {
   tz1: string,
-  tokens: array<Token.t>,
+  tokens: array<Token.allTokens>,
   balance: option<int>,
 }
 

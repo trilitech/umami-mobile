@@ -68,13 +68,14 @@ let updateAccountOperations = (
 let useAccountsBalanceUpdate = () => {
   let (accounts, setAccounts) = Store.useAccounts()
 
-  () =>
+  () => {
     accounts
     ->Belt.Array.map(a => getAccountBalance(a.tz1))
     ->Js.Promise.all
-    ->Promise.thenResolve(balances =>
+    ->Promise.thenResolve(balances => {
       setAccounts(accounts => updateAccountBalances(accounts, balances))
-    )
+    })
+  }
 }
 
 let useAccountsOperationsUpdate = () => {
@@ -113,28 +114,32 @@ let useTransactionNotif = () => {
 }
 
 let useBalancesSync = () => {
-  // let (accounts, setAccounts) = Store.useAccounts()
-  // let notify = SnackBar.useNotification()
   useTransactionNotif()
   let updateBalances = useAccountsBalanceUpdate()
   let updateOperations = useAccountsOperationsUpdate()
 
-  useInterval(() => {
-    updateBalances()->ignore
-    updateOperations()->ignore
-    // updateAccounts(accounts)->Promise.thenResolve(newAccounts => {
-    //   // Need this to prevent setStates if promises resolve when logged out.
-    //   if isMounted.current {
-    //     setAccounts(prevAccounts => {
-    //       TransNotif.getUpdates(prevAccounts, newAccounts)->Belt.Array.forEach(notification => {
-    //         open TezHelpers
-    //         notify(`${notification.name} received ${notification.amount->formatBalance}`)
-    //       })
+  let update = () => Promise.all([updateBalances(), updateOperations()])
+  let updateRef = React.useRef(update)
+  let timeoutId = React.useRef(None)
 
-    //       handleAccounts(prevAccounts, newAccounts)
-    //     })
-    //   }
-    // })
-    ()
-  }, 2000)
+  updateRef.current = update
+
+  let startFetching = React.useCallback1(() => {
+    let rec updateAll = () =>
+      updateRef.current()
+      ->Promise.thenResolve(_ => {
+        timeoutId.current = Js.Global.setTimeout(updateAll, 3000)->Some
+      })
+      ->ignore
+    updateAll()->ignore
+  }, [])
+
+  React.useEffect1(() => {
+    startFetching()
+    None
+  }, [startFetching])
+
+  React.useEffect1(() => {
+    Some(() => timeoutId.current->Belt.Option.map(id => Js.Global.clearTimeout(id))->ignore)
+  }, [])
 }

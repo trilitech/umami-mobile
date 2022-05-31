@@ -111,3 +111,10 @@ let decodeJson = (json: JSON.t) => {
 }
 
 let decodeJsonArray = arr => arr->Belt.Array.map(decodeJson)->Helpers.filterNone
+
+let filterRelevant = ops =>
+  ops->Belt.Array.keep(op => {
+    op.kind == "transaction" && !Js.Re.test_(%re("/^kt1/i"), op.destination)
+  })
+
+let handleJSONArray = arr => arr->decodeJsonArray->filterRelevant
