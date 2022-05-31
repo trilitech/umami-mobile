@@ -18,7 +18,7 @@ let make = (~onSubmit, ~loading=false) => {
       style=vMargin
     />
     <Button
-      disabled={!PasswordUtils.isMinLength(value)}
+      disabled={!PasswordUtils.isMinLength(value) || loading}
       loading
       style={vMargin}
       mode=#contained

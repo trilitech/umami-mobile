@@ -31,7 +31,7 @@ let make = (~onSubmit, ~loading=false) => {
       onChangeText={s => setValue2(_ => s)}
     />
     <Button
-      disabled={!formValid(value1, value2)}
+      disabled={!formValid(value1, value2) || loading}
       loading
       style={FormStyles.styles["verticalMargin"]}
       mode=#contained
