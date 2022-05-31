@@ -40,6 +40,13 @@ let sendTez = (~recipient, ~amount, ~passphrase, ~sk) => {
   })
 }
 
+let estimateSendTez = (~recipient, ~amount) => {
+  let tezos = Taquito.create(tezNodeURL)
+
+  tezos->Taquito.Toolkit.setProvider({"signer": Taquito.createDummySigner()})
+  tezos.estimate->Taquito.Toolkit.estimateTransfer({"to": recipient, "amount": amount})
+}
+
 let sendToken = (
   ~passphrase,
   ~sk,

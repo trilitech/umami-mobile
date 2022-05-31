@@ -11,13 +11,22 @@ module Toolkit = {
     estimate: estimate,
   }
 
+  type estimation = {
+    suggestedFeeMutez: int,
+    gasLimit: int,
+  }
+
   @send external getBalance: (tz, string) => Promise.t<Js.Json.t> = "getBalance"
   @send external setProvider: (toolkit, 'a) => unit = "setProvider"
   @send external transfer: (contract, 'a) => Promise.t<operation> = "transfer"
+  @send external estimateTransfer: (estimate, 'a) => Promise.t<estimation> = "transfer"
 }
 
 @module("@taquito/taquito") @new
 external create: string => Toolkit.toolkit = "TezosToolkit"
+
+@module("./dummySigner")
+external createDummySigner: unit => signer = "create"
 
 @module("custom-signer") @scope("InMemorySigner")
 external fromSecretKey: (string, string) => Promise.t<signer> = "fromSecretKey"
