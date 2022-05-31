@@ -10,7 +10,7 @@ open UsePrevious
 
 let getAccountBalance = (tz1: string) => {
   open AccountsReducer
-  Promise.all2((TaquitoUtils.safeGetBalance(tz1), TzktAPI.getTokens(tz1)))->Promise.thenResolve(((
+  Promise.all2((TaquitoUtils.getBalance(tz1), TzktAPI.getTokens(tz1)))->Promise.thenResolve(((
     b,
     t,
   )) => {

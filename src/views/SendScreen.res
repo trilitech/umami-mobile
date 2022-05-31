@@ -337,7 +337,7 @@ module ConnectedSend = {
         )
 
       let send = switch amount {
-      | Tez(amount) => TaquitoUtils.send(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
+      | Tez(amount) => TaquitoUtils.sendTez(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
       | NFT((base, _)) => makeSendToken(base, ~amount=1, ())
       | FA1(b) => makeSendToken(b, ())
       | FA2(b, m) => makeSendToken(b, ~amount=Token.toRaw(b.balance, m.decimals), ())

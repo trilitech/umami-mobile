@@ -1,5 +1,5 @@
-@module("./sendNft")
-external sendNftBinding: (
+@module("./sendToken")
+external sendTokenBinding: (
   Taquito.Toolkit.toolkit,
   string,
   string,
@@ -8,20 +8,20 @@ external sendNftBinding: (
   string,
 ) => Promise.t<'a> = "default"
 
-let sendNft = (~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
-  sendNftBinding(tezos, contractAddress, tokenId, amount, senderTz1, recipientTz1)
+let sendToken = (~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
+  sendTokenBinding(tezos, contractAddress, tokenId, amount, senderTz1, recipientTz1)
 }
 
 let tezNodeURL = "https://ithacanet.smartpy.io/"
 
-let getBalance = tz1 => {
+let _getBalance = tz1 => {
   let tezos = Taquito.create(tezNodeURL)
   let res = tezos.tz->Taquito.Toolkit.getBalance(tz1)
   res->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
 }
 
-let safeGetBalance = tz1 =>
-  getBalance(tz1)
+let getBalance = tz1 =>
+  _getBalance(tz1)
   ->Promise.thenResolve(b => Belt.Int.fromString(b))
   ->Promise.then(b => {
     Promise.make((resolve, reject) => {
@@ -32,7 +32,7 @@ let safeGetBalance = tz1 =>
     })
   })
 
-let send = (~recipient, ~amount, ~passphrase, ~sk) => {
+let sendTez = (~recipient, ~amount, ~passphrase, ~sk) => {
   let tezos = Taquito.create(tezNodeURL)
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
@@ -53,7 +53,7 @@ let signAndSendToken = (
 
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
-    sendNft(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1)
+    sendToken(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1)
   })
 }
 
