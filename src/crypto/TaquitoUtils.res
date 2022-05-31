@@ -1,15 +1,31 @@
 @module("./sendToken")
-external sendTokenBinding: (
+external _makeContractTransferBinding: (
   Taquito.Toolkit.toolkit,
   string,
   string,
   int,
   string,
   string,
-) => Promise.t<'a> = "default"
+) => Promise.t<Taquito.Contract.transfer> = "default"
+
+let makeContractTransfer = (
+  ~tezos,
+  ~contractAddress,
+  ~tokenId,
+  ~amount,
+  ~senderTz1,
+  ~recipientTz1,
+) => _makeContractTransferBinding(tezos, contractAddress, tokenId, amount, senderTz1, recipientTz1)
 
 let _sendToken = (~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
-  sendTokenBinding(tezos, contractAddress, tokenId, amount, senderTz1, recipientTz1)
+  makeContractTransfer(
+    ~tezos,
+    ~contractAddress,
+    ~tokenId,
+    ~amount,
+    ~senderTz1,
+    ~recipientTz1,
+  )->Promise.then(t => t->Taquito.Contract.send())
 }
 
 let tezNodeURL = "https://ithacanet.smartpy.io/"

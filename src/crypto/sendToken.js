@@ -20,14 +20,5 @@ export default async (
   ];
 
   const contract = await Tezos.wallet.at(contractAddress);
-
-  try {
-    const op = await contract.methods.transfer(transfer_params).send();
-
-    return op;
-    // let result = await op.confirmation();
-    // return result;
-  } catch (error) {
-    console.log(error);
-  }
+  return contract.methods.transfer(transfer_params);
 };

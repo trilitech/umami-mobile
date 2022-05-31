@@ -22,6 +22,12 @@ module Toolkit = {
   @send external estimateTransfer: (estimate, 'a) => Promise.t<estimation> = "transfer"
 }
 
+module Contract = {
+  type transfer
+
+  @send external send: (transfer, unit) => Promise.t<'a> = "send"
+}
+
 @module("@taquito/taquito") @new
 external create: string => Toolkit.toolkit = "TezosToolkit"
 
