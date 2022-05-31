@@ -326,7 +326,7 @@ module ConnectedSend = {
       setLoading(_ => true)
 
       let makeSendToken = (base: Token.tokenBase, ~amount=base.balance, ()) =>
-        TaquitoUtils.signAndSendToken(
+        TaquitoUtils.sendToken(
           ~passphrase,
           ~sk=sender.sk,
           ~contractAddress=base.contract,

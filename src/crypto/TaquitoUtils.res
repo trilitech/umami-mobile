@@ -8,7 +8,7 @@ external sendTokenBinding: (
   string,
 ) => Promise.t<'a> = "default"
 
-let sendToken = (~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
+let _sendToken = (~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
   sendTokenBinding(tezos, contractAddress, tokenId, amount, senderTz1, recipientTz1)
 }
 
@@ -40,7 +40,7 @@ let sendTez = (~recipient, ~amount, ~passphrase, ~sk) => {
   })
 }
 
-let signAndSendToken = (
+let sendToken = (
   ~passphrase,
   ~sk,
   ~contractAddress,
@@ -53,7 +53,7 @@ let signAndSendToken = (
 
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
-    sendToken(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1)
+    _sendToken(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1)
   })
 }
 
