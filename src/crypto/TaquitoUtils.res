@@ -56,11 +56,31 @@ let sendTez = (~recipient, ~amount, ~passphrase, ~sk) => {
   })
 }
 
-let estimateSendTez = (~recipient, ~amount) => {
+let estimateSendTez = (~recipient, ~amount, ~senderTz1) => {
   let tezos = Taquito.create(tezNodeURL)
+  tezos->Taquito.Toolkit.setProvider({"signer": Taquito.createDummySigner(senderTz1)})
 
-  tezos->Taquito.Toolkit.setProvider({"signer": Taquito.createDummySigner()})
   tezos.estimate->Taquito.Toolkit.estimateTransfer({"to": recipient, "amount": amount})
+}
+
+let estimateSendToken = (~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
+  let tezos = Taquito.create(tezNodeURL)
+  tezos->Taquito.Toolkit.setProvider({"signer": Taquito.createDummySigner(senderTz1)})
+
+  let transfer = makeContractTransfer(
+    ~tezos,
+    ~contractAddress,
+    ~tokenId,
+    ~amount,
+    ~senderTz1,
+    ~recipientTz1,
+  )
+
+  transfer->Promise.then(t => {
+    let params = t->Taquito.Contract.toTransferParams()
+
+    tezos.estimate->Taquito.Toolkit.estimateTransfer(params)
+  })
 }
 
 let sendToken = (

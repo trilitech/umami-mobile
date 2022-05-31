@@ -325,7 +325,19 @@ module ConnectedSend = {
       let {recipient, amount} = trans
       setLoading(_ => true)
 
-      let makeSendToken = (base: Token.tokenBase, ~amount=base.balance, ()) =>
+      let makeSendToken = (base: Token.tokenBase, ~amount=base.balance, ()) => {
+        TaquitoUtils.estimateSendToken(
+          ~contractAddress=base.contract,
+          ~amount,
+          ~recipientTz1=recipient,
+          ~tokenId=base.tokenId,
+          ~senderTz1=sender.tz1,
+        )
+        ->Promise.thenResolve(res => {
+          Js.Console.log2("fee", res.suggestedFeeMutez)
+        })
+        ->ignore
+
         TaquitoUtils.sendToken(
           ~passphrase,
           ~sk=sender.sk,
@@ -335,9 +347,16 @@ module ConnectedSend = {
           ~tokenId=base.tokenId,
           ~senderTz1=sender.tz1,
         )
+      }
 
       let send = switch amount {
-      | Tez(amount) => TaquitoUtils.sendTez(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
+      | Tez(amount) =>
+        TaquitoUtils.estimateSendTez(~amount, ~recipient, ~senderTz1=sender.tz1)
+        ->Promise.thenResolve(res => {
+          Js.Console.log2("fee", res.suggestedFeeMutez)
+        })
+        ->ignore
+        TaquitoUtils.sendTez(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
       | NFT((base, _)) => makeSendToken(base, ~amount=1, ())
       | FA1(b) => makeSendToken(b, ())
       | FA2(b, m) => makeSendToken(b, ~amount=Token.toRaw(b.balance, m.decimals), ())

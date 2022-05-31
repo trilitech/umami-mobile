@@ -24,15 +24,18 @@ module Toolkit = {
 
 module Contract = {
   type transfer
+  type transferParams
 
   @send external send: (transfer, unit) => Promise.t<'a> = "send"
+  @send
+  external toTransferParams: (transfer, unit) => transferParams = "toTransferParams"
 }
 
 @module("@taquito/taquito") @new
 external create: string => Toolkit.toolkit = "TezosToolkit"
 
 @module("./dummySigner")
-external createDummySigner: unit => signer = "create"
+external createDummySigner: string => signer = "create"
 
 @module("custom-signer") @scope("InMemorySigner")
 external fromSecretKey: (string, string) => Promise.t<signer> = "fromSecretKey"
