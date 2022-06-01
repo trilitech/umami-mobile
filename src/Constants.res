@@ -1,1 +1,2 @@
-let tezCurrencyDivider = 1000000
+let tezCurrencyDecimal = 6
+let fa1CurrencyDecimal = 4

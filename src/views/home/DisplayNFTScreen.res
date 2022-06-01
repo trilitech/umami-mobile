@@ -12,7 +12,7 @@ module DisplayNFT = {
     let (_, metadata) = token
     let {displayUri, name, description} = metadata
 
-    let url = Token.getNftUrl(displayUri)
+    let url = displayUri
 
     <Container>
       <Wrapper flexDirection=#column justifyContent=#flexStart alignItems=#center>

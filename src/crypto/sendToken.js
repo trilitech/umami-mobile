@@ -5,6 +5,7 @@ export default async (
   amount,
   sender,
   recipient,
+  isFa1 = false,
 ) => {
   const transfer_params = [
     {
@@ -20,5 +21,7 @@ export default async (
   ];
 
   const contract = await Tezos.wallet.at(contractAddress);
-  return contract.methods.transfer(transfer_params);
+  return isFa1
+    ? contract.methods.transfer(sender, recipient, amount)
+    : contract.methods.transfer(transfer_params);
 };

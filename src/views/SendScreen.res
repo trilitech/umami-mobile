@@ -2,7 +2,7 @@ open Paper
 open SendAmount
 
 open CommonComponents
-type formState = {recipient: string, amount: SendAmount.t, passphrase: string}
+type formState = {recipient: string, amount: SendAmount.t}
 let vMargin = FormStyles.styles["verticalMargin"]
 open ReactNative.Style
 
@@ -49,17 +49,17 @@ let isTez = amount =>
   | _ => false
   }
 
-let getCurrencies = (tokens: array<Token.allTokens>) => {
+let getCurrencies = (tokens: array<Token.t>) => {
   open Belt.Array
   tokens
   ->reduce([], (acc, curr) => {
     switch curr {
-    | FA1(_) => concat(acc, ["FA1"])
+    | FA1(_) => concat(acc, ["FA1.2"])
     | FA2(_, m) => concat(acc, [m.symbol])
     | _ => acc
     }
   })
-  ->concat(["TEZ"])
+  ->concat(["tez"])
 }
 module CurrencyPicker = {
   @react.component
@@ -94,8 +94,8 @@ module MultiCurrencyInput = {
 
 let getSymbol = (t: SendAmount.t) => {
   switch t {
-  | Tez(_) => "TEZ"
-  | FA1(_) => "FA1"
+  | Tez(_) => "tez"
+  | FA1(_) => "FA1.2"
   | FA2(_, m) => m.symbol
   | NFT(_, m) => m.symbol
   }
@@ -120,7 +120,7 @@ let updateAmount = (a: int, t: SendAmount.t) => {
 }
 
 open Belt
-let getFA1Data = (tokens: array<Token.allTokens>) =>
+let getFA1Data = (tokens: array<Token.t>) =>
   tokens
   ->Array.getBy(t =>
     switch t {
@@ -135,7 +135,7 @@ let getFA1Data = (tokens: array<Token.allTokens>) =>
     }
   })
 
-let getFA2Data = (symbol: string, tokens: array<Token.allTokens>) =>
+let getFA2Data = (symbol: string, tokens: array<Token.t>) =>
   tokens
   ->Array.getBy(t =>
     switch t {
@@ -150,13 +150,13 @@ let getFA2Data = (symbol: string, tokens: array<Token.allTokens>) =>
     }
   })
 
-let updateCurrency = (symbol: string, t: SendAmount.t, tokens: array<Token.allTokens>): option<
+let updateCurrency = (symbol: string, t: SendAmount.t, tokens: array<Token.t>): option<
   SendAmount.t,
 > => {
   let amount = getAmount(t)
-  if symbol == "TEZ" {
+  if symbol == "tez" {
     Tez(amount)->Some
-  } else if symbol == "FA1" {
+  } else if symbol == "FA1.2" {
     getFA1Data(tokens)->Option.map(b => FA1({...b, balance: amount}))
   } else {
     getFA2Data(symbol, tokens)->Option.map(((b, m)) => {
@@ -196,7 +196,7 @@ module SendForm = {
     | NFT((_, metadata)) =>
       let {name, displayUri} = metadata
 
-      <NFTInput imageUrl={Token.getNftUrl(displayUri)} name />
+      <NFTInput imageUrl={displayUri} name />
     | Tez(amount) =>
       <MultiCurrencyInput
         amount
@@ -256,7 +256,6 @@ module SendForm = {
               setTrans(prev => {
                 recipient: recipient,
                 amount: prev.amount,
-                passphrase: prev.passphrase,
               })
             })
             ->ignore
@@ -302,7 +301,7 @@ module ConnectedSend = {
     | _ => Tez(0)
     }
 
-    let (trans, setTrans) = React.useState(_ => {recipient: "", amount: amount, passphrase: ""})
+    let (trans, setTrans) = React.useState(_ => {recipient: "", amount: amount})
     let notify = SnackBar.useNotification()
     let notifyAdvanced = SnackBar.useNotificationAdvanced()
     let navigate = NavUtils.useNavigate()
@@ -325,13 +324,14 @@ module ConnectedSend = {
       let {recipient, amount} = trans
       setLoading(_ => true)
 
-      let makeSendToken = (base: Token.tokenBase, ~amount=base.balance, ()) => {
+      let makeSendToken = (~base: Token.tokenBase, ~amount, ~isFa1=false, ()) => {
         TaquitoUtils.estimateSendToken(
           ~contractAddress=base.contract,
           ~amount,
           ~recipientTz1=recipient,
           ~tokenId=base.tokenId,
           ~senderTz1=sender.tz1,
+          ~isFa1,
         )
         ->Promise.thenResolve(res => {
           Js.Console.log2("fee", res.suggestedFeeMutez)
@@ -346,10 +346,13 @@ module ConnectedSend = {
           ~recipientTz1=recipient,
           ~tokenId=base.tokenId,
           ~senderTz1=sender.tz1,
+          ~isFa1,
+          (),
         )
       }
 
       let send = switch amount {
+      // No need to ajust tez amount
       | Tez(amount) =>
         TaquitoUtils.estimateSendTez(~amount, ~recipient, ~senderTz1=sender.tz1)
         ->Promise.thenResolve(res => {
@@ -357,9 +360,15 @@ module ConnectedSend = {
         })
         ->ignore
         TaquitoUtils.sendTez(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
-      | NFT((base, _)) => makeSendToken(base, ~amount=1, ())
-      | FA1(b) => makeSendToken(b, ())
-      | FA2(b, m) => makeSendToken(b, ~amount=Token.toRaw(b.balance, m.decimals), ())
+      | NFT((base, _)) => makeSendToken(~base, ~amount=1, ())
+      | FA1(base) =>
+        makeSendToken(
+          ~base,
+          ~amount=Token.toRaw(base.balance, Constants.fa1CurrencyDecimal),
+          ~isFa1=true,
+          (),
+        )
+      | FA2(base, m) => makeSendToken(~base, ~amount=Token.toRaw(base.balance, m.decimals), ())
       }
 
       send

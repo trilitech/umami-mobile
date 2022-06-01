@@ -6,6 +6,7 @@ external _makeContractTransferBinding: (
   int,
   string,
   string,
+  bool,
 ) => Promise.t<Taquito.Contract.transfer> = "default"
 
 let makeContractTransfer = (
@@ -15,9 +16,29 @@ let makeContractTransfer = (
   ~amount,
   ~senderTz1,
   ~recipientTz1,
-) => _makeContractTransferBinding(tezos, contractAddress, tokenId, amount, senderTz1, recipientTz1)
+  ~isFa1=false,
+  (),
+) =>
+  _makeContractTransferBinding(
+    tezos,
+    contractAddress,
+    tokenId,
+    amount,
+    senderTz1,
+    recipientTz1,
+    isFa1,
+  )
 
-let _sendToken = (~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
+let _sendToken = (
+  ~tezos,
+  ~contractAddress,
+  ~tokenId,
+  ~amount,
+  ~senderTz1,
+  ~recipientTz1,
+  ~isFa1=false,
+  (),
+) => {
   makeContractTransfer(
     ~tezos,
     ~contractAddress,
@@ -25,6 +46,8 @@ let _sendToken = (~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~reci
     ~amount,
     ~senderTz1,
     ~recipientTz1,
+    ~isFa1,
+    (),
   )->Promise.then(t => t->Taquito.Contract.send())
 }
 
@@ -63,7 +86,14 @@ let estimateSendTez = (~recipient, ~amount, ~senderTz1) => {
   tezos.estimate->Taquito.Toolkit.estimateTransfer({"to": recipient, "amount": amount})
 }
 
-let estimateSendToken = (~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1) => {
+let estimateSendToken = (
+  ~contractAddress,
+  ~tokenId,
+  ~amount,
+  ~senderTz1,
+  ~recipientTz1,
+  ~isFa1,
+) => {
   let tezos = Taquito.create(tezNodeURL)
   tezos->Taquito.Toolkit.setProvider({"signer": Taquito.createDummySigner(senderTz1)})
 
@@ -74,6 +104,8 @@ let estimateSendToken = (~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recip
     ~amount,
     ~senderTz1,
     ~recipientTz1,
+    ~isFa1,
+    (),
   )
 
   transfer->Promise.then(t => {
@@ -91,12 +123,14 @@ let sendToken = (
   ~amount,
   ~senderTz1,
   ~recipientTz1,
+  ~isFa1=false,
+  (),
 ) => {
   let tezos = Taquito.create(tezNodeURL)
 
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
-    _sendToken(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1)
+    _sendToken(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1, ~isFa1, ())
   })
 }
 

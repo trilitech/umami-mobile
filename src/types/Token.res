@@ -1,61 +1,48 @@
-type metadata = {
-  name: string,
-  symbol: string,
-  description: option<string>,
-  displayUri: option<string>,
-  thumbnailUri: option<string>,
-  creators: option<string>,
-  decimals: string,
-}
+module JSON = {
+  type metadata = {
+    name: string,
+    symbol: string,
+    description: option<string>,
+    displayUri: option<string>,
+    thumbnailUri: option<string>,
+    creators: option<array<string>>,
+    decimals: string,
+  }
 
-type address = {address: string}
-type token = {
-  id: int,
-  tokenId: string,
-  contract: address,
-  metadata: option<metadata>,
-  standard: string,
-}
+  type address = {address: string}
+  type token = {
+    id: int,
+    tokenId: string,
+    contract: address,
+    metadata: option<metadata>,
+    standard: string,
+  }
 
-type t = {
-  id: int,
-  balance: string,
-  account: address,
-  token: token,
-}
+  type t = {
+    id: int,
+    balance: string,
+    account: address,
+    token: token,
+  }
 
-let getNftUrl = (ipfsUrl: string) => ipfsUrl->Js.String2.replace("ipfs://", "https://ipfs.io/ipfs/")
+  let getNftUrl = (ipfsUrl: string) =>
+    ipfsUrl->Js.String2.replace("ipfs://", "https://ipfs.io/ipfs/")
 
-let matchNftData = (metadata: option<metadata>) => {
-  switch metadata {
-  | Some(metadata) => {
-      let {displayUri, thumbnailUri, description} = metadata
-      switch (displayUri, thumbnailUri, description) {
-      | (Some(displayUri), Some(thumbnailUri), Some(description)) =>
-        Some((displayUri, thumbnailUri, description, metadata.name))
-      | _ => None
-      }
+  let matchNftFields = metadata => {
+    let {displayUri, thumbnailUri, description, creators} = metadata
+
+    switch (displayUri, thumbnailUri, description, creators) {
+    | (Some(displayUri), Some(thumbnailUri), Some(description), Some(creators)) =>
+      Some((displayUri, thumbnailUri, description, creators))
+    | _ => None
     }
-  | None => None
   }
 }
-
-let matchNftFields = metadata => {
-  let {displayUri, thumbnailUri, description, creators} = metadata
-
-  switch (displayUri, thumbnailUri, description, creators) {
-  | (Some(displayUri), Some(thumbnailUri), Some(description), Some(creators)) =>
-    Some((displayUri, thumbnailUri, description, creators))
-  | _ => None
-  }
-}
-
-let isNft = (token: t) => matchNftData(token.token.metadata)->Belt.Option.isSome
 
 type tokenBase = {
   id: int,
   balance: int,
-  account: address,
+  tz1: string,
   tokenId: string,
   contract: string,
 }
@@ -66,7 +53,7 @@ type nftMetadata = {
   displayUri: string,
   thumbnailUri: string,
   description: string,
-  creators: string,
+  creators: array<string>,
 }
 
 type fa2TokenMetadata = {
@@ -79,9 +66,9 @@ type tokenNFT = (tokenBase, nftMetadata)
 type tokenFA2 = (tokenBase, fa2TokenMetadata)
 
 // type faTokens = FA2(tokenFA2) | FA1(tokenBase)
-type allTokens = FA2(tokenFA2) | NFT(tokenNFT) | FA1(tokenBase)
+type t = FA2(tokenFA2) | NFT(tokenNFT) | FA1(tokenBase)
 
-let filterNFTs = (arr: array<allTokens>) =>
+let filterNFTs = (arr: array<t>) =>
   arr
   ->Belt.Array.map(token =>
     switch token {
@@ -92,28 +79,28 @@ let filterNFTs = (arr: array<allTokens>) =>
   ->Helpers.filterNone
 
 open Belt
-let decodeJSON = (token: t) => {
+let decodeJSON = (token: JSON.t) => {
   token.balance
   ->Int.fromString
   ->Option.flatMap(balance => {
     let base = {
       id: token.id,
       balance: balance,
-      account: token.account,
+      tz1: token.account.address,
       contract: token.token.contract.address,
       tokenId: token.token.tokenId,
     }
 
     token.token.metadata->Option.mapWithDefault(Some(FA1(base)), metadata =>
-      switch matchNftFields(metadata) {
+      switch JSON.matchNftFields(metadata) {
       | Some(displayUri, thumbnailUri, description, creators) =>
         NFT((
           base,
           {
             name: metadata.name,
             symbol: metadata.symbol,
-            displayUri: displayUri,
-            thumbnailUri: thumbnailUri,
+            displayUri: displayUri->JSON.getNftUrl,
+            thumbnailUri: thumbnailUri->JSON.getNftUrl,
             description: description,
             creators: creators,
           },
@@ -130,7 +117,7 @@ let decodeJSON = (token: t) => {
 }
 let decodeJsonArray = arr => arr->Belt.Array.map(decodeJSON)->Helpers.filterNone
 
-let matchBase = (t: allTokens) => {
+let matchBase = (t: t) => {
   switch t {
   | FA2(base, _) => base
   | FA1(base) => base
@@ -138,7 +125,7 @@ let matchBase = (t: allTokens) => {
   }
 }
 
-let positiveBalance = (t: allTokens) => {
+let positiveBalance = (t: t) => {
   matchBase(t).balance > 0
 }
 
@@ -150,4 +137,12 @@ let fromRaw = (amount: int, decimals: int) => {
 let toRaw = (amount: int, decimals: int) => {
   let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)->Belt.Float.toInt
   amount * divider
+}
+
+let printBalance = (rawAmount, token: t) => {
+  switch token {
+  | NFT(_) => rawAmount
+  | FA1(_) => fromRaw(rawAmount, 6)
+  | FA2(_, m) => fromRaw(rawAmount, m.decimals)
+  }
 }

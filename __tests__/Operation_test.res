@@ -1,10 +1,13 @@
 open Jest
 open Operation
 
+@scope("JSON") @val
+external parseJSON: string => array<JSON.t> = "parse"
+
 describe("Operation functions", () => {
   open Expect
 
-  test("handleJSONarray returns the right value (nominal case)", () => {
+  test("handleJSONarray returns the right value (nominal case TEZ + FA2)", () => {
     let input = parseJSON(`
     [
   {
@@ -87,7 +90,7 @@ describe("Operation functions", () => {
     "gas_limit": "69",
     "storage_limit": "4009"
   }
-  
+
   ]
     `)
     let result = handleJSONArray(input)
@@ -108,7 +111,11 @@ describe("Operation functions", () => {
         destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
         level: 549850,
         timestamp: "2022-05-18T08:35:35Z",
-        amount: FA2({amount: 1, tokenId: "5", contract: "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob"}),
+        amount: Contract({
+          amount: 1,
+          tokenId: "5"->Some,
+          contract: "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob",
+        }),
         kind: "transaction",
         blockHash: Some("mockBlockHash1"),
       },
@@ -118,13 +125,63 @@ describe("Operation functions", () => {
         destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t",
         level: 588389,
         timestamp: "2022-05-25T17:07:20Z",
-        amount: FA2({
+        amount: Contract({
           amount: 1000000,
-          tokenId: "0",
+          tokenId: "0"->Some,
           contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
         }),
         kind: "transaction",
         blockHash: Some("mockBlockHash2"),
+      },
+    ])
+  })
+
+  test("handleJSONarray returns the right value (nominal case FA1.2)", () => {
+    let input = parseJSON(`
+    [
+        {
+    "hash": "opUU1cokKoxbBQBJu6VsXR6g6CA66gnuUcvF7hGAYxwYGxPE8jZ",
+    "id": "0",
+    "block_hash": "BLXLjVGys2XWpzxGmguF4oVve9F43xthWiLu5R2RAcJ1UcAFsTk",
+    "op_timestamp": "2022-06-01T13:14:35Z",
+    "level": "624184",
+    "internal": 0,
+    "kind": "transaction",
+    "src": "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
+    "status": "applied",
+    "fee": "792",
+    "data": {
+      "amount": "0",
+      "token_amount": "100000",
+      "token": "fa1-2",
+      "destination": "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+      "contract": "KT1UCPcXExqEYRnfoXWYvBkkn5uPjn8TBTEe",
+      "parameters": null,
+      "entrypoint": null,
+      "storage_size": null,
+      "paid_storage_size_diff": null
+    },
+    "counter": "133965",
+    "gas_limit": "0",
+    "storage_limit": "3997"
+  }
+  ]
+    `)
+    let result = handleJSONArray(input)
+    expect(result)->toEqual([
+      {
+        hash: "opUU1cokKoxbBQBJu6VsXR6g6CA66gnuUcvF7hGAYxwYGxPE8jZ",
+        src: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
+        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+        level: 624184,
+        timestamp: "2022-06-01T13:14:35Z",
+        amount: Contract({
+          amount: 100000,
+          tokenId: None,
+          contract: "KT1UCPcXExqEYRnfoXWYvBkkn5uPjn8TBTEe",
+        }),
+        kind: "transaction",
+        blockHash: Some("BLXLjVGys2XWpzxGmguF4oVve9F43xthWiLu5R2RAcJ1UcAFsTk"),
       },
     ])
   })
@@ -309,7 +366,7 @@ describe("Operation functions", () => {
     "gas_limit": "69",
     "storage_limit": "4009"
   }
-  
+
   ]
     `)
     let result = handleJSONArray(input)
@@ -330,7 +387,11 @@ describe("Operation functions", () => {
         destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
         level: 549850,
         timestamp: "2022-05-18T08:35:35Z",
-        amount: FA2({amount: 1, tokenId: "5", contract: "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob"}),
+        amount: Contract({
+          amount: 1,
+          tokenId: "5"->Some,
+          contract: "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob",
+        }),
         kind: "transaction",
         blockHash: Some("mockBlockHash1"),
       },
@@ -340,9 +401,9 @@ describe("Operation functions", () => {
         destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t",
         level: 588389,
         timestamp: "2022-05-25T17:07:20Z",
-        amount: FA2({
+        amount: Contract({
           amount: 1000000,
-          tokenId: "0",
+          tokenId: "0"->Some,
           contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
         }),
         kind: "transaction",

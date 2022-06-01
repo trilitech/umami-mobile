@@ -68,7 +68,7 @@ let make = (~balance, ~onPress, ~tokens) => {
         <CurrencyIem
           key={base.contract}
           onPress
-          balance={fromRaw(base.balance, 4)}
+          balance={fromRaw(base.balance, Constants.fa1CurrencyDecimal)}
           symbol={"KLD"}
           standard="fa1.2"
         />

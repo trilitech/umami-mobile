@@ -6,7 +6,6 @@ module NftCard = {
   open ReactNative.Style
   @react.component
   let make = (~url, ~name, ~onPress) => {
-    let url = Token.getNftUrl(url)
     let source = Image.uriSource(~uri=url, ())
     <TouchableRipple style={array([unsafeStyle({"width": "45%"})])} onPress>
       <Surface style={array([unsafeStyle({"width": "100%"}), style(~height=240.->dp, ())])}>

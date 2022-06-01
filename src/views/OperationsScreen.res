@@ -4,41 +4,90 @@ open CommonComponents
 
 type status = Done | Processing | Mempool
 
+type displayAmount = Currency(string) | NFT(string, string)
 type diplayElement = {
   target: string,
   date: string,
-  prettyAmountDisplay: string,
+  prettyAmountDisplay: displayAmount,
   hash: string,
   status: status,
 }
 
 let makePrettyDate = (date: string) =>
   date->Js.Date.fromString->Js.Date.toLocaleDateString ++
-    date->Js.Date.fromString->Js.Date.toLocaleTimeString
+  " " ++
+  date->Js.Date.fromString->Js.Date.toLocaleTimeString
 
 let minConfirmations = 2
 
-let makeDisplayElement = (op: Operation.t, myAddress: string, indexorLevel: int) => {
+let getStatus = (op: Operation.t, indexorLevel) => {
   let currentConfirmations = indexorLevel - op.level
-
-  let status = if {op.blockHash->Belt.Option.isNone} {
+  if {op.blockHash->Belt.Option.isNone} {
     Mempool
   } else if currentConfirmations > 2 {
     Done
   } else {
     Processing
   }
+}
 
-  let date = makePrettyDate(op.timestamp)
+type tokenName = CurrencyName(string) | NFTname(string, string)
 
-  let printAmount = (amount: Operation.amount) =>
-    switch amount {
-    | Tez(amount) => {
-        let amount = Token.fromRaw(amount, 6)
-        `${Belt.Int.toString(amount)} tez`
-      }
-    | FA2({amount}) => `${Belt.Int.toString(Token.fromRaw(amount, 5))} token`
+let getTokenByAddress = (tokens: array<Token.t>, address) => {
+  tokens->Belt.Array.getBy(t =>
+    switch t {
+    | FA2(b, _) => b.contract == address
+    | NFT(b, _) => b.contract == address
+    | FA1(b) => b.contract == address
     }
+  )
+}
+
+let getName = (a: Operation.amount, tokens: array<Token.t>) => {
+  open Belt
+  switch a {
+  | Tez(_) => CurrencyName("tez")
+  | Contract(data) =>
+    tokens
+    ->getTokenByAddress(data.contract)
+    ->Option.map(t =>
+      switch t {
+      | FA2(_, m) => CurrencyName(m.symbol)
+      | NFT(_, m) => NFTname(m.symbol, m.thumbnailUri)
+      | FA1(_) => CurrencyName("KLD")
+      }
+    )
+    ->Option.getWithDefault(CurrencyName("Token"))
+  }
+}
+
+let getAdjustedAmount = (amount: Operation.amount, tokens: array<Token.t>) => {
+  switch amount {
+  | Tez(amount) => Token.fromRaw(amount, Constants.tezCurrencyDecimal)
+  | Contract(data) =>
+    let token = tokens->getTokenByAddress(data.contract)
+    token->Belt.Option.mapWithDefault(data.amount, t =>
+      switch t {
+      | FA2(_, m) => Token.fromRaw(data.amount, m.decimals)
+      | NFT(_, _) => data.amount
+      | FA1(_) => Token.fromRaw(data.amount, Constants.fa1CurrencyDecimal)
+      }
+    )
+  }
+}
+let makeDisplayElement = (
+  op: Operation.t,
+  myAddress: string,
+  indexorLevel: int,
+  tokens: array<Token.t>,
+) => {
+  let status = getStatus(op, indexorLevel)
+  let date = makePrettyDate(op.timestamp)
+  let adjustedAmount = getAdjustedAmount(op.amount, tokens)->Js.Int.toString
+  let symbol = switch getName(op.amount, tokens) {
+  | NFTname(n, _) => n
+  | CurrencyName(n) => n
+  }
 
   if op.destination == myAddress {
     let sign = "+"
@@ -47,7 +96,7 @@ let makeDisplayElement = (op: Operation.t, myAddress: string, indexorLevel: int)
       target: op.src->TezHelpers.formatTz1,
       date: date,
       hash: op.hash,
-      prettyAmountDisplay: sign ++ printAmount(op.amount),
+      prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
       status: status,
     }->Some
   } else if op.src == myAddress {
@@ -57,7 +106,7 @@ let makeDisplayElement = (op: Operation.t, myAddress: string, indexorLevel: int)
       target: op.destination->TezHelpers.formatTz1,
       date: date,
       hash: op.hash,
-      prettyAmountDisplay: sign ++ printAmount(op.amount),
+      prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
       status: status,
     }->Some
   } else {
@@ -78,6 +127,14 @@ let makeKey = (t: Operation.t, i) => {
   t.destination ++ t.timestamp ++ t.src ++ i->Belt.Int.toString
 }
 
+let matchAmount = (a: displayAmount) => {
+  switch a {
+  | NFT(a, _) => a
+  | Currency(a) => a
+  }
+}
+let isCredit = (a: displayAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
+
 module TransactionItem = {
   open Paper
   @react.component
@@ -90,7 +147,7 @@ module TransactionItem = {
     | Processing => "timer-sand"
     }
 
-    let isCredit = transaction.prettyAmountDisplay |> Js.Re.test_(%re("/^\+/i"))
+    let isCredit = isCredit(transaction.prettyAmountDisplay)
     let arrowIcon = isCredit
       ? <Paper.Avatar.Icon
           style={style(~backgroundColor=positive, ())}
@@ -111,7 +168,7 @@ module TransactionItem = {
       </ReactNative.View>}
       right={<Wrapper>
         <Caption style={style(~color=isCredit ? positive : negative, ())}>
-          {transaction.prettyAmountDisplay->React.string}
+          {matchAmount(transaction.prettyAmountDisplay)->React.string}
         </Caption>
         <Paper.IconButton
         // onPress={_ =>
@@ -127,12 +184,18 @@ module TransactionItem = {
     />
   }
 }
+
+let makePrettyOperations = (~myTz1, ~operations, ~tokens, ~indexerLastBlock) => {
+  operations
+  ->Belt.Array.map(el => makeDisplayElement(el, myTz1, indexerLastBlock, tokens))
+  ->Helpers.filterNone
+}
 module HistoryDisplay = {
   @react.component
-  let make = (~tz1, ~operations: array<Operation.t>, ~indexerLastBlock: int) => {
+  let make = (~tz1, ~operations: array<Operation.t>, ~indexerLastBlock: int, ~tokens) => {
     let els =
       operations
-      ->Belt.Array.map(el => makeDisplayElement(el, tz1, indexerLastBlock))
+      ->Belt.Array.map(el => makeDisplayElement(el, tz1, indexerLastBlock, tokens))
       ->Helpers.filterNone
 
     <Container>
@@ -151,6 +214,7 @@ module HistoryDisplay = {
 @react.component
 let make = (~route as _, ~navigation as _) => {
   let operations = useCurrentAccountOperations()
+  let tokens = Store.useTokens()
   let (indexerLastBlock, setIndexerLastBlock) = React.useState(_ => None)
 
   React.useEffect1(() => {
@@ -165,7 +229,7 @@ let make = (~route as _, ~navigation as _) => {
 
   switch (account, indexerLastBlock) {
   | (Some(account), Some(indexerLastBlock)) =>
-    <HistoryDisplay tz1=account.tz1 operations indexerLastBlock />
+    <HistoryDisplay tz1=account.tz1 operations indexerLastBlock tokens />
   | _ => React.null
   }
 }

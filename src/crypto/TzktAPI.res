@@ -1,4 +1,4 @@
-external unsafeParse: Js.Json.t => Token.t = "%identity"
+external unsafeParse: Js.Json.t => Token.JSON.t = "%identity"
 
 let getTokens = tz1 => {
   Fetch.fetch("https://api.ithacanet.tzkt.io/v1/tokens/balances/?account=" ++ tz1)

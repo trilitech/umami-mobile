@@ -1,12 +1,11 @@
-// bind to JS' JSON.parse
 open Belt
-type fa2data = {
+type contractData = {
   amount: int,
-  tokenId: string,
+  tokenId: option<string>,
   contract: string,
 }
 
-type amount = Tez(int) | FA2(fa2data)
+type amount = Tez(int) | Contract(contractData)
 
 type t = {
   src: string,
@@ -44,9 +43,6 @@ module JSON = {
   }
 }
 
-@scope("JSON") @val
-external parseJSON: string => array<JSON.t> = "parse"
-
 // {
 //     "hash": "oniXhaqU7eev5P3sJm6FyvcS72VQDkPV7x23qpqr4s9aGDA2ZuQ",
 //     "id": "0",
@@ -79,12 +75,22 @@ external parseJSON: string => array<JSON.t> = "parse"
 let decodeDataField = (data: JSON.data) => {
   switch data.token {
   | "tez" => Belt.Int.fromString(data.amount)->Option.map(amount => Tez(amount))
+  | "fa1-2" =>
+    switch (data.token_amount, data.token_id, data.contract->Js.Nullable.toOption) {
+    | (Some(tokenAmount), None, Some(contract)) =>
+      Belt.Int.fromString(tokenAmount)->Option.map(amount => Contract({
+        amount: amount,
+        tokenId: None,
+        contract: contract,
+      }))
+    | _ => None
+    }
   | "fa2" =>
     switch (data.token_amount, data.token_id, data.contract->Js.Nullable.toOption) {
     | (Some(tokenAmount), Some(tokenId), Some(contract)) =>
-      Belt.Int.fromString(tokenAmount)->Option.map(amount => FA2({
+      Belt.Int.fromString(tokenAmount)->Option.map(amount => Contract({
         amount: amount,
-        tokenId: tokenId,
+        tokenId: tokenId->Some,
         contract: contract,
       }))
     | _ => None
@@ -112,9 +118,9 @@ let decodeJson = (json: JSON.t) => {
 
 let decodeJsonArray = arr => arr->Belt.Array.map(decodeJson)->Helpers.filterNone
 
-let filterRelevant = ops =>
-  ops->Belt.Array.keep(op => {
+let keepRelevant = ops =>
+  ops->Belt.Array.keep(op =>
     op.kind == "transaction" && !Js.Re.test_(%re("/^kt1/i"), op.destination)
-  })
+  )
 
-let handleJSONArray = arr => arr->decodeJsonArray->filterRelevant
+let handleJSONArray = arr => arr->decodeJsonArray->keepRelevant
