@@ -29,8 +29,8 @@ module FAStandard = {
 open Belt
 module CurrencyIem = {
   @react.component
-  let make = (~balance: int, ~symbol=?, ~standard=?, ~onPress) => {
-    let prettyCurrency = Js.Int.toString(balance) ++ " " ++ symbol->Option.getWithDefault("tez")
+  let make = (~balance: float, ~symbol=?, ~standard=?, ~onPress) => {
+    let prettyCurrency = Belt.Float.toString(balance) ++ " " ++ symbol->Option.getWithDefault("tez")
     <CustomListItem
       height=70.
       left={<CustomImage
@@ -52,7 +52,7 @@ open Token
 let make = (~balance, ~onPress, ~tokens) => {
   let balance = balance->Belt.Option.mapWithDefault("", TezHelpers.formatBalance)
   <>
-    <CurrencyIem onPress balance={Belt.Int.fromString(balance)->Option.getWithDefault(0)} />
+    <CurrencyIem onPress balance={Belt.Float.fromString(balance)->Option.getWithDefault(0.)} />
     {tokens
     ->Belt.Array.map(t =>
       switch t {

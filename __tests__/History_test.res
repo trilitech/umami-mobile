@@ -38,7 +38,7 @@ describe("History functions", () => {
       {
         target: "tz1aW...2T1Z9",
         date: "01/06/2022 08:05:15",
-        prettyAmountDisplay: Currency("+26 tez"),
+        prettyAmountDisplay: Currency("+26.4249 tez"),
         hash: "opWYyTWguCwH8Ph1dNya5eTNfhBRKhZWo2aQCyh7vpN2jAZbX4y",
         status: Done,
       },

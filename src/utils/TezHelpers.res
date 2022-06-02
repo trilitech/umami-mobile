@@ -5,5 +5,5 @@ let formatTz1 = (tz1: string) => {
 
 let formatBalance = (balance: int) => {
   let result = Token.fromRaw(balance, Constants.tezCurrencyDecimal)
-  result->Belt.Int.toString ++ " " ++ "tez"
+  result->Belt.Float.toString ++ " " ++ "tez"
 }

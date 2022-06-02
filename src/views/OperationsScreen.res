@@ -66,10 +66,10 @@ let getAdjustedAmount = (amount: Operation.amount, tokens: array<Token.t>) => {
   | Tez(amount) => Token.fromRaw(amount, Constants.tezCurrencyDecimal)
   | Contract(data) =>
     let token = tokens->getTokenByAddress(data.contract)
-    token->Belt.Option.mapWithDefault(data.amount, t =>
+    token->Belt.Option.mapWithDefault(data.amount->Belt.Int.toFloat, t =>
       switch t {
       | FA2(_, m) => Token.fromRaw(data.amount, m.decimals)
-      | NFT(_, _) => data.amount
+      | NFT(_, _) => data.amount->Belt.Int.toFloat
       | FA1(_) => Token.fromRaw(data.amount, Constants.fa1CurrencyDecimal)
       }
     )
@@ -83,7 +83,7 @@ let makeDisplayElement = (
 ) => {
   let status = getStatus(op, indexorLevel)
   let date = makePrettyDate(op.timestamp)
-  let adjustedAmount = getAdjustedAmount(op.amount, tokens)->Js.Int.toString
+  let adjustedAmount = getAdjustedAmount(op.amount, tokens)->Js.Float.toString
   let symbol = switch getName(op.amount, tokens) {
   | NFTname(n, _) => n
   | CurrencyName(n) => n

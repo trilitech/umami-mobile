@@ -131,7 +131,7 @@ let positiveBalance = (t: t) => {
 
 let fromRaw = (amount: int, decimals: int) => {
   let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)->Belt.Float.toInt
-  amount / divider
+  amount->Belt.Int.toFloat /. divider->Belt.Int.toFloat
 }
 
 let toRaw = (amount: int, decimals: int) => {
@@ -141,7 +141,7 @@ let toRaw = (amount: int, decimals: int) => {
 
 let printBalance = (rawAmount, token: t) => {
   switch token {
-  | NFT(_) => rawAmount
+  | NFT(_) => rawAmount->Belt.Int.toFloat
   | FA1(_) => fromRaw(rawAmount, 6)
   | FA2(_, m) => fromRaw(rawAmount, m.decimals)
   }
