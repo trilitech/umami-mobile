@@ -128,6 +128,7 @@ let matchBase = (t: t) => {
 let positiveBalance = (t: t) => {
   matchBase(t).balance > 0
 }
+let getBalance = (t: t) => matchBase(t).balance
 
 let fromRaw = (amount: int, decimals: int) => {
   let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)->Belt.Float.toInt

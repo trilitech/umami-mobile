@@ -95,27 +95,32 @@ module MultiCurrencyInput = {
 let getSymbol = (t: SendAmount.t) => {
   switch t {
   | Tez(_) => "tez"
-  | FA1(_) => "FA1.2"
-  | FA2(_, m) => m.symbol
-  | NFT(_, m) => m.symbol
+  | Token(t) =>
+    switch t {
+    | FA1(_) => "FA1.2"
+    | FA2(_, m) => m.symbol
+    | NFT(_, m) => m.symbol
+    }
   }
 }
 
 let getAmount = (t: SendAmount.t) => {
   switch t {
   | Tez(amount) => amount
-  | FA1(b) => b.balance
-  | FA2(b, _) => b.balance
-  | NFT(b, _) => b.balance
+  | Token(t) => Token.getBalance(t)
   }
 }
 
 let updateAmount = (a: int, t: SendAmount.t) => {
   switch t {
   | Tez(_) => Tez(a)
-  | FA1(b) => FA1({...b, balance: a})
-  | FA2(b, m) => FA2({...b, balance: a}, m)
-  | NFT(b, m) => NFT({...b, balance: a}, m)
+
+  | Token(t) =>
+    switch t {
+    | FA1(b) => FA1({...b, balance: a})->Token
+    | FA2(b, m) => FA2({...b, balance: a}, m)->Token
+    | NFT(b, m) => NFT({...b, balance: a}, m)->Token
+    }
   }
 }
 
@@ -157,14 +162,48 @@ let updateCurrency = (symbol: string, t: SendAmount.t, tokens: array<Token.t>): 
   if symbol == "tez" {
     Tez(amount)->Some
   } else if symbol == "FA1.2" {
-    getFA1Data(tokens)->Option.map(b => FA1({...b, balance: amount}))
+    getFA1Data(tokens)->Option.map(b => FA1({...b, balance: amount})->Token)
   } else {
     getFA2Data(symbol, tokens)->Option.map(((b, m)) => {
-      FA2({...b, balance: amount}, m)
+      FA2({...b, balance: amount}, m)->Token
     })
   }
 }
 
+let makeRow = (title, content) =>
+  <Wrapper justifyContent=#spaceBetween style=vMargin>
+    <Caption> {title->React.string} </Caption> <Text> {content->React.string} </Text>
+  </Wrapper>
+module Recap = {
+  @react.component
+  let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
+    let symbol = getSymbol(trans.amount)
+    let formatAmount = t => Token.getBalance(t)->Belt.Int.toString ++ " " ++ symbol
+    let amountDisplay = switch trans.amount {
+    | Tez(amount) => makeRow("Subtotal", amount->Belt.Int.toString ++ " " ++ symbol)
+    | Token(t) =>
+      switch t {
+      | NFT((_, metadata)) =>
+        let {name, displayUri} = metadata
+
+        <NFTInput imageUrl={displayUri} name />
+      | _ => makeRow("Subtotal", formatAmount(t))
+      }
+    }
+    <>
+      <Headline style={style(~textAlign=#center, ())}> {"Recap"->React.string} </Headline>
+      {amountDisplay}
+      {makeRow("Fee", TezHelpers.formatBalance(fee))}
+      {makeRow("Recipient", trans.recipient)}
+      <Button disabled=isLoading loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>
+        {React.string("Submit transaction")}
+      </Button>
+      <Button disabled=isLoading onPress=onCancel style={vMargin} mode=#contained>
+        {React.string("Cancel")}
+      </Button>
+    </>
+  }
+}
 module SendForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
@@ -193,10 +232,6 @@ module SendForm = {
     }
 
     let amountInput = switch trans.amount {
-    | NFT((_, metadata)) =>
-      let {name, displayUri} = metadata
-
-      <NFTInput imageUrl={displayUri} name />
     | Tez(amount) =>
       <MultiCurrencyInput
         amount
@@ -204,20 +239,20 @@ module SendForm = {
         symbol={getSymbol(trans.amount)}
         onChangeSymbol=handleChangeSymbol
       />
-    | FA1(b) =>
-      <MultiCurrencyInput
-        amount=b.balance
-        onChangeAmount={handleChangeAmount}
-        symbol={getSymbol(trans.amount)}
-        onChangeSymbol=handleChangeSymbol
-      />
-    | FA2((b, _)) =>
-      <MultiCurrencyInput
-        amount=b.balance
-        onChangeAmount={handleChangeAmount}
-        symbol={getSymbol(trans.amount)}
-        onChangeSymbol=handleChangeSymbol
-      />
+    | Token(t) =>
+      switch t {
+      | NFT((_, metadata)) =>
+        let {name, displayUri} = metadata
+
+        <NFTInput imageUrl={displayUri} name />
+      | _ =>
+        <MultiCurrencyInput
+          amount={getAmount(trans.amount)}
+          onChangeAmount={handleChangeAmount}
+          symbol={getSymbol(trans.amount)}
+          onChangeSymbol=handleChangeSymbol
+        />
+      }
     }
 
     let handleSenderPress = _ => navigate("Accounts")->ignore
@@ -230,13 +265,6 @@ module SendForm = {
         <TextInput
           value={recipient == "" ? "" : TezHelpers.formatTz1(recipient)}
           disabled=true
-          // onChangeText={e => {
-          //   setTrans(prev => {
-          //     recipient: e,
-          //     amount: prev.amount,
-          //     passphrase: prev.passphrase,
-          //   })
-          // }}
           style={array([vMargin, style(~flex=1., ())])}
           label="recipient"
           mode=#flat
@@ -265,7 +293,7 @@ module SendForm = {
         />
       </Wrapper>
       <Button disabled loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>
-        {React.string("send")}
+        {React.string("review")}
       </Button>
     </>
   }
@@ -273,11 +301,17 @@ module SendForm = {
 
 module SendAndConfirmForm = {
   @react.component
-  let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
+  let make = (~trans, ~setTrans, ~isLoading, ~onSimulate, ~onSubmit, ~fee, ~onCancel) => {
     let (step, setStep) = React.useState(_ => #fill)
 
+    let el = switch fee {
+    | Some(fee) => <Recap fee trans onSubmit={_ => {setStep(_ => #confirm)}} onCancel />
+    | None => <SendForm trans setTrans isLoading onSubmit={_ => onSimulate()} />
+    }
+
     switch step {
-    | #fill => <SendForm trans setTrans isLoading=false onSubmit={_ => {setStep(_ => #confirm)}} />
+    // | #fill => <SendForm trans setTrans isLoading=false onSubmit={_ => {setStep(_ => #confirm)}} />
+    | #fill => el
     | #confirm => <PasswordConfirm loading=isLoading onSubmit />
     }
   }
@@ -293,15 +327,63 @@ let makeNotif = hash => {
     />
   </CommonComponents.Wrapper>
 }
+
+let makeEstimate = (~base: Token.tokenBase, ~senderTz1, ~recipientTz1, ~isFa1=false, ()) => {
+  TaquitoUtils.estimateSendToken(
+    ~contractAddress=base.contract,
+    ~tokenId=base.tokenId,
+    ~amount=base.balance,
+    ~senderTz1,
+    ~recipientTz1,
+    ~isFa1,
+  )
+}
+
+let simulate = (trans, senderTz1) =>
+  switch trans.amount {
+  | Tez(amount) => TaquitoUtils.estimateSendTez(~amount, ~recipient=trans.recipient, ~senderTz1)
+  | Token(t) =>
+    let estimate = makeEstimate(~recipientTz1=trans.recipient, ~senderTz1)
+    switch t {
+    | NFT((base, _))
+    | FA2(base, _) =>
+      estimate(~base, ())
+    | FA1(base) => estimate(~base, ~isFa1=true, ())
+    }
+  }
+
+let makeSendToken = (
+  ~base: Token.tokenBase,
+  ~amount,
+  ~isFa1=false,
+  ~passphrase,
+  ~sk,
+  ~senderTz1,
+  ~recipientTz1,
+  (),
+) => {
+  TaquitoUtils.sendToken(
+    ~passphrase,
+    ~sk,
+    ~contractAddress=base.contract,
+    ~amount,
+    ~recipientTz1,
+    ~tokenId=base.tokenId,
+    ~senderTz1,
+    ~isFa1,
+    (),
+  )
+}
 module ConnectedSend = {
   @react.component
   let make = (~sender: Store.account, ~nft: option<Token.tokenNFT>, ~tz1FromQr: option<string>) => {
     let amount = switch nft {
-    | Some(token) => NFT(token)
+    | Some(token) => NFT(token)->Token
     | _ => Tez(0)
     }
 
     let (trans, setTrans) = React.useState(_ => {recipient: "", amount: amount})
+    let (fee, setFee) = React.useState(_ => None)
     let notify = SnackBar.useNotification()
     let notifyAdvanced = SnackBar.useNotificationAdvanced()
     let navigate = NavUtils.useNavigate()
@@ -320,55 +402,31 @@ module ConnectedSend = {
       None
     }, [tz1FromQr])
 
+    let {recipient, amount} = trans
     let onSubmit = (passphrase: string) => {
-      let {recipient, amount} = trans
       setLoading(_ => true)
-
-      let makeSendToken = (~base: Token.tokenBase, ~amount, ~isFa1=false, ()) => {
-        TaquitoUtils.estimateSendToken(
-          ~contractAddress=base.contract,
-          ~amount,
-          ~recipientTz1=recipient,
-          ~tokenId=base.tokenId,
-          ~senderTz1=sender.tz1,
-          ~isFa1,
-        )
-        ->Promise.thenResolve(res => {
-          Js.Console.log2("fee", res.suggestedFeeMutez)
-        })
-        ->ignore
-
-        TaquitoUtils.sendToken(
-          ~passphrase,
-          ~sk=sender.sk,
-          ~contractAddress=base.contract,
-          ~amount,
-          ~recipientTz1=recipient,
-          ~tokenId=base.tokenId,
-          ~senderTz1=sender.tz1,
-          ~isFa1,
-          (),
-        )
-      }
 
       let send = switch amount {
       // No need to ajust tez amount
-      | Tez(amount) =>
-        TaquitoUtils.estimateSendTez(~amount, ~recipient, ~senderTz1=sender.tz1)
-        ->Promise.thenResolve(res => {
-          Js.Console.log2("fee", res.suggestedFeeMutez)
-        })
-        ->ignore
-        TaquitoUtils.sendTez(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
-      | NFT((base, _)) => makeSendToken(~base, ~amount=1, ())
-      | FA1(base) =>
-        makeSendToken(
-          ~base,
-          ~amount=Token.toRaw(base.balance, Constants.fa1CurrencyDecimal),
-          ~isFa1=true,
-          (),
+      | Tez(amount) => TaquitoUtils.sendTez(~recipient, ~amount, ~passphrase, ~sk=sender.sk)
+      | Token(t) =>
+        let sendToken = makeSendToken(
+          ~passphrase,
+          ~sk=sender.sk,
+          ~senderTz1=sender.tz1,
+          ~recipientTz1=recipient,
         )
-      | FA2(base, m) => makeSendToken(~base, ~amount=Token.toRaw(base.balance, m.decimals), ())
+        switch t {
+        | NFT((base, _)) => sendToken(~base, ~amount=1, ())
+        | FA1(base) =>
+          sendToken(
+            ~base,
+            ~amount=Token.toRaw(base.balance, Constants.fa1CurrencyDecimal),
+            ~isFa1=true,
+            (),
+          )
+        | FA2(base, m) => sendToken(~base, ~amount=Token.toRaw(base.balance, m.decimals), ())
+        }
       }
 
       send
@@ -377,7 +435,6 @@ module ConnectedSend = {
 
         notifyAdvanced(Some(el))
 
-        // queryResult.remove()
         navigate("Home")->ignore
         ()
       })
@@ -391,7 +448,27 @@ module ConnectedSend = {
       ->ignore
     }
 
-    <Container> <SendAndConfirmForm isLoading=loading trans setTrans onSubmit /> </Container>
+    let onSimulate = () => {
+      setLoading(_ => true)
+      simulate(trans, sender.tz1)
+      ->Promise.thenResolve(res => {
+        setFee(_ => res.suggestedFeeMutez->Some)
+      })
+      ->Promise.catch(_ => {
+        notify("Invalid transaction")
+        Promise.resolve()
+      })
+      ->Promise.finally(_ => {
+        setLoading(_ => false)
+      })
+      ->ignore
+    }
+
+    <Container>
+      <SendAndConfirmForm
+        fee isLoading=loading trans setTrans onSubmit onSimulate onCancel={_ => setFee(_ => None)}
+      />
+    </Container>
   }
 }
 
