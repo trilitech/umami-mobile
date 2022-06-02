@@ -31,11 +31,15 @@ module CurrencyIem = {
   @react.component
   let make = (~balance: float, ~symbol=?, ~standard=?, ~onPress) => {
     let prettyCurrency = Belt.Float.toString(balance) ++ " " ++ symbol->Option.getWithDefault("tez")
+    let icon = Option.isSome(symbol)
+      ? <Icon size=40 name="stop-circle-outline" />
+      : <CustomImage
+          size=40. source={Option.isSome(symbol) ? tokenLogoImagePath : tezLogoImagePath}
+        />
+
     <CustomListItem
       height=70.
-      left={<CustomImage
-        size=40. source={Option.isSome(symbol) ? tokenLogoImagePath : tezLogoImagePath}
-      />}
+      left={icon}
       center={<Wrapper>
         <Paper.Title style={style()}> {React.string(prettyCurrency)} </Paper.Title>
         {standard->Option.mapWithDefault(React.null, standard => <FAStandard standard />)}
