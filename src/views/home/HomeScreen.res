@@ -59,13 +59,15 @@ module HomeCoreView = {
 @react.component
 let make = (~navigation, ~route as _) => {
   let navigate = (route, ()) => navigation->Navigation.navigate(route)
+  let (openReceive, setOpenReceive) = React.useState(_ => false)
   <>
     <TopBar
       onNetworkPress={navigate("ScanQR")}
       onSettingsPress={navigate("Settings")}
       onNotificationPress={navigate("Notifications")}
     />
-    <Profile />
+    <Profile onPressReceive={_ => setOpenReceive(_ => true)} />
     <HomeCoreView />
+    <ReceiveAssetsBottomDrawer openReceive onChange={v => setOpenReceive(_ => v)} />
   </>
 }

@@ -91,6 +91,10 @@ let usePrimaryColor = () => {
   useTheme()->Theme.colors->Theme.Colors.primary
 }
 
+let useSurfaceColor = () => {
+  open Paper.ThemeProvider
+  useTheme()->Theme.colors->Theme.Colors.surface
+}
 @react.component
 let make = (~children) => {
   let (newDark, newDefault) = makeThemes()

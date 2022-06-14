@@ -43,12 +43,6 @@ module NFTInput = {
   }
 }
 
-let isTez = amount =>
-  switch amount {
-  | Tez(_) => true
-  | _ => false
-  }
-
 let getCurrencies = (tokens: array<Token.t>) => {
   open Belt.Array
   tokens

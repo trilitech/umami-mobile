@@ -8,23 +8,16 @@ module QR = {
 
 module PureReceiveModal = {
   @react.component
-  let make = (~handleCopy, ~handleShare, ~onClose, ~tz1) => {
-    <ReactNative.View
-      style={style(~flex=1., ~display=#flex, ~flexDirection=#column, ~justifyContent=#flexEnd, ())}>
-      <Paper.Surface
+  let make = (~handleCopy, ~handleShare, ~tz1) => {
+    <ReactNative.View style={style(~flex=1., ())}>
+      <ReactNative.View
         style={style(
-          ~height=380.->dp,
           ~flexDirection=#column,
           ~alignItems=#center,
           ~justifyContent=#spaceAround,
-          ~borderTopLeftRadius=16.,
-          ~borderTopRightRadius=16.,
           (),
         )}>
-        // <Wrapper flexDirection=#column alignItems=#center style={FormStyles.makeVMargin(4.)}>
-        <Paper.TouchableRipple onPress={_ => onClose()}>
-          <QR value=tz1 size=250 />
-        </Paper.TouchableRipple>
+        <QR value=tz1 size=250 />
         <Wrapper justifyContent=#flexStart style={array([FormStyles.styles["verticalMargin"]])}>
           <NicerIconBtn
             onPress=handleCopy iconName="content-copy" style={FormStyles.styles["hMargin"]}
@@ -33,28 +26,23 @@ module PureReceiveModal = {
             onPress=handleShare iconName="share-variant" style={FormStyles.styles["hMargin"]}
           />
         </Wrapper>
-        // </Wrapper>
-      </Paper.Surface>
+      </ReactNative.View>
     </ReactNative.View>
   }
 }
 
 open Store
 @react.component
-let make = (~navigation as _, ~route as _) => {
-  let goBack = NavUtils.useGoBack()
+let make = () => {
   let copy = ClipboardCopy.useCopy()
 
   let handleCopy = tz1 => {
     copy(tz1)
-    goBack()->ignore
   }
 
   let handleShare = tz1 => {
     let content = ReactNative.Share.content(~message=`This is my Tezos Pkh: ${tz1}`, ())
     ReactNative.Share.share(content)->ignore
-    goBack()->ignore
-    ()
   }
 
   useWithAccount(account => {
@@ -62,7 +50,6 @@ let make = (~navigation as _, ~route as _) => {
       handleCopy={_ => handleCopy(account.tz1)}
       handleShare={_ => handleShare(account.tz1)}
       tz1=account.tz1
-      onClose={() => goBack()->ignore}
     />
   })
 }

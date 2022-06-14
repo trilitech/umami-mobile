@@ -86,7 +86,7 @@ module PureProfile = {
 }
 
 @react.component
-let make = () => {
+let make = (~onPressReceive) => {
   let navigate = NavUtils.useNavigate()
 
   let onPressSend = () => {
@@ -95,10 +95,6 @@ let make = () => {
 
   let onPressToggle = () => {
     navigate("Accounts")->ignore
-  }
-
-  let onPressReceive = () => {
-    navigate("Receive")->ignore
   }
 
   Store.useWithAccount(account => <PureProfile onPressSend onPressToggle onPressReceive account />)
