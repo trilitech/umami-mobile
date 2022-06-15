@@ -136,9 +136,9 @@ let fromRaw = (amount: int, decimals: int) => {
   amount->Belt.Int.toFloat /. divider->Belt.Int.toFloat
 }
 
-let toRaw = (amount: int, decimals: int) => {
-  let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)->Belt.Float.toInt
-  amount * divider
+let toRaw = (amount: float, decimals: int) => {
+  let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)
+  (amount *. divider)->Belt.Float.toInt
 }
 
 let printBalance = (rawAmount, token: t) => {

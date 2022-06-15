@@ -13,16 +13,18 @@ let makeRow = (title, content) =>
 @react.component
 let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
   let symbol = Asset.getSymbol(trans.asset)
-  let formatAmount = t => Token.getBalance(t)->Belt.Int.toString ++ " " ++ symbol
+
+  let formatedAmount = trans.prettyAmount->Belt.Float.toString ++ " " ++ symbol
+
   let amountDisplay = switch trans.asset {
-  | Tez(amount) => makeRow("Subtotal", amount->Belt.Int.toString ++ " " ++ symbol)
+  | Tez(_) => makeRow("Subtotal", formatedAmount)
   | Token(t) =>
     switch t {
     | NFT((_, metadata)) =>
       let {name, displayUri} = metadata
 
       <SendInputs.NFTInput imageUrl={displayUri} name />
-    | _ => makeRow("Subtotal", formatAmount(t))
+    | _ => makeRow("Subtotal", formatedAmount)
     }
   }
   <>

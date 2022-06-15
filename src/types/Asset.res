@@ -36,3 +36,14 @@ let getBalance = (a: t) => {
   | Token(t) => Token.getBalance(t)
   }
 }
+
+let updateAmount = (a: t, prettyAmount: float) =>
+  switch a {
+  | Tez(_) => Tez(Token.toRaw(prettyAmount, Constants.tezCurrencyDecimal))
+  | Token(token) =>
+    switch token {
+    | FA2(d, m) => FA2({...d, balance: Token.toRaw(prettyAmount, m.decimals)}, m)->Token
+    | NFT(d, m) => NFT({...d, balance: prettyAmount->Belt.Float.toInt}, m)->Token
+    | FA1(d) => FA1({...d, balance: Token.toRaw(prettyAmount, Constants.fa1CurrencyDecimal)})->Token
+    }
+  }

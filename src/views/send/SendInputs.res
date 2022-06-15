@@ -61,10 +61,10 @@ module MultiCurrencyInput = {
     <Wrapper>
       <TextInput
         style={style(~flex=1., ())}
-        keyboardType="number-pad"
-        value={amount->Belt.Int.toString}
+        // keyboardType="number-pad"
+        value={amount->Belt.Float.toString}
         onChangeText={t => {
-          Belt.Int.fromString(t)->Belt.Option.map(v => onChangeAmount(v))->ignore
+          Belt.Float.fromString(t)->Belt.Option.map(v => onChangeAmount(v))->ignore
         }}
         label="amount"
         mode=#flat

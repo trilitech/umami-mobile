@@ -11,10 +11,12 @@ let _makeTokenEstimate = (~base: Token.tokenBase, ~senderTz1, ~recipientTz1, ~is
   )
 }
 
-let simulate = (~trans, ~senderTz1, ~senderPk) =>
-  switch trans.asset {
-  | Tez(amount) =>
-    TaquitoUtils.estimateSendTez(~amount, ~recipient=trans.recipient, ~senderTz1, ~senderPk)
+let simulate = (~trans, ~senderTz1, ~senderPk) => {
+  let {recipient, asset, prettyAmount} = trans
+  let adjustedAsset = asset->Asset.updateAmount(prettyAmount)
+
+  switch adjustedAsset {
+  | Tez(_) => TaquitoUtils.estimateSendTez(~amount=prettyAmount, ~recipient, ~senderTz1, ~senderPk)
   | Token(t) =>
     let estimate = _makeTokenEstimate(~recipientTz1=trans.recipient, ~senderTz1, ~senderPk)
     switch t {
@@ -24,6 +26,7 @@ let simulate = (~trans, ~senderTz1, ~senderPk) =>
     | FA1(base) => estimate(~base, ~isFa1=true, ())
     }
   }
+}
 
 let _makeSendToken = (
   ~base: Token.tokenBase,
@@ -49,23 +52,20 @@ let _makeSendToken = (
 }
 
 let send = (~trans, ~senderTz1, ~sk, ~passphrase) => {
-  let {recipient, asset} = trans
-  let send = switch asset {
-  // No need to ajust tez amount
-  | Tez(amount) => TaquitoUtils.sendTez(~recipient, ~amount, ~passphrase, ~sk)
+  let {recipient, asset, prettyAmount} = trans
+  let adjustedAsset = asset->Asset.updateAmount(prettyAmount)
+
+  switch adjustedAsset {
+  // Hacky
+  // No need to adjust tez amount
+  | Tez(_) => TaquitoUtils.sendTez(~recipient, ~amount=prettyAmount, ~passphrase, ~sk)
   | Token(t) =>
     let sendToken = _makeSendToken(~passphrase, ~sk, ~senderTz1, ~recipientTz1=recipient)
     switch t {
-    | NFT((base, _)) => sendToken(~base, ~amount=1, ())
-    | FA1(base) =>
-      sendToken(
-        ~base,
-        ~amount=Token.toRaw(base.balance, Constants.fa1CurrencyDecimal),
-        ~isFa1=true,
-        (),
-      )
-    | FA2(base, m) => sendToken(~base, ~amount=Token.toRaw(base.balance, m.decimals), ())
+    | FA1(base) => sendToken(~base, ~amount=base.balance, ~isFa1=true, ())
+    | FA2(base, _)
+    | NFT((base, _)) =>
+      sendToken(~base, ~amount=base.balance, ())
     }
   }
-  send
 }

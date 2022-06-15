@@ -1,1 +1,1 @@
-type formState = {recipient: string, asset: Asset.t}
+type formState = {recipient: string, asset: Asset.t, prettyAmount: float}

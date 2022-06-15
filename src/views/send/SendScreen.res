@@ -9,24 +9,8 @@ open SendInputs
 let vMargin = FormStyles.styles["verticalMargin"]
 
 let validTrans = trans => {
-  trans.recipient->TaquitoUtils.tz1IsValid &&
-    switch trans.asset {
-    | Tez(amount) => amount > 0
-    | _ => true
-    }
-}
-
-let updateAmount = (a: int, t: Asset.t) => {
-  switch t {
-  | Tez(_) => Tez(a)
-
-  | Token(t) =>
-    switch t {
-    | FA1(b) => FA1({...b, balance: a})->Token
-    | FA2(b, m) => FA2({...b, balance: a}, m)->Token
-    | NFT(b, m) => NFT({...b, balance: a}, m)->Token
-    }
-  }
+  Js.Console.log(trans)
+  trans.recipient->TaquitoUtils.tz1IsValid && trans.prettyAmount > 0.
 }
 
 let getFA1base = (tokens: array<Token.t>) =>
@@ -83,17 +67,16 @@ module SendForm = {
     let disabled = !validTrans(trans) || isLoading
     let navigate = NavUtils.useNavigate()
 
-    let handleChangeAmount = (a: int) => {
+    let handleChangeAmount = (a: float) => {
       setTrans(t => {
-        let amount = updateAmount(a, t.asset)
-        {...t, asset: amount}
+        {...t, prettyAmount: a}
       })
     }
 
-    let handleChangeSymbol = (s: string) => {
+    let handleChangeSymbol = (a: string) => {
       setTrans(t => {
-        let amount = changeCurrency(s, t.asset, tokens)
-        switch amount {
+        let asset = a->changeCurrency(t.asset, tokens)
+        switch asset {
         | Some(amount) => {...t, asset: amount}
         | None => t
         }
@@ -101,10 +84,12 @@ module SendForm = {
       ()
     }
 
+    let prettyAmount = trans.prettyAmount
+
     let amountInput = switch trans.asset {
-    | Tez(amount) =>
+    | Tez(_) =>
       <MultiCurrencyInput
-        amount
+        amount=prettyAmount
         onChangeAmount={handleChangeAmount}
         symbol={getSymbol(trans.asset)}
         onChangeSymbol=handleChangeSymbol
@@ -117,7 +102,7 @@ module SendForm = {
         <NFTInput imageUrl={displayUri} name />
       | _ =>
         <MultiCurrencyInput
-          amount={getBalance(trans.asset)}
+          amount={prettyAmount}
           onChangeAmount={handleChangeAmount}
           symbol={getSymbol(trans.asset)}
           onChangeSymbol=handleChangeSymbol
@@ -153,8 +138,8 @@ module SendForm = {
             ->Promise.thenResolve(recipient => {
               if TaquitoUtils.tz1IsValid(recipient) {
                 setTrans(prev => {
+                  ...prev,
                   recipient: recipient,
-                  asset: prev.asset,
                 })
               } else {
                 notify(`${recipient} is not a valid pkh`)
@@ -212,12 +197,22 @@ module ConnectedSend = {
     ~notifyAdvanced,
     ~navigate,
   ) => {
-    let amount = switch nft {
+    let asset = switch nft {
     | Some(token) => NFT(token)->Token
     | _ => Tez(0)
     }
 
-    let (trans, setTrans) = React.useState(_ => {recipient: "", asset: amount})
+    let prettyAmount = switch nft {
+    | Some((b, _)) => b.balance->Js.Int.toFloat
+    | _ => 0.
+    }
+
+    let (trans, setTrans) = React.useState(_ => {
+      recipient: "",
+      asset: asset,
+      prettyAmount: prettyAmount,
+    })
+
     let (fee, setFee) = React.useState(_ => None)
     let (loading, setLoading) = React.useState(_ => false)
 
