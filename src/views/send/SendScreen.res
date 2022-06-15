@@ -215,8 +215,8 @@ module ConnectedSend = {
     let (fee, setFee) = React.useState(_ => None)
     let (loading, setLoading) = React.useState(_ => false)
 
-    let send = SendAPI.send(~trans, ~sk=sender.sk, ~senderTz1=sender.tz1)
-    let simulate = () => SendAPI.simulate(trans, sender.tz1)
+    let send = SendAPI.send(~trans, ~senderTz1=sender.tz1, ~sk=sender.sk)
+    let simulate = () => SendAPI.simulate(~trans, ~senderTz1=sender.tz1, ~senderPk=sender.pk)
 
     // if present, load QRCode tz1 in transaction
     React.useEffect2(() => {

@@ -1,17 +1,22 @@
 let generateAccount = (~mnemonic, ~passphrase, ~derivationPathIndex=0, ~name=?, ()) => {
   CryptoUtils.mnemonicToSK(~mnemonic, ~passphrase, ~derivationPathIndex, ())->Promise.then(sk => {
-    TaquitoUtils.getTz1(~sk, ~passphrase)->Promise.thenResolve(tz1 => {
-      let account: Account.t = {
-        name: name->Belt.Option.getWithDefault("Account " ++ Js.Int.toString(derivationPathIndex)),
-        tz1: tz1,
-        sk: sk,
-        derivationPathIndex: derivationPathIndex,
-        balance: None,
-        tokens: [],
-        transactions: [],
-      }
+    TaquitoUtils.getTz1(~sk, ~passphrase)->Promise.then(tz1 => {
+      TaquitoUtils.getPk(~sk, ~passphrase)->Promise.thenResolve(pk => {
+        let account: Account.t = {
+          name: name->Belt.Option.getWithDefault(
+            "Account " ++ Js.Int.toString(derivationPathIndex),
+          ),
+          tz1: tz1,
+          sk: sk,
+          derivationPathIndex: derivationPathIndex,
+          balance: None,
+          tokens: [],
+          transactions: [],
+          pk: pk,
+        }
 
-      account
+        account
+      })
     })
   })
 }

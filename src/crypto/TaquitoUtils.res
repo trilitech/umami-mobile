@@ -79,9 +79,11 @@ let sendTez = (~recipient, ~amount, ~passphrase, ~sk) => {
   })
 }
 
-let estimateSendTez = (~recipient, ~amount, ~senderTz1) => {
+let estimateSendTez = (~recipient, ~amount, ~senderTz1, ~senderPk) => {
   let tezos = Taquito.create(tezNodeURL)
-  tezos->Taquito.Toolkit.setProvider({"signer": Taquito.createDummySigner(senderTz1)})
+  tezos->Taquito.Toolkit.setProvider({
+    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1),
+  })
 
   tezos.estimate->Taquito.Toolkit.estimateTransfer({"to": recipient, "amount": amount})
 }
@@ -91,11 +93,14 @@ let estimateSendToken = (
   ~tokenId,
   ~amount,
   ~senderTz1,
+  ~senderPk,
   ~recipientTz1,
   ~isFa1,
 ) => {
   let tezos = Taquito.create(tezNodeURL)
-  tezos->Taquito.Toolkit.setProvider({"signer": Taquito.createDummySigner(senderTz1)})
+  tezos->Taquito.Toolkit.setProvider({
+    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1),
+  })
 
   let transfer = makeContractTransfer(
     ~tezos,
@@ -134,6 +139,8 @@ let sendToken = (
   })
 }
 
-let getTz1 = (~sk, ~passphrase) => {
+let getTz1 = (~sk, ~passphrase) =>
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => signer->Taquito.publicKeyHash())
-}
+
+let getPk = (~sk, ~passphrase) =>
+  Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => signer->Taquito.publicKey())

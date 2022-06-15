@@ -11,5 +11,4 @@ class NoopSigner {
   }
 }
 
-let dummyPk = 'edpkuDBhPULoNAoQbjDUo6pYdpY5o3DugXo1GAJVQGzGMGFyKUVcKN';
-export const create = pkh => new NoopSigner(dummyPk, pkh);
+export const create = (pk, pkh) => new NoopSigner(pk, pkh);

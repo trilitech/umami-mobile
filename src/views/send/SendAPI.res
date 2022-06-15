@@ -11,11 +11,12 @@ let _makeTokenEstimate = (~base: Token.tokenBase, ~senderTz1, ~recipientTz1, ~is
   )
 }
 
-let simulate = (trans, senderTz1) =>
+let simulate = (~trans, ~senderTz1, ~senderPk) =>
   switch trans.asset {
-  | Tez(amount) => TaquitoUtils.estimateSendTez(~amount, ~recipient=trans.recipient, ~senderTz1)
+  | Tez(amount) =>
+    TaquitoUtils.estimateSendTez(~amount, ~recipient=trans.recipient, ~senderTz1, ~senderPk)
   | Token(t) =>
-    let estimate = _makeTokenEstimate(~recipientTz1=trans.recipient, ~senderTz1)
+    let estimate = _makeTokenEstimate(~recipientTz1=trans.recipient, ~senderTz1, ~senderPk)
     switch t {
     | NFT((base, _))
     | FA2(base, _) =>

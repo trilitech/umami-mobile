@@ -35,9 +35,10 @@ module Contract = {
 external create: string => Toolkit.toolkit = "TezosToolkit"
 
 @module("./dummySigner")
-external createDummySigner: string => signer = "create"
+external createDummySigner: (~pk: string, ~pkh: string) => signer = "create"
 
 @module("custom-signer") @scope("InMemorySigner")
 external fromSecretKey: (string, string) => Promise.t<signer> = "fromSecretKey"
 
 @send external publicKeyHash: (signer, unit) => Promise.t<string> = "publicKeyHash"
+@send external publicKey: (signer, unit) => Promise.t<string> = "publicKey"
