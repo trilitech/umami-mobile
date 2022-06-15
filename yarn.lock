@@ -1967,6 +1967,20 @@
     elliptic "^6.5.4"
     typedarray-to-buffer "^4.0.0"
 
+"@taquito/utils@^13.0.0":
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/@taquito/utils/-/utils-13.0.0.tgz#1b39f8f2227dbdc98e4729ff8cbd7f4fdeff937a"
+  integrity sha512-b6uD3VOb8YSrExEH5beicDSNGuEfuH2qvJYx4FX5OI+EfXa9EfORfUNNsHzkEn/Rh3Ue3jKFbymPvkFhM95uiw==
+  dependencies:
+    "@stablelib/blake2b" "^1.0.1"
+    "@stablelib/ed25519" "^1.0.2"
+    "@types/bs58check" "^2.1.0"
+    blakejs "^1.1.1"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    elliptic "^6.5.4"
+    typedarray-to-buffer "^4.0.0"
+
 "@testing-library/jest-native@^4.0.4":
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@testing-library/jest-native/-/jest-native-4.0.4.tgz#25e2046896118f887683202a6e5fd8a4056131cd"

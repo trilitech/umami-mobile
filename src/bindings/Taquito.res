@@ -34,6 +34,9 @@ module Contract = {
 @module("@taquito/taquito") @new
 external create: string => Toolkit.toolkit = "TezosToolkit"
 
+@module("@taquito/utils")
+external validateAddress: string => int = "validateAddress"
+
 @module("./dummySigner")
 external createDummySigner: (~pk: string, ~pkh: string) => signer = "create"
 

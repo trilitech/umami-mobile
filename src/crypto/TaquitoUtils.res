@@ -144,3 +144,5 @@ let getTz1 = (~sk, ~passphrase) =>
 
 let getPk = (~sk, ~passphrase) =>
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => signer->Taquito.publicKey())
+
+let tz1IsValid = address => Taquito.validateAddress(address) == 3
