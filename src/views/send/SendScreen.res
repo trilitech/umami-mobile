@@ -240,8 +240,8 @@ module ConnectedSend = {
         hash->makeNotif->Some->notifyAdvanced
         navigate("Home")->ignore
       })
-      ->Promise.catch(_ => {
-        notify("Failed to send")->ignore
+      ->Promise.catch(e => {
+        notify("Failed to send. Reason: " ++ Helpers.getMessage(e))->ignore
         Promise.resolve()
       })
       ->Promise.finally(_ => setLoading(_ => false))
@@ -255,8 +255,8 @@ module ConnectedSend = {
       ->Promise.thenResolve(res => {
         setFee(_ => res.suggestedFeeMutez->Some)
       })
-      ->Promise.catch(_ => {
-        notify("Invalid transaction")
+      ->Promise.catch(e => {
+        notify("Invalid transaction: " ++ Helpers.getMessage(e))
         Promise.resolve()
       })
       ->Promise.finally(_ => {

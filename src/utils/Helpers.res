@@ -19,3 +19,11 @@ let filterNone = (arr: array<option<'a>>) =>
     | None => acc
     }
   )
+
+let getMessage = (e: exn) => {
+  let message = switch e {
+  | Promise.JsError(jsExn) => jsExn->Js.Exn.message
+  | _ => None
+  }
+  message->Belt.Option.getWithDefault("Unknown error")
+}
