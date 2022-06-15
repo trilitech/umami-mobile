@@ -9,7 +9,7 @@ open SendInputs
 let vMargin = FormStyles.styles["verticalMargin"]
 
 let validTrans = trans => {
-  trans.recipient->Js.String2.length > 10 &&
+  trans.recipient->TaquitoUtils.tz1IsValid &&
     switch trans.asset {
     | Tez(amount) => amount > 0
     | _ => true
@@ -75,9 +75,11 @@ let changeCurrency = (symbol: string, t: Asset.t, tokens: array<Token.t>): optio
 module SendForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
+    let notify = SnackBar.useNotification()
+    let tokens = Store.useTokens()
+
     let {recipient} = trans
 
-    let tokens = Store.useTokens()
     let disabled = !validTrans(trans) || isLoading
     let navigate = NavUtils.useNavigate()
 
@@ -149,10 +151,14 @@ module SendForm = {
           onPress={_ => {
             Clipboard.getString()
             ->Promise.thenResolve(recipient => {
-              setTrans(prev => {
-                recipient: recipient,
-                asset: prev.asset,
-              })
+              if TaquitoUtils.tz1IsValid(recipient) {
+                setTrans(prev => {
+                  recipient: recipient,
+                  asset: prev.asset,
+                })
+              } else {
+                notify(`${recipient} is not a valid pkh`)
+              }
             })
             ->ignore
           }}

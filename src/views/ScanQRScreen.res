@@ -13,10 +13,14 @@ let make = (~navigation as _, ~route as _) => {
   let navigateWithParams = NavUtils.useNavigateWithParams()
   <QRCodeScanner
     onRead={e => {
-      navigateWithParams(
-        "Send",
-        {derivationIndex: None, token: None, tz1FromQr: Some(e["data"])},
-      )->ignore
+      let tz1 = e["data"]
+
+      if tz1->TaquitoUtils.tz1IsValid {
+        navigateWithParams(
+          "Send",
+          {derivationIndex: None, token: None, tz1FromQr: Some(tz1)},
+        )->ignore
+      }
     }}
     topContent={<Headline> {React.string("Scan TZ1")} </Headline>}
     bottomContent={<TouchableRipple>
