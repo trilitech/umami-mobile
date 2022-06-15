@@ -9,7 +9,6 @@ open SendInputs
 let vMargin = FormStyles.styles["verticalMargin"]
 
 let validTrans = trans => {
-  Js.Console.log(trans)
   trans.recipient->TaquitoUtils.tz1IsValid && trans.prettyAmount > 0.
 }
 
