@@ -61,20 +61,26 @@ let getName = (a: Operation.amount, tokens: array<Token.t>) => {
   }
 }
 
-let getAdjustedAmount = (amount: Operation.amount, tokens: array<Token.t>) => {
+let operationAmountToAsset = (amount: Operation.amount, tokens: array<Token.t>) => {
+  open Asset
   switch amount {
-  | Tez(amount) => Token.fromRaw(amount, Constants.tezCurrencyDecimal)
+  | Tez(amount) => Tez(amount)->Some
   | Contract(data) =>
-    let token = tokens->getTokenByAddress(data.contract)
-    token->Belt.Option.mapWithDefault(data.amount->Belt.Int.toFloat, t =>
+    tokens
+    ->getTokenByAddress(data.contract)
+    ->Belt.Option.map(t => {
       switch t {
-      | FA2(_, m) => Token.fromRaw(data.amount, m.decimals)
-      | NFT(_, _) => data.amount->Belt.Int.toFloat
-      | FA1(_) => Token.fromRaw(data.amount, Constants.fa1CurrencyDecimal)
-      }
-    )
+      | FA2(d, m) => FA2({...d, balance: data.amount}, m)
+      | NFT(d, m) => NFT({...d, balance: data.amount}, m)
+      | FA1(d) => FA1({...d, balance: data.amount})
+      }->Token
+    })
   }
 }
+
+let getAdjustedAmount = (amount: Operation.amount, tokens: array<Token.t>) =>
+  operationAmountToAsset(amount, tokens)->Belt.Option.map(Asset.toPretty)
+
 let makeDisplayElement = (
   op: Operation.t,
   myAddress: string,
@@ -83,35 +89,39 @@ let makeDisplayElement = (
 ) => {
   let status = getStatus(op, indexorLevel)
   let date = makePrettyDate(op.timestamp)
-  let adjustedAmount = getAdjustedAmount(op.amount, tokens)->Js.Float.toString
+  let adjustedAmount =
+    getAdjustedAmount(op.amount, tokens)->Belt.Option.map(a => Js.Float.toString(a))
+
   let symbol = switch getName(op.amount, tokens) {
   | NFTname(n, _) => n
   | CurrencyName(n) => n
   }
 
-  if op.destination == myAddress {
-    let sign = "+"
+  adjustedAmount->Belt.Option.flatMap(adjustedAmount =>
+    if op.destination == myAddress {
+      let sign = "+"
 
-    {
-      target: op.src->TezHelpers.formatTz1,
-      date: date,
-      hash: op.hash,
-      prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
-      status: status,
-    }->Some
-  } else if op.src == myAddress {
-    let sign = "-"
+      {
+        target: op.src->TezHelpers.formatTz1,
+        date: date,
+        hash: op.hash,
+        prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
+        status: status,
+      }->Some
+    } else if op.src == myAddress {
+      let sign = "-"
 
-    {
-      target: op.destination->TezHelpers.formatTz1,
-      date: date,
-      hash: op.hash,
-      prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
-      status: status,
-    }->Some
-  } else {
-    None
-  }
+      {
+        target: op.destination->TezHelpers.formatTz1,
+        date: date,
+        hash: op.hash,
+        prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
+        status: status,
+      }->Some
+    } else {
+      None
+    }
+  )
 }
 
 let useCurrentAccountOperations = () => {

@@ -51,7 +51,7 @@ let _sendToken = (
   )->Promise.then(t => t->Taquito.Contract.send())
 }
 
-let tezNodeURL = "https://ithacanet.smartpy.io/"
+let tezNodeURL = "https://ithacanet.ecadinfra.com"
 
 let _getBalance = tz1 => {
   let tezos = Taquito.create(tezNodeURL)

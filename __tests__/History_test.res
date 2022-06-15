@@ -109,11 +109,13 @@ describe("History functions", () => {
           blockHash: Some("blockHash3"),
         },
       ]
+      let tokens = TokenJSON.jsonString1->parseTokenJSON->Token.decodeJsonArray
 
       let result =
         input
-        ->Belt.Array.map(op => OperationsScreen.makeDisplayElement(op, myTz1, 117, []))
+        ->Belt.Array.map(op => OperationsScreen.makeDisplayElement(op, myTz1, 117, tokens))
         ->Helpers.filterNone
+
       expect(result)->toEqual([
         {
           target: "tz1AB...Q4XCD",
@@ -132,14 +134,14 @@ describe("History functions", () => {
         {
           target: "tz1AB...Q4XCD",
           date: "18/05/2022 10:35:35",
-          prettyAmountDisplay: Currency("-1 Token"),
+          prettyAmountDisplay: Currency("-1 FKR"),
           hash: "hash3",
           status: Done,
         },
         {
           target: "tz1EF...Q4XGH",
           date: "25/05/2022 19:07:20",
-          prettyAmountDisplay: Currency("-1000000 Token"),
+          prettyAmountDisplay: Currency("-10 KL2"),
           hash: "hash4",
           status: Done,
         },

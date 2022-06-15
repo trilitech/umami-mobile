@@ -10,6 +10,7 @@ module JSON = {
   }
 
   type address = {address: string}
+
   type token = {
     id: int,
     tokenId: string,
