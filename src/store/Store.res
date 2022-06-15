@@ -5,7 +5,7 @@ type account = t
 @scope("JSON") @val
 external parseAccount: string => array<account> = "parse"
 
-let themeAtom = Jotai.Atom.make("light")
+let themeAtom = Jotai.Atom.make("dark")
 let snackBarAtom: Jotai.Atom.t<option<React.element>, _, _> = Jotai.Atom.make(None)
 let secretAtom: Jotai.Atom.t<array<account>, _, _> = Jotai.Atom.make([])
 let selectedAccountAtom: Jotai.Atom.t<option<int>, _, _> = Jotai.Atom.make(None)
