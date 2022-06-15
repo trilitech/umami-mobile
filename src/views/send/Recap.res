@@ -31,7 +31,7 @@ let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
     <Headline style={style(~textAlign=#center, ())}> {"Recap"->React.string} </Headline>
     {amountDisplay}
     {makeRow("Fee", TezHelpers.formatBalance(fee))}
-    {makeRow("Recipient", trans.recipient)}
+    {makeRow("Recipient", trans.recipient->TezHelpers.formatTz1)}
     <Button disabled=isLoading loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("Submit transaction")}
     </Button>
