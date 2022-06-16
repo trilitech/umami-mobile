@@ -1,65 +1,19 @@
 open Paper
 open Belt
-open Asset
 open ReactNative.Style
 open CommonComponents
-open SendTypes
 open SendInputs
+open SendTypes
 
 let vMargin = FormStyles.styles["verticalMargin"]
 
-let validTrans = trans => {
+let validTrans = (trans: SendTypes.formState) =>
   trans.recipient->TaquitoUtils.tz1IsValid && trans.prettyAmount > 0.
-}
-
-let getFA1base = (tokens: array<Token.t>) =>
-  tokens
-  ->Array.getBy(t =>
-    switch t {
-    | FA1(_) => true
-    | _ => false
-    }
-  )
-  ->Option.flatMap(t =>
-    switch t {
-    | FA1(d) => Some(d)
-    | _ => None
-    }
-  )
-
-let getFA2base = (symbol: string, tokens: array<Token.t>) =>
-  tokens
-  ->Array.getBy(t =>
-    switch t {
-    | FA2(_, meta) => meta.symbol === symbol
-    | _ => false
-    }
-  )
-  ->Option.flatMap(t =>
-    switch t {
-    | FA2(d) => Some(d)
-    | _ => None
-    }
-  )
-
-let changeCurrency = (symbol: string, t: Asset.t, tokens: array<Token.t>): option<Asset.t> => {
-  let amount = getBalance(t)
-  if symbol == "tez" {
-    Tez(amount)->Some
-  } else if symbol == "FA1.2" {
-    getFA1base(tokens)->Option.map(b => FA1({...b, balance: amount})->Token)
-  } else {
-    getFA2base(symbol, tokens)->Option.map(((b, m)) => {
-      FA2({...b, balance: amount}, m)->Token
-    })
-  }
-}
 
 module SendForm = {
   @react.component
   let make = (~trans, ~setTrans, ~isLoading, ~onSubmit) => {
     let notify = SnackBar.useNotification()
-    let tokens = Store.useTokens()
 
     let {recipient} = trans
 
@@ -72,41 +26,23 @@ module SendForm = {
       })
     }
 
-    let handleChangeSymbol = (a: string) => {
+    let handleChangeSymbol = (c: SendTypes.currency) => {
       setTrans(t => {
-        let asset = a->changeCurrency(t.asset, tokens)
-        switch asset {
-        | Some(amount) => {...t, asset: amount}
-        | None => t
-        }
+        {...t, assetType: CurrencyAsset(c)}
       })
-      ()
     }
 
     let prettyAmount = trans.prettyAmount
 
-    let amountInput = switch trans.asset {
-    | Tez(_) =>
+    let amountInput = switch trans.assetType {
+    | CurrencyAsset(currency) =>
       <MultiCurrencyInput
         amount=prettyAmount
         onChangeAmount={handleChangeAmount}
-        symbol={getSymbol(trans.asset)}
+        currency={currency}
         onChangeSymbol=handleChangeSymbol
       />
-    | Token(t) =>
-      switch t {
-      | NFT((_, metadata)) =>
-        let {name, displayUri} = metadata
-
-        <NFTInput imageUrl={displayUri} name />
-      | _ =>
-        <MultiCurrencyInput
-          amount={prettyAmount}
-          onChangeAmount={handleChangeAmount}
-          symbol={getSymbol(trans.asset)}
-          onChangeSymbol=handleChangeSymbol
-        />
-      }
+    | NftAsset(_, m) => <NFTInput imageUrl={m.displayUri} name={m.name} />
     }
 
     let handleSenderPress = _ => navigate("Accounts")->ignore
@@ -114,7 +50,7 @@ module SendForm = {
     <>
       {amountInput}
       // Only allow sender change when sending Tez
-      <Sender onPress=handleSenderPress disabled={!isTez(trans.asset)} />
+      <Sender onPress=handleSenderPress disabled={SendTypes.isNft(trans.assetType)} />
       <Wrapper>
         <TextInput
           value={recipient == "" ? "" : TezHelpers.formatTz1(recipient)}
@@ -196,20 +132,20 @@ module ConnectedSend = {
     ~notifyAdvanced,
     ~navigate,
   ) => {
-    let asset = switch nft {
-    | Some(token) => NFT(token)->Token
-    | _ => Tez(0)
-    }
-
-    let prettyAmount = switch nft {
+    let initialPrettyAmount = switch nft {
     | Some((b, _)) => b.balance->Js.Int.toFloat
     | _ => 0.
     }
 
+    let initialAssetType = switch nft {
+    | Some((b, m)) => NftAsset({tokenId: b.tokenId, contract: b.contract, symbol: m.symbol}, m)
+    | _ => CurrencyAsset(CurrencyTez)
+    }
+
     let (trans, setTrans) = React.useState(_ => {
       recipient: "",
-      asset: asset,
-      prettyAmount: prettyAmount,
+      prettyAmount: initialPrettyAmount,
+      assetType: initialAssetType,
     })
 
     let (fee, setFee) = React.useState(_ => None)

@@ -2,7 +2,8 @@ open Paper
 open Store
 open CommonComponents
 open ReactNative.Style
-
+open Belt
+open SendTypes
 module Sender = {
   @react.component
   let make = (~onPress, ~disabled) => {
@@ -31,49 +32,95 @@ module NFTInput = {
   }
 }
 
-let _getCurrencies = (tokens: array<Token.t>) => {
+let fa1Symbol = "FA1.2"
+let tezSymbol = "tez"
+
+let _getCurrencies = (tokens: array<Token.t>): array<(currencyData, decimals)> => {
   open Belt.Array
-  tokens
-  ->reduce([], (acc, curr) => {
+  tokens->reduce([], (acc, curr) => {
     switch curr {
-    | FA1(_) => concat(acc, ["FA1.2"])
-    | FA2(_, m) => concat(acc, [m.symbol])
+    | FA1(b) =>
+      concat(
+        acc,
+        [
+          (
+            {symbol: fa1Symbol, contract: b.contract, tokenId: b.tokenId},
+            Constants.fa1CurrencyDecimal,
+          ),
+        ],
+      )
+    | FA2(b, m) =>
+      concat(acc, [({symbol: m.symbol, contract: b.contract, tokenId: b.tokenId}, m.decimals)])
     | _ => acc
     }
   })
-  ->concat(["tez"])
 }
+
+let getLabel = c =>
+  switch c {
+  | CurrencyTez => tezSymbol
+  | CurrencyToken(d, _) => d.symbol
+  }
+
+let makeSelectItem = (symbol: string) =>
+  {
+    "label": symbol,
+    "value": symbol,
+  }
 module CurrencyPicker = {
   @react.component
-  let make = (~value, ~onChange) => {
+  let make = (~value: currency, ~onChange: currency => unit) => {
     let tokens = Store.useTokens()
 
-    let items =
-      tokens->_getCurrencies->Belt.Array.map(currency => {"label": currency, "value": currency})
+    let tokenCurrencies = tokens->_getCurrencies
 
-    <StyledPicker items value onChange />
+    let items =
+      tokenCurrencies
+      ->Array.map(((data, _)) => makeSelectItem(data.symbol))
+      ->Array.concat([
+        {
+          makeSelectItem(tezSymbol)
+        },
+      ])
+
+    <StyledPicker
+      items
+      value={getLabel(value)}
+      onChange={symbol => {
+        if symbol == tezSymbol {
+          onChange(CurrencyTez)
+        } else {
+          tokenCurrencies
+          ->Array.getBy(((i, _)) => i.symbol == symbol)
+          ->Option.map(((data, decimals)) => {
+            onChange(CurrencyToken(data, decimals))
+          })
+          ->ignore
+        }
+      }}
+    />
   }
 }
 
 module MultiCurrencyInput = {
   @react.component
-  let make = (~amount, ~onChangeAmount, ~symbol, ~onChangeSymbol) => {
+  let make = (~amount, ~onChangeAmount, ~currency, ~onChangeSymbol) => {
     <Wrapper>
       <TextInput
         style={style(~flex=1., ())}
         keyboardType="number-pad"
-        value={amount->Belt.Float.toString}
+        value={amount->Float.toString}
         onChangeText={t => {
           if t == "" {
             onChangeAmount(0.)
           } else {
-            Belt.Float.fromString(t)->Belt.Option.map(v => onChangeAmount(v))->ignore
+            Float.fromString(t)->Option.map(v => onChangeAmount(v))->ignore
           }
         }}
         label="amount"
         mode=#flat
       />
-      <CurrencyPicker value=symbol onChange=onChangeSymbol />
+      <CurrencyPicker value=currency onChange=onChangeSymbol />
     </Wrapper>
   }
 }

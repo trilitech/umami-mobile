@@ -95,7 +95,8 @@ let estimateSendToken = (
   ~senderTz1,
   ~senderPk,
   ~recipientTz1,
-  ~isFa1,
+  ~isFa1=false,
+  (),
 ) => {
   let tezos = Taquito.create(tezNodeURL)
   tezos->Taquito.Toolkit.setProvider({

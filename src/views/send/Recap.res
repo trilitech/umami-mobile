@@ -12,20 +12,15 @@ let makeRow = (title, content) =>
 
 @react.component
 let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
-  let symbol = Asset.getSymbol(trans.asset)
+  let amountStr = trans.prettyAmount->Belt.Float.toString
 
-  let formatedAmount = trans.prettyAmount->Belt.Float.toString ++ " " ++ symbol
-
-  let amountDisplay = switch trans.asset {
-  | Tez(_) => makeRow("Subtotal", formatedAmount)
-  | Token(t) =>
-    switch t {
-    | NFT((_, metadata)) =>
-      let {name, displayUri} = metadata
-
-      <SendInputs.NFTInput imageUrl={displayUri} name />
-    | _ => makeRow("Subtotal", formatedAmount)
+  let amountDisplay = switch trans.assetType {
+  | CurrencyAsset(currency) =>
+    switch currency {
+    | CurrencyTez => makeRow("Subtotal", amountStr ++ " " ++ SendInputs.tezSymbol)
+    | CurrencyToken(b, _) => makeRow("Subtotal", amountStr ++ " " ++ b.symbol)
     }
+  | NftAsset(_, m) => <SendInputs.NFTInput imageUrl={m.displayUri} name=m.name />
   }
   <>
     <Headline style={style(~textAlign=#center, ())}> {"Recap"->React.string} </Headline>
