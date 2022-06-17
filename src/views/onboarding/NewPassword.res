@@ -19,7 +19,7 @@ let make = (~navigation as _, ~route as _) => {
         (),
       )->Promise.thenResolve(account => {
         setSecret(_ => [account])
-        setSelectedAccount(0)
+        setSelectedAccount(_ => 0->Some)
       })
     )
     ->Promise.catch(err => {

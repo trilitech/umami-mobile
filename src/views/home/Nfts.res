@@ -87,7 +87,7 @@ module NftGallery = {
 
 module PureNfts = {
   @react.component
-  let make = (~account: Store.account) => {
+  let make = (~account: Account.t) => {
     let nfts = account.tokens->Token.filterNFTs
 
     if nfts == [] {

@@ -43,7 +43,7 @@ let make = (~navigation as _, ~route as _) => {
   let (loading, setLoading) = React.useState(_ => false)
   let hoc = (~onSubmit) => <ImportSecret backupPhrase setBackupPhrase onSubmit />
 
-  let handleAccounts = (accounts: array<Store.account>, passphrase) => {
+  let handleAccounts = (accounts: array<Account.t>, passphrase) => {
     if accounts == [] {
       notify("No accounts revealed for this secret...")
     } else {

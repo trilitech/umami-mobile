@@ -61,7 +61,7 @@ module MemoizedApp = {
 
 @react.component
 let app = () => {
-  let storeIsUpToDate = Store.useInit()
+  let storeIsUpToDate = StoreInit.useInit()
 
   // Prevent rerenders sinces useInit is hooked to all the states
 

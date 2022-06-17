@@ -20,7 +20,7 @@ let make = (~navigation, ~route as _) => {
           selected
           onPress={_ => {
             navigation->NavStacks.OnBoard.Navigation.goBack()
-            setSelectedAccount(a.derivationPathIndex)
+            setSelectedAccount(_ => a.derivationPathIndex->Some)
           }}
           onPressEdit={_ => {
             navigation->NavStacks.OnBoard.Navigation.navigateWithParams(

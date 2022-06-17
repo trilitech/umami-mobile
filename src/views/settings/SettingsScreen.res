@@ -8,7 +8,7 @@ let make = (~navigation as _, ~route as _) => {
   let reset = Store.useResetAccounts()
   let makeRadio = value =>
     <LabeledRadio
-      onPress={_ => setTheme(value)}
+      onPress={_ => setTheme(_ => value)}
       label=value
       status={theme == value ? #checked : #unchecked}
       value

@@ -125,7 +125,7 @@ let makeNotif = hash => {
 module ConnectedSend = {
   @react.component
   let make = (
-    ~sender: Store.account,
+    ~sender: Account.t,
     ~nft: option<Token.tokenNFT>,
     ~tz1FromQr: option<string>,
     ~notify,
