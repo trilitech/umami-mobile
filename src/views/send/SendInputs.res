@@ -39,15 +39,10 @@ let _getCurrencies = (tokens: array<Token.t>): array<(currencyData, decimals)> =
   open Belt.Array
   tokens->reduce([], (acc, curr) => {
     switch curr {
-    | FA1(b) =>
+    | FA1({contract, tokenId}) =>
       concat(
         acc,
-        [
-          (
-            {symbol: fa1Symbol, contract: b.contract, tokenId: b.tokenId},
-            Constants.fa1CurrencyDecimal,
-          ),
-        ],
+        [({symbol: fa1Symbol, contract: contract, tokenId: tokenId}, Constants.fa1CurrencyDecimal)],
       )
     | FA2(b, m) =>
       concat(acc, [({symbol: m.symbol, contract: b.contract, tokenId: b.tokenId}, m.decimals)])
@@ -67,37 +62,39 @@ let makeSelectItem = (symbol: string) =>
     "label": symbol,
     "value": symbol,
   }
+
+let tokensToSelectItems = tokens =>
+  tokens
+  ->_getCurrencies
+  ->Array.map(((data, _)) => makeSelectItem(data.symbol))
+  ->Array.concat([
+    {
+      makeSelectItem(tezSymbol)
+    },
+  ])
+
+let symbolToCurrencyData = (symbol: string, tokens) => {
+  if symbol == tezSymbol {
+    Some(CurrencyTez)
+  } else {
+    tokens
+    ->_getCurrencies
+    ->Array.getBy(((i, _)) => i.symbol == symbol)
+    ->Option.map(((data, decimals)) => CurrencyToken(data, decimals))
+  }
+}
+
 module CurrencyPicker = {
   @react.component
   let make = (~value: currency, ~onChange: currency => unit) => {
     let tokens = Store.useTokens()
 
-    let tokenCurrencies = tokens->_getCurrencies
-
-    let items =
-      tokenCurrencies
-      ->Array.map(((data, _)) => makeSelectItem(data.symbol))
-      ->Array.concat([
-        {
-          makeSelectItem(tezSymbol)
-        },
-      ])
+    let items = tokensToSelectItems(tokens)
 
     <StyledPicker
       items
       value={getLabel(value)}
-      onChange={symbol => {
-        if symbol == tezSymbol {
-          onChange(CurrencyTez)
-        } else {
-          tokenCurrencies
-          ->Array.getBy(((i, _)) => i.symbol == symbol)
-          ->Option.map(((data, decimals)) => {
-            onChange(CurrencyToken(data, decimals))
-          })
-          ->ignore
-        }
-      }}
+      onChange={symbol => symbol->symbolToCurrencyData(tokens)->Option.map(onChange)->ignore}
     />
   }
 }
