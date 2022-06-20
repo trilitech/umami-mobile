@@ -7,6 +7,7 @@ let useNavigateWithParams = () => {
     ->Belt.Option.map(nav => {
       nav->NavStacks.OnBoard.Navigation.navigateWithParams(route, params)
     })
+    ->ignore
   }
 }
 
@@ -25,13 +26,13 @@ let useNavigate = () => {
 let useGoBack = () => {
   let nav = ReactNavigation.Native.useNavigation()
 
-  _ => {
+  _ =>
     nav
     ->Js.Nullable.toOption
     ->Belt.Option.map(nav => {
       nav->NavStacks.OnBoard.Navigation.goBack()
     })
-  }
+    ->ignore
 }
 
 let getToken = (route: NavStacks.OnBoard.route) => {
@@ -42,5 +43,5 @@ let getToken = (route: NavStacks.OnBoard.route) => {
 }
 
 let getTz1FromQr = (route: NavStacks.OnBoard.route) => {
-  route.params->Belt.Option.flatMap(p => p.tz1FromQr)
+  route.params->Belt.Option.flatMap(p => p.tz1)
 }

@@ -28,7 +28,7 @@ module DisplayNFT = {
               {
                 token: Some(token),
                 derivationIndex: None,
-                tz1FromQr: None,
+                tz1: None,
               },
             )->ignore}
           icon={Paper.Icon.name("arrow-top-right-thin")}

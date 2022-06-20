@@ -1,11 +1,6 @@
 open ReactNative.Style
 
 open CommonComponents
-module QR = {
-  @react.component @module("react-native-qrcode-svg")
-  external make: (~value: string, ~size: int=?) => React.element = "default"
-}
-
 module PureReceiveModal = {
   @react.component
   let make = (~handleCopy, ~handleShare, ~tz1) => {
@@ -17,7 +12,7 @@ module PureReceiveModal = {
           ~justifyContent=#spaceAround,
           (),
         )}>
-        <QR value=tz1 size=250 />
+        <Qr value=tz1 size=250 />
         <Wrapper justifyContent=#flexStart style={array([FormStyles.styles["verticalMargin"]])}>
           <NicerIconBtn
             onPress=handleCopy iconName="content-copy" style={FormStyles.styles["hMargin"]}

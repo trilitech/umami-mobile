@@ -6,7 +6,7 @@ module OnboardParams = {
   type params = {
     derivationIndex: option<int>,
     token: option<Token.tokenNFT>,
-    tz1FromQr: option<string>,
+    tz1: option<string>,
   }
 }
 

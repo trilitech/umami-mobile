@@ -4,6 +4,7 @@ module Serializers = {
   let serializeAccounts = Js.Json.stringifyAny
   let serializeSelectedAccount = s => s->Belt.Option.map(Js.Int.toString)
   let serializeTheme = s => s->Some
+  let serializeContacts = Js.Json.stringifyAny
 }
 
 let _withSave = (stateHook, serializer, key: string, ()) => {
@@ -26,3 +27,5 @@ let useSelectedAccount = withSave(
   Serializers.serializeSelectedAccount,
   "selectedAccount",
 )
+
+let useContacts = withSave(contactsAtom, Serializers.serializeContacts, "contacts")

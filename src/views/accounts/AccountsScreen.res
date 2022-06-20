@@ -28,7 +28,7 @@ let make = (~navigation, ~route as _) => {
               {
                 derivationIndex: Some(a.derivationPathIndex),
                 token: None,
-                tz1FromQr: None,
+                tz1: None,
               },
             )
           }}

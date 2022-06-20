@@ -133,10 +133,21 @@ module ListItemCustomIcon = {
     ~selected=false,
     ~height=50.,
     ~description=?,
-    ~testID=?
+    ~testID=?,
   ) => {
     let theme = Paper.ThemeProvider.useTheme()
-    makeListItem(~theme, ~onPress, ~title, ~left, ~right?, ~selected, ~height, ~description?,~testID?, ())
+    makeListItem(
+      ~theme,
+      ~onPress,
+      ~title,
+      ~left,
+      ~right?,
+      ~selected,
+      ~height,
+      ~description?,
+      ~testID?,
+      (),
+    )
   }
 }
 
@@ -163,7 +174,7 @@ module CustomListItem = {
       style={style(~alignSelf=#stretch, ~marginVertical=4.->dp, ())}
       ?onPress>
       <Surface style={style(~borderRadius=4., ~backgroundColor, ())}>
-        <Wrapper alignItems=#center style={style(~height=height->dp, ())}>
+        <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
           <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>
           <ReactNative.View style={style(~margin=8.->dp, ())}> {center} </ReactNative.View>
           <ReactNative.View style={style(~position=#absolute, ~right=0.->dp, ())}>

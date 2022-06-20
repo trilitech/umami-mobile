@@ -7,6 +7,8 @@ module Deserializers = {
   external deserializeAccounts: string => array<Account.t> = "parse"
   let deserializeSelectedAccount = s => Belt.Int.fromString(s)
   let deserializeTheme = (s: string) => s
+  @scope("JSON") @val
+  external deserializeContacts: string => array<Contact.t> = "parse"
 }
 
 let _useIniter = (hook, key: string, deserializer) => {
@@ -27,6 +29,7 @@ let useInit = () => {
     useIniter(themeAtom, "theme", deserializeTheme),
     useIniter(accountsAtom, "accounts", deserializeAccounts),
     useIniter(selectedAccountAtom, "selectedAccount", deserializeSelectedAccount),
+    useIniter(contactsAtom, "contacts", deserializeContacts),
   ]
 
   let memoIniters = React.useMemo1(() => initers, [])

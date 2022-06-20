@@ -44,7 +44,7 @@ let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
         {
           derivationIndex: None,
           token: Some(tokenNFT),
-          tz1FromQr: None,
+          tz1: None,
         },
       )->ignore
     }}

@@ -13,13 +13,6 @@ module Sender = {
   }
 }
 
-module TezInput = {
-  @react.component
-  let make = (~value, ~onChangeText, ~style) => {
-    <TextInput keyboardType="number-pad" value onChangeText style label="amount" mode=#flat />
-  }
-}
-
 module NFTInput = {
   @react.component
   let make = (~imageUrl, ~name) => {

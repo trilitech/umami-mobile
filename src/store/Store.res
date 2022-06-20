@@ -50,3 +50,13 @@ let useResetAccounts = () => {
     setAccounts(_ => [])
   }
 }
+
+let useContactsDispatcher = () => {
+  let (_, setContacts) = SavedStore.useContacts()
+
+  action => setContacts(prev => ContactReducer.reducer(prev, action))
+}
+let useContacts = () => {
+  let (contacts, _) = SavedStore.useContacts()
+  contacts
+}
