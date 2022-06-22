@@ -56,12 +56,13 @@ let make = (~navigation as _, ~route as _) => {
   }
   let onConfirm = passphrase => {
     setLoading(_ => true)
-    AccountUtils.restoreAccounts(
+    AccountUtils.restoreKeys(
       ~mnemonic=backupPhrase->formatForMnemonic,
       ~passphrase,
       ~onDone=accounts => {
         switch accounts {
-        | Ok(accounts) => handleAccounts(accounts, passphrase)
+        | Ok(accounts) =>
+          handleAccounts(accounts->Belt.Array.map(AccountUtils.keysToAccount), passphrase)
         | Error(_) => ()
         }
 

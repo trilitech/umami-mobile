@@ -8,3 +8,5 @@ type t = {
   tokens: array<Token.t>,
   transactions: array<Operation.t>,
 }
+
+let changeName = (a, name) => {...a, name: name}
