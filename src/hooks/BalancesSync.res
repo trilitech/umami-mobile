@@ -110,8 +110,49 @@ let useTransactionNotif = () => {
   }, (accounts, notify, prevAccounts))
 }
 
-open AccountsReducer
 open Helpers
+open Belt
+let makeQueryAutomator = (~fn, ~onResult, ~onError, ~refreshRate) => {
+  let (cancelablFn, cancel) = withCancel(fn)
+  let timeoutId = ref(None)
+
+  let rec recursive = () => {
+    cancelablFn()
+    ->Promise.thenResolve(res => {
+      onResult(res)
+    })
+    ->Promise.catch(err => {
+      switch err {
+      | PromiseCanceled => ()
+      | err => onError(err)
+      }
+      Promise.resolve()
+    })
+    ->Promise.finally(_ => {
+      timeoutId.contents = Js.Global.setTimeout(recursive, refreshRate)->Some
+    })
+    ->ignore
+  }
+  let start = recursive
+  let stop = () => {
+    cancel.contents()
+    timeoutId.contents
+    ->Option.map(id => {
+      Js.Global.clearTimeout(id)
+      timeoutId.contents = None
+    })
+    ->ignore
+  }
+
+  let refresh = () => {
+    stop()
+    start()
+  }
+
+  (start, stop, refresh)
+}
+
+open AccountsReducer
 let useBalancesSync = () => {
   let updateBalances = useAccountsBalanceUpdate()
   let updateOperations = useAccountsOperationsUpdate()
