@@ -27,3 +27,29 @@ let getMessage = (e: exn) => {
   }
   message->Belt.Option.getWithDefault("Unknown error")
 }
+
+let cancelRef: ref<option<unit => unit>> = ref(None)
+
+exception PromiseCanceled
+
+let withCancel = (fn: 'b => Promise.t<'a>) => {
+  let cancelRef: ref<unit => unit> = ref(() => ())
+
+  let fn = () =>
+    Promise.make((resolve, reject) => {
+      let cancel = () => {
+        reject(. PromiseCanceled)
+      }
+      cancelRef.contents = cancel
+
+      fn()
+      ->Promise.thenResolve(res => resolve(. res))
+      ->Promise.catch(exn => {
+        reject(. exn)->ignore
+        Promise.resolve()
+      })
+      ->ignore
+    })
+
+  (fn, cancelRef)
+}
