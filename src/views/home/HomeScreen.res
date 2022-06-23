@@ -68,7 +68,7 @@ let make = (~navigation, ~route as _) => {
     (),
   )
   <>
-    <TopBar
+    <TopBarHome
       onNetworkPress={navigate("ScanQR")}
       onSettingsPress={navigate("Settings")}
       onNotificationPress={navigate("Notifications")}

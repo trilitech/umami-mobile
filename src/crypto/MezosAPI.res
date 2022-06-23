@@ -1,7 +1,10 @@
 external unsafeToOperationJSON: Js.Json.t => Operation.JSON.t = "%identity"
 
-let getTransactions = tz1 => {
-  Fetch.fetch(`https://ithacanet.umamiwallet.com/accounts/${tz1}/operations`)
+let getUmamiWalletHost = isTestNet =>
+  isTestNet ? Endpoints.umamiWallet.testNet : Endpoints.umamiWallet.mainNet
+
+let getTransactions = (~tz1, ~isTestNet) => {
+  Fetch.fetch(`https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1}/operations`)
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
   ->Promise.thenResolve(Belt.Option.getExn)
@@ -11,9 +14,29 @@ let getTransactions = tz1 => {
 
 external unsafeToBlockJSON: Js_dict.t<Js.Json.t> => {"indexer_last_block": int} = "%identity"
 
-let getIndexerLastBlock = () =>
-  Fetch.fetch("https://ithacanet.umamiwallet.com/monitor/blocks")
+let getIndexerLastBlock = (~isTestNet) =>
+  Fetch.fetch(`https://${getUmamiWalletHost(isTestNet)}/monitor/blocks`)
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeObject)
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(json => unsafeToBlockJSON(json)["indexer_last_block"])
+
+%%private(
+  let checkExists = (~tz1, ~isTestNet) => {
+    let existsUrl = `https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1}/exists`
+
+    Fetch.fetch(existsUrl)
+    ->Promise.then(Fetch.Response.json)
+    ->Promise.thenResolve(Js.Json.decodeBoolean)
+    ->Promise.thenResolve(Belt.Option.getExn)
+  }
+)
+
+let checkExistsAllNetworks = (~tz1) => {
+  Promise.all2((
+    checkExists(~tz1, ~isTestNet=false),
+    checkExists(~tz1, ~isTestNet=true),
+  ))->Promise.thenResolve(((existsInTestNet, existsInMainNet)) =>
+    existsInTestNet || existsInMainNet
+  )
+}

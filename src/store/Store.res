@@ -60,3 +60,11 @@ let useContacts = () => {
   let (contacts, _) = SavedStore.useContacts()
   contacts
 }
+
+let useIsTestNet = () => {
+  let (network, _) = SavedStore.useNetwork()
+  switch network {
+  | Mainnet => false
+  | _ => true
+  }
+}

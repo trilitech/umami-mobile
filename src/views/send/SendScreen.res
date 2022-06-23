@@ -39,6 +39,7 @@ module PureSendScreen = {
     ~notify,
     ~notifyAdvanced,
     ~navigate,
+    ~isTestNet,
   ) => {
     let initialPrettyAmount = switch nft {
     | Some((b, _)) => b.balance->Js.Int.toFloat
@@ -67,6 +68,7 @@ module PureSendScreen = {
           ~assetType=trans.assetType,
           ~senderTz1=sender.tz1,
           ~sk=sender.sk,
+          ~isTestNet,
         )
       )
     let simulate =
@@ -77,6 +79,7 @@ module PureSendScreen = {
           ~assetType=trans.assetType,
           ~senderTz1=sender.tz1,
           ~senderPk=sender.pk,
+          ~isTestNet,
         )
       )
 
@@ -153,7 +156,8 @@ let make = (~navigation as _, ~route) => {
   let notify = SnackBar.useNotification()
   let notifyAdvanced = SnackBar.useNotificationAdvanced()
   let navigate = NavUtils.useNavigate()
+  let isTestNet = Store.useIsTestNet()
   Store.useWithAccount(account =>
-    <PureSendScreen tz1FromQr sender=account nft notify notifyAdvanced navigate />
+    <PureSendScreen tz1FromQr sender=account nft notify notifyAdvanced navigate isTestNet />
   )
 }

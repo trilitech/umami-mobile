@@ -5,6 +5,7 @@ module Serializers = {
   let serializeSelectedAccount = s => s->Belt.Option.map(Js.Int.toString)
   let serializeTheme = s => s->Some
   let serializeContacts = Js.Json.stringifyAny
+  let serializeNetwork = (n: Network.t) => n->Network.toString->Some
 }
 
 let _withSave = (stateHook, serializer, key: string, ()) => {
@@ -29,3 +30,5 @@ let useSelectedAccount = withSave(
 )
 
 let useContacts = withSave(contactsAtom, Serializers.serializeContacts, "contacts")
+
+let useNetwork = withSave(networkAtom, Serializers.serializeNetwork, "network")

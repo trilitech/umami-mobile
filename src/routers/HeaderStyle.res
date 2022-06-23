@@ -1,15 +1,16 @@
-open ReactNative.Style
+type route = {name: string}
+external fixType: NavStacks.OnBoard.Header.headerProps<'a> => {"route": route, "back": bool} =
+  "%identity"
 
+let dangerColor = Colors.Light.error
 let useHeaderStyle = () => {
-  open Paper.ThemeProvider.Theme
-  let colors = ThemeProvider.useColors()
+  let header = NavStacks.OnBoard.Header.render(p => {
+    let goBack = NavUtils.useGoBack()
 
-  let options = NavStacks.OnBoard.options(
-    ~headerStyle=style(~backgroundColor=colors->Colors.background, ()),
-    ~headerTitleStyle=style(~color=colors->Colors.text, ()),
-    ~headerBackTitleStyle=style(~color=colors->Colors.text, ()),
-    ~headerBackImage=_ => <Paper.IconButton icon={Paper.Icon.name("arrow-left")} size={15} />,
-    (),
-  )
+    let name = (p->fixType)["route"].name
+    <TopBarAllScreens title=name onPressGoBack={goBack} />
+  })
+
+  let options = NavStacks.OnBoard.options(~header, ())
   _ => options
 }

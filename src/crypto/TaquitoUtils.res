@@ -51,16 +51,19 @@ let _sendToken = (
   )->Promise.then(t => t->Taquito.Contract.send())
 }
 
-let tezNodeURL = "https://ithacanet.ecadinfra.com"
+let _makeToolkit = (~isTestNet) =>
+  Taquito.create(
+    "https://" ++ (isTestNet ? Endpoints.tezosNode.testNet : Endpoints.tezosNode.mainNet),
+  )
 
-let _getBalance = tz1 => {
-  let tezos = Taquito.create(tezNodeURL)
+let _getBalance = (~tz1, ~isTestNet) => {
+  let tezos = _makeToolkit(~isTestNet)
   let res = tezos.tz->Taquito.Toolkit.getBalance(tz1)
   res->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
 }
 
-let getBalance = tz1 =>
-  _getBalance(tz1)
+let getBalance = (~tz1, ~isTestNet) =>
+  _getBalance(~tz1, ~isTestNet)
   ->Promise.thenResolve(b => Belt.Int.fromString(b))
   ->Promise.then(b => {
     Promise.make((resolve, reject) => {
@@ -71,16 +74,16 @@ let getBalance = tz1 =>
     })
   })
 
-let sendTez = (~recipient, ~amount, ~passphrase, ~sk) => {
-  let tezos = Taquito.create(tezNodeURL)
+let sendTez = (~recipient, ~amount, ~passphrase, ~sk, ~isTestNet) => {
+  let tezos = _makeToolkit(~isTestNet)
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
     tezos.contract->Taquito.Toolkit.transfer({"to": recipient, "amount": amount})
   })
 }
 
-let estimateSendTez = (~recipient, ~amount, ~senderTz1, ~senderPk) => {
-  let tezos = Taquito.create(tezNodeURL)
+let estimateSendTez = (~recipient, ~amount, ~senderTz1, ~senderPk, ~isTestNet) => {
+  let tezos = _makeToolkit(~isTestNet)
   tezos->Taquito.Toolkit.setProvider({
     "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1),
   })
@@ -96,9 +99,10 @@ let estimateSendToken = (
   ~senderPk,
   ~recipientTz1,
   ~isFa1=false,
+  ~isTestNet,
   (),
 ) => {
-  let tezos = Taquito.create(tezNodeURL)
+  let tezos = _makeToolkit(~isTestNet)
   tezos->Taquito.Toolkit.setProvider({
     "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1),
   })
@@ -130,9 +134,10 @@ let sendToken = (
   ~senderTz1,
   ~recipientTz1,
   ~isFa1=false,
+  ~isTestNet,
   (),
 ) => {
-  let tezos = Taquito.create(tezNodeURL)
+  let tezos = _makeToolkit(~isTestNet)
 
   Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})

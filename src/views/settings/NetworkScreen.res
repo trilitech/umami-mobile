@@ -1,12 +1,23 @@
 open CommonComponents
 
+open Network
 open Paper
+
+let makeRadio = (target, network, setNetwork) =>
+  <LabeledRadio
+    onPress={_ => setNetwork(_ => target)}
+    status={network == target ? #checked : #unchecked}
+    label={target->toString}
+    value={target->toString}
+  />
+
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let makeRadio = value => <LabeledRadio onPress={_ => ()} label=value status={#unchecked} value />
+  let (network, setNetwork) = SavedStore.useNetwork()
+
   <Container>
     <List.Section title="Selected Network">
-      {makeRadio("mainnet")} {makeRadio("hanghzounet")}
+      {makeRadio(Mainnet, network, setNetwork)} {makeRadio(Ithacanet, network, setNetwork)}
     </List.Section>
   </Container>
 }

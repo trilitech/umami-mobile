@@ -12,7 +12,7 @@ module type Deps = {
     unit,
   ) => Promise.t<keys>
 
-  let checkExists: string => Promise.t<bool>
+  let checkExists: (~tz1: string) => Promise.t<bool>
 }
 module Make = (M: Deps) => {
   let generateKeys = M.generateKeys
@@ -57,7 +57,7 @@ module Make = (M: Deps) => {
 
     generateKeys(~mnemonic, ~passphrase, ~derivationPathIndex, ())
     ->Promise.then(account => {
-      checkExists(account.tz1)->Promise.thenResolve(exists => {
+      checkExists(~tz1=account.tz1)->Promise.thenResolve(exists => {
         if exists {
           _restoreKeys(
             ~mnemonic,

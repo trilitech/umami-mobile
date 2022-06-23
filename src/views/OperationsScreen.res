@@ -226,9 +226,10 @@ let make = (~route as _, ~navigation as _) => {
   let operations = useCurrentAccountOperations()
   let tokens = Store.useTokens()
   let (indexerLastBlock, setIndexerLastBlock) = React.useState(_ => None)
+  let isTestNet = Store.useIsTestNet()
 
   React.useEffect1(() => {
-    MezosAPI.getIndexerLastBlock()
+    MezosAPI.getIndexerLastBlock(~isTestNet)
     ->Promise.thenResolve(lastBlock => {
       setIndexerLastBlock(_ => Some(lastBlock))
     })

@@ -9,6 +9,15 @@ module Deserializers = {
   let deserializeTheme = (s: string) => s
   @scope("JSON") @val
   external deserializeContacts: string => array<Contact.t> = "parse"
+
+  let deserializeNetwork = s => {
+    open Network
+    switch s {
+    | "ithacanet" => Ithacanet
+    | "mainnet" => Mainnet
+    | _ => Mainnet
+    }
+  }
 }
 
 let _useIniter = (hook, key: string, deserializer) => {
@@ -30,6 +39,7 @@ let useInit = () => {
     useIniter(accountsAtom, "accounts", deserializeAccounts),
     useIniter(selectedAccountAtom, "selectedAccount", deserializeSelectedAccount),
     useIniter(contactsAtom, "contacts", deserializeContacts),
+    useIniter(networkAtom, "network", deserializeNetwork),
   ]
 
   let memoIniters = React.useMemo1(() => initers, [])

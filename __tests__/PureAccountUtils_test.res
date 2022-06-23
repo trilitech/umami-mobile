@@ -15,8 +15,7 @@ describe("PureAccountUtils", () => {
     mockFn->MockJs.mockImplementationOnce(() => true->Promise.resolve)->ignore
     mockFn->MockJs.mockImplementationOnce(() => false->Promise.resolve)->ignore
 
-    let mockCheckExists = (tz1: string) => {
-      Js.Console.log(tz1)
+    let mockCheckExists = (~tz1 as _) => {
       fn()
     }
 
@@ -32,7 +31,7 @@ describe("PureAccountUtils", () => {
       let generateKeys = mockGenerateKeys
       let checkExists = mockCheckExists
     })
-    // expect(true)->toEqual(true)
+
     let expected = [
       {
         derivationPathIndex: 0,

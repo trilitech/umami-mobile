@@ -8,19 +8,19 @@ open UsePrevious
 //   })
 // }
 
-let getAccountBalance = (tz1: string) => {
+let getAccountBalance = (~tz1: string, ~isTestNet) => {
   open AccountsReducer
-  Promise.all2((TaquitoUtils.getBalance(tz1), TzktAPI.getTokens(tz1)))->Promise.thenResolve(((
-    b,
-    t,
-  )) => {
+  Promise.all2((
+    TaquitoUtils.getBalance(~tz1, ~isTestNet),
+    TzktAPI.getTokens(~tz1, ~isTestNet),
+  ))->Promise.thenResolve(((b, t)) => {
     {tz1: tz1, balance: Some(b), tokens: t}
   })
 }
 
-let getAccountOperations = (tz1: string) => {
+let getAccountOperations = (tz1: string, ~isTestNet) => {
   open AccountsReducer
-  MezosAPI.getTransactions(tz1)->Promise.thenResolve(operations => {
+  MezosAPI.getTransactions(~tz1, ~isTestNet)->Promise.thenResolve(operations => {
     {tz1: tz1, operations: operations}
   })
 }
@@ -68,9 +68,9 @@ let updateAccountOperations = (
 let useAccountsBalanceUpdate = () => {
   let (accounts, setAccounts) = Store.useAccounts()
 
-  () => {
+  (~isTestNet) => {
     accounts
-    ->Belt.Array.map(a => getAccountBalance(a.tz1))
+    ->Belt.Array.map(a => getAccountBalance(~tz1=a.tz1, ~isTestNet))
     ->Js.Promise.all
     ->Promise.thenResolve(balances => {
       setAccounts(accounts => updateAccountBalances(accounts, balances))
@@ -81,17 +81,14 @@ let useAccountsBalanceUpdate = () => {
 let useAccountsOperationsUpdate = () => {
   let (accounts, setAccounts) = Store.useAccounts()
 
-  () =>
+  (~isTestNet) =>
     accounts
-    ->Belt.Array.map(a => getAccountOperations(a.tz1))
+    ->Belt.Array.map(a => getAccountOperations(a.tz1, ~isTestNet))
     ->Js.Promise.all
     ->Promise.thenResolve(balances =>
       setAccounts(accounts => updateAccountOperations(accounts, balances))
     )
 }
-
-@module("use-interval")
-external useInterval: ('a, int) => unit = "default"
 
 let useTransactionNotif = () => {
   let (accounts, _) = Store.useAccounts()
@@ -99,7 +96,7 @@ let useTransactionNotif = () => {
   let prevAccounts = usePrevious(accounts)
   let notify = SnackBar.useNotification()
 
-  React.useEffect1(() => {
+  React.useEffect3(() => {
     prevAccounts
     ->Belt.Option.map(prevAccounts => {
       TransNotif.getUpdates(prevAccounts, accounts)->Belt.Array.forEach(notification => {
@@ -110,36 +107,61 @@ let useTransactionNotif = () => {
     ->ignore
 
     None
-  }, [accounts])
+  }, (accounts, notify, prevAccounts))
 }
 
+open AccountsReducer
+open Helpers
 let useBalancesSync = () => {
-  useTransactionNotif()
   let updateBalances = useAccountsBalanceUpdate()
   let updateOperations = useAccountsOperationsUpdate()
+  let isTestNet = Store.useIsTestNet()
+  let dispatch = AccountsReducer.useAccountsDispatcher()
+  let notify = SnackBar.useNotification()
 
-  let update = () => Promise.all([updateBalances(), updateOperations()])
-  let updateRef = React.useRef(update)
-  let timeoutId = React.useRef(None)
+  let updateWithCancel =
+    (() => Promise.all([updateBalances(~isTestNet), updateOperations(~isTestNet)]))->withCancel
 
-  updateRef.current = update
+  let updateWithCancelRef = React.useRef(updateWithCancel)
+  let timeoutIdRef = React.useRef(None)
 
-  let startFetching = React.useCallback1(() => {
-    let rec updateAll = () =>
-      updateRef.current()
-      ->Promise.thenResolve(_ => {
-        timeoutId.current = Js.Global.setTimeout(updateAll, 3000)->Some
+  updateWithCancelRef.current = updateWithCancel
+
+  let start = React.useCallback1(() => {
+    let rec recursiveUpdate = () => {
+      let (update, _) = updateWithCancelRef.current
+
+      update()
+      ->Promise.catch(err => {
+        switch err {
+        | PromiseCanceled => ()
+        | err => err->getMessage->notify
+        }
+        Promise.resolve([])
+      })
+      ->Promise.finally(_ => {
+        timeoutIdRef.current = Js.Global.setTimeout(recursiveUpdate, 3000)->Some
       })
       ->ignore
-    updateAll()->ignore
+    }
+
+    recursiveUpdate()->ignore
   }, [])
 
   React.useEffect1(() => {
-    startFetching()
+    start()
     None
-  }, [startFetching])
+  }, [start])
+
+  React.useEffect2(() => {
+    let (_, cancel) = updateWithCancelRef.current
+
+    dispatch(ResetAssetInfos)
+    cancel.contents()
+    None
+  }, (isTestNet, dispatch))
 
   React.useEffect1(() => {
-    Some(() => timeoutId.current->Belt.Option.map(id => Js.Global.clearTimeout(id))->ignore)
+    Some(() => timeoutIdRef.current->Belt.Option.map(id => Js.Global.clearTimeout(id))->ignore)
   }, [])
 }

@@ -1,6 +1,6 @@
 open SendTypes
 
-let simulate = (~recipientTz1, ~prettyAmount, ~assetType, ~senderTz1, ~senderPk) => {
+let simulate = (~recipientTz1, ~prettyAmount, ~assetType, ~senderTz1, ~senderPk, ~isTestNet) => {
   let estimate = TaquitoUtils.estimateSendToken(~recipientTz1, ~senderTz1, ~senderPk)
   switch assetType {
   | CurrencyAsset(currency) =>
@@ -11,6 +11,7 @@ let simulate = (~recipientTz1, ~prettyAmount, ~assetType, ~senderTz1, ~senderPk)
         ~recipient=recipientTz1,
         ~senderTz1,
         ~senderPk,
+        ~isTestNet,
       )
     | CurrencyToken(b, decimals) =>
       estimate(
@@ -18,6 +19,7 @@ let simulate = (~recipientTz1, ~prettyAmount, ~assetType, ~senderTz1, ~senderPk)
         ~tokenId=b.tokenId,
         ~amount=Token.toRaw(prettyAmount, decimals),
         ~isFa1=b.symbol == SendInputs.fa1Symbol, // :(
+        ~isTestNet,
         (),
       )
     }
@@ -26,24 +28,32 @@ let simulate = (~recipientTz1, ~prettyAmount, ~assetType, ~senderTz1, ~senderPk)
       ~contractAddress=b.contract,
       ~tokenId=b.tokenId,
       ~amount=Token.toRaw(prettyAmount, 0),
+      ~isTestNet,
       (),
     )
   }
 }
 
-let send = (~prettyAmount, ~recipientTz1, ~assetType, ~senderTz1, ~sk, ~passphrase) => {
+let send = (~prettyAmount, ~recipientTz1, ~assetType, ~senderTz1, ~sk, ~passphrase, ~isTestNet) => {
   let sendToken = TaquitoUtils.sendToken(~passphrase, ~sk, ~senderTz1, ~recipientTz1)
 
   switch assetType {
   | CurrencyAsset(currency) =>
     switch currency {
     | CurrencyTez =>
-      TaquitoUtils.sendTez(~recipient=recipientTz1, ~amount=prettyAmount, ~passphrase, ~sk)
+      TaquitoUtils.sendTez(
+        ~recipient=recipientTz1,
+        ~amount=prettyAmount,
+        ~passphrase,
+        ~sk,
+        ~isTestNet,
+      )
     | CurrencyToken(b, decimals) =>
       sendToken(
         ~contractAddress=b.contract,
         ~tokenId=b.tokenId,
         ~amount=Token.toRaw(prettyAmount, decimals),
+        ~isTestNet,
         (),
       )
     }
@@ -52,6 +62,7 @@ let send = (~prettyAmount, ~recipientTz1, ~assetType, ~senderTz1, ~sk, ~passphra
       ~contractAddress=b.contract,
       ~tokenId=b.tokenId,
       ~amount=Token.toRaw(prettyAmount, 0),
+      ~isTestNet,
       (),
     )
   }

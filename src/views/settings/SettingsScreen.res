@@ -24,6 +24,11 @@ let make = (~navigation as _, ~route as _) => {
       center={<Text> {React.string("Contacts")} </Text>}
       right={<CommonComponents.Icon name="chevron-right" />}
     />
+    <CustomListItem
+      onPress={_ => navigate("Network")->ignore}
+      center={<Text> {React.string("Network")} </Text>}
+      right={<CommonComponents.Icon name="chevron-right" />}
+    />
     <List.Section title="Storage">
       <Button mode=#contained onPress={_ => reset()}>
         <Paper.Text> {React.string("Erase secret")} </Paper.Text>

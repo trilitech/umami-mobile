@@ -53,10 +53,12 @@ module CurrencyIem = {
 
 open Token
 @react.component
-let make = (~balance, ~onPress, ~tokens) => {
-  let balance = balance->Belt.Option.mapWithDefault("", TezHelpers.formatBalance)
+let make = (~balance: option<int>, ~onPress, ~tokens) => {
   <>
-    <CurrencyIem onPress balance={Belt.Float.fromString(balance)->Option.getWithDefault(0.)} />
+    {balance->Belt.Option.mapWithDefault(React.null, balance => {
+      let balance = balance->TezHelpers.formatBalance
+      <CurrencyIem onPress balance={Belt.Float.fromString(balance)->Option.getWithDefault(0.)} />
+    })}
     {tokens
     ->Belt.Array.map(t =>
       switch t {
