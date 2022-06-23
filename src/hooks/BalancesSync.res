@@ -112,7 +112,7 @@ let useTransactionNotif = () => {
 
 open Helpers
 open Belt
-let makeQueryAutomator = (~fn, ~onResult, ~onError, ~refreshRate) => {
+let makeQueryAutomator = (~fn, ~onResult=_ => (), ~onError=_ => (), ~refreshRate=3000, ()) => {
   let (cancelablFn, cancel) = withCancel(fn)
   let timeoutId = ref(None)
 
@@ -152,57 +152,31 @@ let makeQueryAutomator = (~fn, ~onResult, ~onError, ~refreshRate) => {
   (start, stop, refresh)
 }
 
-open AccountsReducer
 let useBalancesSync = () => {
   let updateBalances = useAccountsBalanceUpdate()
   let updateOperations = useAccountsOperationsUpdate()
   let isTestNet = Store.useIsTestNet()
-  let dispatch = AccountsReducer.useAccountsDispatcher()
-  let notify = SnackBar.useNotification()
 
-  let updateWithCancel =
-    (() => Promise.all([updateBalances(~isTestNet), updateOperations(~isTestNet)]))->withCancel
+  let isTestNetRef = React.useRef(isTestNet)
 
-  let updateWithCancelRef = React.useRef(updateWithCancel)
-  let timeoutIdRef = React.useRef(None)
+  isTestNetRef.current = isTestNet
 
-  updateWithCancelRef.current = updateWithCancel
+  let update = () =>
+    Promise.all([
+      updateBalances(~isTestNet=isTestNetRef.current),
+      updateOperations(~isTestNet=isTestNetRef.current),
+    ])
 
-  let start = React.useCallback1(() => {
-    let rec recursiveUpdate = () => {
-      let (update, _) = updateWithCancelRef.current
+  let updateRef = React.useRef(update)
 
-      update()
-      ->Promise.catch(err => {
-        switch err {
-        | PromiseCanceled => ()
-        | err => err->getMessage->notify
-        }
-        Promise.resolve([])
-      })
-      ->Promise.finally(_ => {
-        timeoutIdRef.current = Js.Global.setTimeout(recursiveUpdate, 3000)->Some
-      })
-      ->ignore
-    }
+  let masterUpdate = () => updateRef.current()
 
-    recursiveUpdate()->ignore
-  }, [])
+  let memoAutomator = React.useMemo1(() => makeQueryAutomator(~fn=masterUpdate, ()), [])
 
-  React.useEffect1(() => {
-    start()
-    None
-  }, [start])
+  let (_, _, refresh) = memoAutomator
 
   React.useEffect2(() => {
-    let (_, cancel) = updateWithCancelRef.current
-
-    dispatch(ResetAssetInfos)
-    cancel.contents()
+    refresh()
     None
-  }, (isTestNet, dispatch))
-
-  React.useEffect1(() => {
-    Some(() => timeoutIdRef.current->Belt.Option.map(id => Js.Global.clearTimeout(id))->ignore)
-  }, [])
+  }, (isTestNet, refresh))
 }
