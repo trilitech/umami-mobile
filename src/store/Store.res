@@ -48,7 +48,7 @@ let useReset = () => {
   let (_, setNetwork) = useNetwork()
 
   () => {
-    setSelectedAccount(_ => None)
+    setSelectedAccount(_ => Some(0))
     setAccounts(_ => [])
     setNetwork(_ => Mainnet)
   }

@@ -11,18 +11,24 @@ module Serializers = {
 let _withSave = (stateHook, serializer, key: string, ()) => {
   let (value, setValue) = stateHook()
 
+  // Have to do this ref and memo dance to keep the setter stable...
+  let valueRef = React.useRef(value)
+  valueRef.current = value
+
   let setValueWithSave = fn => {
     setValue(fn)
-    fn(value)
+
+    fn(valueRef.current)
     ->serializer
     ->Belt.Option.map(s => {
       Storage.set(key, s)
     })
     ->ignore
   }
-  let memoized = React.useMemo(() => setValueWithSave)
 
-  (value, memoized)
+  let stableSetValue = React.useMemo(() => setValueWithSave)
+
+  (value, stableSetValue)
 }
 
 let withSave = atom => _withSave(() => Jotai.Atom.use(atom))
