@@ -42,12 +42,15 @@ let useUpdateAccount = () => {
   }
 }
 
-let useResetAccounts = () => {
+let useReset = () => {
   let (_, setAccounts) = useAccounts()
   let (_, setSelectedAccount) = useSelectedAccount()
+  let (_, setNetwork) = useNetwork()
+
   () => {
-    setSelectedAccount(_ => Some(0))->ignore
+    setSelectedAccount(_ => None)
     setAccounts(_ => [])
+    setNetwork(_ => Mainnet)
   }
 }
 

@@ -6,7 +6,7 @@ let make = (~navigation as _, ~route as _) => {
   let (theme, setTheme) = Store.useTheme()
   let navigate = NavUtils.useNavigate()
 
-  let reset = Store.useResetAccounts()
+  let reset = Store.useReset()
   let makeRadio = value =>
     <LabeledRadio
       onPress={_ => setTheme(_ => value)}
