@@ -13,10 +13,16 @@ let _withSave = (stateHook, serializer, key: string, ()) => {
 
   let setValueWithSave = fn => {
     setValue(fn)
-    fn(value)->serializer->Belt.Option.map(s => Storage.set(key, s))->ignore
+    fn(value)
+    ->serializer
+    ->Belt.Option.map(s => {
+      Storage.set(key, s)
+    })
+    ->ignore
   }
+  let memoized = React.useMemo(() => setValueWithSave)
 
-  (value, setValueWithSave)
+  (value, memoized)
 }
 
 let withSave = atom => _withSave(() => Jotai.Atom.use(atom))

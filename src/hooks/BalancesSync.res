@@ -1,12 +1,4 @@
 open UsePrevious
-// let updateAccountBalance = (a: Account.t) => {
-//   Promise.all2((
-//     TaquitoUtils.safeGetBalance(a.tz1),
-//     TaquitoUtils.getTokens(a.tz1),
-//   ))->Promise.thenResolve(((b, t)) => {
-//     {...a, balance: Some(b), tokens: t}
-//   })
-// }
 
 let getAccountBalance = (~tz1: string, ~isTestNet) => {
   open AccountsReducer
@@ -24,20 +16,6 @@ let getAccountOperations = (tz1: string, ~isTestNet) => {
     {tz1: tz1, operations: operations}
   })
 }
-// let updateAccounts = accounts => {
-//   let updated = accounts->Belt.Array.map(updateAccountBalance)
-//   Promise.all(updated)
-// }
-
-// let handleAccounts = (old: array<Store.account>, new_: array<Store.account>) => {
-//   old->Belt.Array.map(oldA => {
-//     let updated = new_->Belt.Array.getBy(acc => acc.tz1 == oldA.tz1)
-//     switch updated {
-//     | Some(account) => account
-//     | None => oldA
-//     }
-//   })
-// }
 
 let updateAccountBalances = (
   accounts: array<Account.t>,
@@ -65,30 +43,13 @@ let updateAccountOperations = (
   })
 }
 
-let useAccountsBalanceUpdate = () => {
-  let (accounts, setAccounts) = Store.useAccounts()
+open Account
 
-  (~isTestNet) => {
-    accounts
-    ->Belt.Array.map(a => getAccountBalance(~tz1=a.tz1, ~isTestNet))
-    ->Js.Promise.all
-    ->Promise.thenResolve(balances => {
-      setAccounts(accounts => updateAccountBalances(accounts, balances))
-    })
-  }
-}
+let getBalances = (~accounts, ~isTestNet) =>
+  accounts->Belt.Array.map(a => getAccountBalance(~tz1=a.tz1, ~isTestNet))->Js.Promise.all
 
-let useAccountsOperationsUpdate = () => {
-  let (accounts, setAccounts) = Store.useAccounts()
-
-  (~isTestNet) =>
-    accounts
-    ->Belt.Array.map(a => getAccountOperations(a.tz1, ~isTestNet))
-    ->Js.Promise.all
-    ->Promise.thenResolve(balances =>
-      setAccounts(accounts => updateAccountOperations(accounts, balances))
-    )
-}
+let getOperations = (~accounts, ~isTestNet) =>
+  accounts->Belt.Array.map(a => getAccountOperations(a.tz1, ~isTestNet))->Js.Promise.all
 
 let useTransactionNotif = () => {
   let (accounts, _) = Store.useAccounts()
@@ -111,69 +72,59 @@ let useTransactionNotif = () => {
 }
 
 open Helpers
-open Belt
-let makeQueryAutomator = (~fn, ~onResult=_ => (), ~onError=_ => (), ~refreshRate=3000, ()) => {
-  let (cancelablFn, cancel) = withCancel(fn)
-  let timeoutId = ref(None)
 
-  let rec recursive = () => {
-    cancelablFn()
-    ->Promise.thenResolve(res => {
-      onResult(res)
-    })
-    ->Promise.catch(err => {
-      switch err {
-      | PromiseCanceled => ()
-      | err => onError(err)
-      }
-      Promise.resolve()
-    })
-    ->Promise.finally(_ => {
-      timeoutId.contents = Js.Global.setTimeout(recursive, refreshRate)->Some
-    })
-    ->ignore
+let _parseError = (e: exn) => {
+  open MezosAPI
+  open TzktAPI
+  open TaquitoUtils
+  switch e {
+  | MezosLastBlockFetchFailure(m) => "Failed to fetch last block. Reason: " ++ m
+  | MezosTransactionFetchFailure(m) => "Failed to fetch operations. Reason: " ++ m
+  | BalanceFetchFailure(m) => "Failed to fetch balances. Reason: " ++ m
+  | TokensFetchFailure(m) => "Failed to fetch tokens. Reason: " ++ m
+  | _ => Helpers.getMessage(e)
   }
-  let start = recursive
-  let stop = () => {
-    cancel.contents()
-    timeoutId.contents
-    ->Option.map(id => {
-      Js.Global.clearTimeout(id)
-      timeoutId.contents = None
-    })
-    ->ignore
-  }
+}
 
-  let refresh = () => {
-    stop()
-    start()
-  }
-
-  (start, stop, refresh)
+let _handleError = (notify, e) => {
+  e->_parseError->notify
+  Promise.reject(e)
 }
 
 let useBalancesSync = () => {
-  let updateBalances = useAccountsBalanceUpdate()
-  let updateOperations = useAccountsOperationsUpdate()
   let isTestNet = Store.useIsTestNet()
+  let (accounts, setAccounts) = SavedStore.useAccounts()
+  let notify = SnackBar.useNotification()
 
   let isTestNetRef = React.useRef(isTestNet)
+  let accountsRef = React.useRef(accounts)
 
   isTestNetRef.current = isTestNet
+  accountsRef.current = accounts
 
-  let update = () =>
-    Promise.all([
-      updateBalances(~isTestNet=isTestNetRef.current),
-      updateOperations(~isTestNet=isTestNetRef.current),
-    ])
+  let update = () => {
+    let accounts = accountsRef.current
+    let isTestNet = isTestNetRef.current
+
+    let operationsPromise =
+      getOperations(~isTestNet, ~accounts)
+      ->Promise.thenResolve(o => setAccounts(a => a->updateAccountOperations(o)))
+      ->Promise.catch(_handleError(notify))
+
+    let balancesPromise =
+      getBalances(~isTestNet, ~accounts)
+      ->Promise.thenResolve(b => setAccounts(a => a->updateAccountBalances(b)))
+      ->Promise.catch(_handleError(notify))
+
+    Promise.all2((balancesPromise, operationsPromise))
+  }
 
   let updateRef = React.useRef(update)
 
-  let masterUpdate = () => updateRef.current()
-
-  let memoAutomator = React.useMemo1(() => makeQueryAutomator(~fn=masterUpdate, ()), [])
-
-  let (_, _, refresh) = memoAutomator
+  let (_, _, refresh) = React.useMemo1(
+    () => makeQueryAutomator(~fn=() => updateRef.current(), ()),
+    [],
+  )
 
   React.useEffect2(() => {
     refresh()

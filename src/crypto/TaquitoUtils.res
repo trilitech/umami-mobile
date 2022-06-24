@@ -62,6 +62,8 @@ let _getBalance = (~tz1, ~isTestNet) => {
   res->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
 }
 
+exception BalanceFetchFailure(string)
+
 let getBalance = (~tz1, ~isTestNet) =>
   _getBalance(~tz1, ~isTestNet)
   ->Promise.thenResolve(b => Belt.Int.fromString(b))
@@ -73,6 +75,7 @@ let getBalance = (~tz1, ~isTestNet) =>
       }
     })
   })
+  ->Promise.catch(err => Promise.reject(BalanceFetchFailure(Helpers.getMessage(err))))
 
 let sendTez = (~recipient, ~amount, ~passphrase, ~sk, ~isTestNet) => {
   let tezos = _makeToolkit(~isTestNet)
