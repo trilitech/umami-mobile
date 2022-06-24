@@ -121,7 +121,7 @@ let useBalancesSync = () => {
 
   let updateRef = React.useRef(update)
 
-  let (_, _, refresh) = React.useMemo1(
+  let (_, stop, refresh) = React.useMemo1(
     () => makeQueryAutomator(~fn=() => updateRef.current(), ()),
     [],
   )
@@ -130,4 +130,6 @@ let useBalancesSync = () => {
     refresh()
     None
   }, (isTestNet, refresh))
+
+  React.useEffect1(() => Some(stop), [])
 }
