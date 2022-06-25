@@ -7,7 +7,7 @@ let useActiveAccount = () => {
 
   let (accounts, _) = useAccounts()
 
-  i->Belt.Option.flatMap(i => accounts->Belt.Array.get(i))
+  accounts->Belt.Array.get(i)
 }
 
 let useSnackBar = () => Jotai.Atom.use(snackBarAtom)
@@ -48,7 +48,7 @@ let useReset = () => {
   let (_, setNetwork) = useNetwork()
 
   () => {
-    setSelectedAccount(_ => Some(0))
+    setSelectedAccount(_ => 0)
     setAccounts(_ => [])
     setNetwork(_ => Mainnet)
   }

@@ -5,7 +5,7 @@ module Deserializers = {
   // Totally unsafe
   @scope("JSON") @val
   external deserializeAccounts: string => array<Account.t> = "parse"
-  let deserializeSelectedAccount = s => Belt.Int.fromString(s)
+  let deserializeSelectedAccount = s => Belt.Int.fromString(s)->Belt.Option.getWithDefault(0)
   let deserializeTheme = (s: string) => s
   @scope("JSON") @val
   external deserializeContacts: string => array<Contact.t> = "parse"

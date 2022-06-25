@@ -10,17 +10,14 @@ let make = (~navigation, ~route as _) => {
     <CommonComponents.Wrapper flexDirection=#column alignItems=#center>
       {accounts
       ->Belt.Array.map(a => {
-        let selected = switch selectedAccount {
-        | Some(i) => i == a.derivationPathIndex
-        | None => false
-        }
+        let selected = a.derivationPathIndex == selectedAccount
         <AccountListItem
           key=a.tz1
           account=a
           selected
           onPress={_ => {
             navigation->NavStacks.OnBoard.Navigation.goBack()
-            setSelectedAccount(_ => a.derivationPathIndex->Some)
+            setSelectedAccount(_ => a.derivationPathIndex)
           }}
           onPressEdit={_ => {
             navigation->NavStacks.OnBoard.Navigation.navigateWithParams(

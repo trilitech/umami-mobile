@@ -2,7 +2,7 @@ open Atoms
 
 module Serializers = {
   let serializeAccounts = Js.Json.stringifyAny
-  let serializeSelectedAccount = s => s->Belt.Option.map(Js.Int.toString)
+  let serializeSelectedAccount = s => s->Js.Int.toString->Some
   let serializeTheme = s => s->Some
   let serializeContacts = Js.Json.stringifyAny
   let serializeNetwork = (n: Network.t) => n->Network.toString->Some

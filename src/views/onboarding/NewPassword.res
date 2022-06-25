@@ -1,6 +1,6 @@
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let (_, setSecret) = Store.useAccounts()
+  let (_, setAccounts) = Store.useAccounts()
   let (_, setSelectedAccount) = Store.useSelectedAccount()
 
   let (mnemonic, _) = OnboardingMnemonicState.useMnemonic()
@@ -18,8 +18,8 @@ let make = (~navigation as _, ~route as _) => {
         ~derivationPathIndex=0,
         (),
       )->Promise.thenResolve(account => {
-        setSecret(_ => [account])
-        setSelectedAccount(_ => 0->Some)
+        setAccounts(_ => [account])
+        setSelectedAccount(_ => 0)
       })
     )
     ->Promise.catch(err => {
