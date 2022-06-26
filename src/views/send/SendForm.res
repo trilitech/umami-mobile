@@ -4,9 +4,13 @@ open CommonComponents
 open Paper
 
 open Belt
+
+let validPrettyAmount = (amount: string) =>
+  amount->Float.fromString->Option.mapWithDefault(false, a => a > 0.)
+
 let validTrans = (trans: SendTypes.formState) =>
   trans.recipient->Option.mapWithDefault(false, t => t->TaquitoUtils.tz1IsValid) &&
-    trans.prettyAmount > 0.
+    trans.prettyAmount->validPrettyAmount
 
 let vMargin = FormStyles.styles["verticalMargin"]
 
@@ -21,7 +25,7 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
   let disabled = !validTrans(trans) || isLoading
   let navigate = NavUtils.useNavigate()
 
-  let handleChangeAmount = (a: float) =>
+  let handleChangeAmount = (a: string) =>
     setTrans(t => {
       {...t, prettyAmount: a}
     })

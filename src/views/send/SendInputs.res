@@ -92,19 +92,27 @@ module CurrencyPicker = {
   }
 }
 
+let re = %re("/.*\..*\..*/")
+
+let hasMoreThan1Comma = s => re->Js.Re.test_(s)
+
+let validFloatRepresentation = (t: string) =>
+  t->Float.fromString->Option.isSome && !hasMoreThan1Comma(t)
+
 module MultiCurrencyInput = {
   @react.component
   let make = (~amount, ~onChangeAmount, ~currency, ~onChangeSymbol) => {
     <Wrapper>
       <TextInput
+        placeholder="Enter amount"
         style={style(~flex=1., ())}
-        keyboardType="number-pad"
-        value={amount->Float.toString}
+        keyboardType="decimal-pad"
+        value=amount
         onChangeText={t => {
           if t == "" {
-            onChangeAmount(0.)
-          } else {
-            Float.fromString(t)->Option.map(v => onChangeAmount(v))->ignore
+            onChangeAmount("")
+          } else if validFloatRepresentation(t) {
+            onChangeAmount(t)
           }
         }}
         label="amount"

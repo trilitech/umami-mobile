@@ -42,8 +42,8 @@ module PureSendScreen = {
     ~isTestNet,
   ) => {
     let initialPrettyAmount = switch nft {
-    | Some((b, _)) => b.balance->Js.Int.toFloat
-    | _ => 0.
+    | Some((_, _)) => "1"
+    | _ => ""
     }
 
     let initialAssetType = switch nft {
@@ -61,21 +61,28 @@ module PureSendScreen = {
     let (loading, setLoading) = React.useState(_ => false)
 
     let send =
-      trans.recipient->Option.map(recipientTz1 =>
+      Helpers.both(Float.fromString(trans.prettyAmount), trans.recipient)->Option.map(((
+        prettyAmount,
+        recipientTz1,
+      )) =>
         SendAPI.send(
           ~recipientTz1,
-          ~prettyAmount=trans.prettyAmount,
+          ~prettyAmount,
           ~assetType=trans.assetType,
           ~senderTz1=sender.tz1,
           ~sk=sender.sk,
           ~isTestNet,
         )
       )
+
     let simulate =
-      trans.recipient->Option.map((recipientTz1, ()) =>
+      Helpers.both(Float.fromString(trans.prettyAmount), trans.recipient)->Option.map((
+        (prettyAmount, recipientTz1),
+        (),
+      ) =>
         SendAPI.simulate(
           ~recipientTz1,
-          ~prettyAmount=trans.prettyAmount,
+          ~prettyAmount,
           ~assetType=trans.assetType,
           ~senderTz1=sender.tz1,
           ~senderPk=sender.pk,

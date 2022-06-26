@@ -3,7 +3,7 @@ open SendTypes
 let make = (~navigation as _, ~route as _) => {
   let trans = {
     recipient: "bar"->Some,
-    prettyAmount: 3.,
+    prettyAmount: "3",
     assetType: CurrencyAsset(CurrencyTez),
   }
   <Recap fee={1232} trans onSubmit={_ => ()} onCancel={_ => ()} />

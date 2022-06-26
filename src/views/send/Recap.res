@@ -12,7 +12,7 @@ let makeRow = (title, content) =>
 
 @react.component
 let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
-  let amountStr = trans.prettyAmount->Belt.Float.toString
+  let amountStr = trans.prettyAmount
 
   let amountDisplay = switch trans.assetType {
   | CurrencyAsset(currency) =>
