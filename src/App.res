@@ -2,17 +2,9 @@
 require('./ignoreWarnings')
 `)
 
-// let useIsDarkMode = () => {
-//   Appearance.useColorScheme()
-//   ->Js.Null.toOption
-//   ->Belt.Option.map(scheme => scheme === #dark)
-//   ->Belt.Option.getWithDefault(false)
-// }
-
 let useHasAccount = () => {
-  let (accounts, _) = Store.useAccounts()
-  let account = accounts->Belt.Array.get(0)
-  Belt.Option.isSome(account)
+  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
+  accounts->Belt.Array.get(0)->Belt.Option.isSome
 }
 
 // Set bg color via react navigation theme otherwise we get glitches
@@ -64,9 +56,5 @@ let app = () => {
   let storeIsUpToDate = StoreInit.useInit()
 
   // Prevent rerenders sinces useInit is hooked to all the states
-
   <MemoizedApp storeIsUpToDate />
 }
-
-// smoke test library import
-// Js.Console.log("lib import works look: " ++ UmamiLibBindings.Hello.foo)

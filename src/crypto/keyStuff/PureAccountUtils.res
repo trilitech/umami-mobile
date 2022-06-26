@@ -20,17 +20,7 @@ module Make = (M: Deps) => {
 
   let keysToAccount = k => {
     let {derivationPathIndex, pk, sk, tz1} = k
-    let account: Account.t = {
-      derivationPathIndex: derivationPathIndex,
-      pk: pk,
-      sk: sk,
-      tz1: tz1,
-      name: "Account " ++ Js.Int.toString(derivationPathIndex),
-      balance: None,
-      tokens: [],
-      transactions: [],
-    }
-    account
+    Account.make(~derivationPathIndex, ~pk, ~sk, ~tz1, ())
   }
 
   let generateAccount = (

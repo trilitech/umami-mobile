@@ -1,6 +1,6 @@
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let (_, setAccounts) = Store.useAccounts()
+  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
   let (_, setSelectedAccount) = Store.useSelectedAccount()
 
   let (mnemonic, _) = OnboardingMnemonicState.useMnemonic()
@@ -18,7 +18,7 @@ let make = (~navigation as _, ~route as _) => {
         ~derivationPathIndex=0,
         (),
       )->Promise.thenResolve(account => {
-        setAccounts(_ => [account])
+        dispatch(ReplaceAll([account]))
         setSelectedAccount(_ => 0)
       })
     )

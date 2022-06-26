@@ -13,14 +13,14 @@ let addNewAccount = (~name, ~passphrase, ~derivationIndex) => {
 }
 
 let useLastDerivationIndex = () => {
-  let (secrets, _) = Store.useAccounts()
-  secrets->Belt.Array.length
+  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
+  accounts->Belt.Array.length
 }
 @react.component
 let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
   let (step, setStep) = React.useState(_ => #edit)
   let (accountName, setAccountName) = React.useState(_ => "")
-  let (accounts, setAccounts) = Store.useAccounts()
+  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
 
   let notify = SnackBar.useNotification()
   let derivationIndex = useLastDerivationIndex()
@@ -46,7 +46,7 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
           setLooading(_ => true)
           addNewAccount(~name=accountName, ~passphrase=p, ~derivationIndex)
           ->Promise.thenResolve(a => {
-            setAccounts(_ => Belt.Array.concat(accounts, [a]))
+            Add([a])->dispatch
 
             notify(`Accounts successfully created: ${accountName}`)
             navigation->NavStacks.OnBoard.Navigation.navigate("Accounts")

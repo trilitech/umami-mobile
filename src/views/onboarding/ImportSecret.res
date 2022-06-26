@@ -37,7 +37,7 @@ module ImportSecret = {
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let (backupPhrase, setBackupPhrase) = React.useState(_ => "")
-  let (_, setAccounts) = Store.useAccounts()
+  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
   let notify = SnackBar.useNotification()
 
   let (loading, setLoading) = React.useState(_ => false)
@@ -48,9 +48,7 @@ let make = (~navigation as _, ~route as _) => {
       notify("No accounts revealed for this secret...")
     } else {
       BackupphraseCrypto.encrypt(backupPhrase, passphrase)
-      ->Promise.thenResolve(_ => {
-        setAccounts(_ => accounts)
-      })
+      ->Promise.thenResolve(_ => ReplaceAll(accounts)->dispatch)
       ->ignore
     }
   }

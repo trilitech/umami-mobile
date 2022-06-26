@@ -3,7 +3,7 @@ open ReactNative.Style
 open Paper
 @react.component
 let make = (~navigation, ~route as _) => {
-  let (accounts, _) = Store.useAccounts()
+  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
   let (selectedAccount, setSelectedAccount) = Store.useSelectedAccount()
 
   <Container>

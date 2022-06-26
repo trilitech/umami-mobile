@@ -17,32 +17,6 @@ let getAccountOperations = (tz1: string, ~isTestNet) => {
   })
 }
 
-let updateAccountBalances = (
-  accounts: array<Account.t>,
-  updates: array<AccountsReducer.balancePayload>,
-) => {
-  accounts->Belt.Array.map(acc => {
-    updates
-    ->Belt.Array.getBy(u => u.tz1 == acc.tz1)
-    ->Belt.Option.mapWithDefault(acc, u => {
-      {...acc, balance: u.balance, tokens: u.tokens}
-    })
-  })
-}
-
-let updateAccountOperations = (
-  accounts: array<Account.t>,
-  updates: array<AccountsReducer.operationPayload>,
-) => {
-  accounts->Belt.Array.map(acc => {
-    updates
-    ->Belt.Array.getBy(u => u.tz1 == acc.tz1)
-    ->Belt.Option.mapWithDefault(acc, u => {
-      {...acc, transactions: u.operations}
-    })
-  })
-}
-
 open Account
 
 let getBalances = (~accounts, ~isTestNet) =>
@@ -52,7 +26,7 @@ let getOperations = (~accounts, ~isTestNet) =>
   accounts->Belt.Array.map(a => getAccountOperations(a.tz1, ~isTestNet))->Js.Promise.all
 
 let useTransactionNotif = () => {
-  let (accounts, _) = Store.useAccounts()
+  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
 
   let prevAccounts = usePrevious(accounts)
   let notify = SnackBar.useNotification()
@@ -93,7 +67,7 @@ let _handleError = (notify, e) => {
 
 let useBalancesSync = () => {
   let isTestNet = Store.useIsTestNet()
-  let (accounts, setAccounts) = SavedStore.useAccounts()
+  let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
   let notify = SnackBar.useNotification()
 
   let isTestNetRef = React.useRef(isTestNet)
@@ -108,12 +82,12 @@ let useBalancesSync = () => {
 
     let operationsPromise =
       getOperations(~isTestNet, ~accounts)
-      ->Promise.thenResolve(o => setAccounts(a => a->updateAccountOperations(o)))
+      ->Promise.thenResolve(o => dispatch(UpdateOperations(o)))
       ->Promise.catch(_handleError(notify))
 
     let balancesPromise =
       getBalances(~isTestNet, ~accounts)
-      ->Promise.thenResolve(b => setAccounts(a => a->updateAccountBalances(b)))
+      ->Promise.thenResolve(b => dispatch(UpdateBalances(b)))
       ->Promise.catch(_handleError(notify))
 
     Promise.all2((balancesPromise, operationsPromise))

@@ -5,7 +5,7 @@ include SavedStore
 let useActiveAccount = () => {
   let (i, _) = useSelectedAccount()
 
-  let (accounts, _) = useAccounts()
+  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
 
   accounts->Belt.Array.get(i)
 }
@@ -28,28 +28,14 @@ let useWithAccount = cb => {
   }
 }
 
-let useUpdateAccount = () => {
-  let (accounts, setAccounts) = useAccounts()
-
-  a => {
-    accounts
-    ->Belt.Array.getIndexBy(ac => a.derivationPathIndex == ac.derivationPathIndex)
-    ->Belt.Option.map(i => {
-      let newAccounts = accounts->Helpers.update(i, a)
-      setAccounts(_ => newAccounts)
-    })
-    ->ignore
-  }
-}
-
 let useReset = () => {
-  let (_, setAccounts) = useAccounts()
+  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
   let (_, setSelectedAccount) = useSelectedAccount()
   let (_, setNetwork) = useNetwork()
 
   () => {
     setSelectedAccount(_ => 0)
-    setAccounts(_ => [])
+    dispatch(Reset)
     setNetwork(_ => Mainnet)
   }
 }

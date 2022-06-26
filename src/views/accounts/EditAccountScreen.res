@@ -10,8 +10,7 @@ let getAccount = (route: NavStacks.OnBoard.route, accounts: array<Account.t>) =>
 
 @react.component
 let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
-  let (accounts, _) = Store.useAccounts()
-  let updateAccount = Store.useUpdateAccount()
+  let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
 
   getAccount(route, accounts)->Belt.Option.mapWithDefault(React.null, a =>
     <Container>
@@ -19,7 +18,7 @@ let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
       <EditAccountForm
         name=a.name
         onSubmit={name => {
-          updateAccount({...a, name: name})
+          dispatch(RenameAccount({"name": name, "tz1": a.tz1}))
           navigation->NavStacks.OnBoard.Navigation.goBack()
         }}
       />
