@@ -45,7 +45,10 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
       currency={currency}
       onChangeSymbol=handleChangeSymbol
     />
-  | NftAsset(_, m) => <NFTInput imageUrl={m.displayUri} name={m.name} />
+  | NftAsset(_, m) => <>
+      <NFTInput imageUrl={m.displayUri} name={m.name} />
+      <EditionsInput prettyAmount={prettyAmount} onChange=handleChangeAmount />
+    </>
   }
 
   let handleSenderPress = _ => navigate("Accounts")->ignore

@@ -13,6 +13,18 @@ module Sender = {
   }
 }
 
+let update = (p, xf, onChange) =>
+  p->Int.fromString->Option.map(xf)->Option.map(Int.toString)->Option.map(onChange)->ignore
+module EditionsInput = {
+  @react.component
+  let make = (~prettyAmount: string, ~onChange) => {
+    <Wrapper>
+      <TextInput style={style(~flex=1., ())} mode=#flat placeholder="editions" value=prettyAmount />
+      <NicerIconBtn iconName="minus" onPress={_ => prettyAmount->update(a => a - 1, onChange)} />
+      <NicerIconBtn iconName="plus" onPress={_ => prettyAmount->update(a => a + 1, onChange)} />
+    </Wrapper>
+  }
+}
 module NFTInput = {
   @react.component
   let make = (~imageUrl, ~name) => {
