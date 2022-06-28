@@ -5,6 +5,9 @@ type eventFirer
 @module("@testing-library/react-native") external render: React.element => renderResult = "render"
 @module("@testing-library/react-native") external fireEvent: eventFirer = "fireEvent"
 
+@module("@testing-library/react-native")
+external within: testInstance => renderResult = "within"
+
 @send
 external getByText: (
   renderResult,
@@ -22,12 +25,6 @@ external getAllByTestId: (
   renderResult,
   ~matcher: @unwrap [#Str(string) | #RegExp(Js.Re.t) | #Func((string, Dom.element) => bool)],
 ) => array<testInstance> = "getAllByTestId"
-
-@send
-external toHaveTextContent: (
-  'a,
-  ~matcher: @unwrap [#Str(string) | #RegExp(Js.Re.t) | #Func((string, Dom.element) => bool)],
-) => unit = "toHaveTextContent"
 
 @send
 external debug: (renderResult, unit) => unit = "debug"
