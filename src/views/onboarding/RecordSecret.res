@@ -1,16 +1,16 @@
-open Paper
-
 let getRandoms = (arr, amount) => {
   arr->Belt.Array.shuffle->Belt.Array.slice(~offset=0, ~len=amount)
 }
 
 let useStack = arr => {
   let (stack, setStack) = React.useState(_ => arr)
+
+  let tail = stack->Belt.Array.get(stack->Belt.Array.length - 1)
   let pop = _ => {
     setStack(prev => prev->Belt.Array.slice(~offset=0, ~len={prev->Belt.Array.length - 1}))
+    tail
   }
-  let tail = stack->Belt.Array.get(stack->Belt.Array.length - 1)
-  (tail, pop)
+  pop
 }
 
 let getRandomEls = (~exclude: string, ~amount, arr: array<string>) => {
@@ -32,18 +32,20 @@ module Redirect = {
 }
 
 let useWordIndex = word => {
-  let (mnemonic, _) = OnboardingMnemonicState.useMnemonic()
+  let (mnemonic, _) = DangerousMnemonicHooks.useSuperDangerousMnemonic()
   mnemonic->Belt.Array.getIndexBy(e => e == word)
 }
 
 module VerifySecret = {
   @react.component
-  let make = (~badAnswers, ~goodAnwser, ~onSolved) => {
+  let make = (~badAnswers, ~goodAnwser, ~onSolved, ~onSkipAll) => {
     let (selected, setSelected) = React.useState(_ => None)
     let wordIndex = useWordIndex(goodAnwser)
+    let notify = SnackBar.useNotification()
     let caption =
       wordIndex->Belt.Option.mapWithDefault("", i => "Word " ++ Belt.Int.toString(i + 1))
 
+    let errorColor = ThemeProvider.useErrorColor()
     let allAnswsers = React.useMemo2(() => {
       badAnswers->Belt.Array.concat([goodAnwser])->Belt.Array.shuffle
     }, (goodAnwser, badAnswers))
@@ -57,15 +59,12 @@ module VerifySecret = {
         if answer == goodAnwser {
           setSelected(_ => None)
           onSolved()
+        } else {
+          notify("Wrong answer!")
         }
       })
       ->ignore
     }
-
-    React.useEffect1(() => {
-      checkAnswer()
-      None
-    }, [selected])
 
     <>
       <OnboardingIntructions
@@ -74,7 +73,7 @@ module VerifySecret = {
         instructions=" We will now verify that you’ve properly recorded your recovery phrase. To demonstrate this, please select the word that corresponds to each sequence number."
       />
       <Container>
-        <Caption> {React.string(caption)} </Caption>
+        <Paper.Caption> {React.string(caption)} </Paper.Caption>
         {allAnswsers
         ->Belt.Array.mapWithIndex((i, s) =>
           <CommonComponents.ListItem
@@ -91,31 +90,42 @@ module VerifySecret = {
         ->React.array}
         <ContinueBtn
           onPress={_ => {
-            onSolved()
+            checkAnswer()
           }}
           text="Next"
         />
+        <ContinueBtn color=errorColor onPress={_ => onSkipAll()} text="YOLO (not recommended)" />
       </Container>
     </>
   }
 }
 
+let useWordsToGuess = mnemonic => mnemonic->getRandoms(4)->useStack
+
 module PureRecordSecret = {
   @react.component
   let make = (~onFinished, ~mnemonic) => {
-    let (toGuess, guessed) = mnemonic->getRandoms(3)->useStack
+    let getWord = useWordsToGuess(mnemonic)
+    let (wordToGuess, setWordToGuess) = React.useState(_ => getWord())
 
     React.useEffect1(() => {
-      if toGuess->Belt.Option.isNone {
+      if wordToGuess->Belt.Option.isNone {
         onFinished()
       }
       None
-    }, [toGuess])
+    }, [wordToGuess])
 
-    switch toGuess {
+    let handleSovled = () => {
+      let nextWord = getWord()
+      setWordToGuess(_ => nextWord)
+    }
+
+    let skipAll = () => setWordToGuess(_ => None)
+
+    switch wordToGuess {
     | Some(goodAnwser) =>
       let badAnswers = getRandomEls(~exclude=goodAnwser, ~amount=4, mnemonic)
-      <VerifySecret goodAnwser badAnswers onSolved=guessed />
+      <VerifySecret goodAnwser badAnswers onSolved=handleSovled onSkipAll=skipAll />
     | None => <Container> {React.null} </Container>
     }
   }
@@ -123,7 +133,7 @@ module PureRecordSecret = {
 
 @react.component
 let make = (~navigation, ~route as _) => {
-  let (mnemonic, _) = OnboardingMnemonicState.useMnemonic()
+  let (mnemonic, _) = DangerousMnemonicHooks.useSuperDangerousMnemonic()
 
   <PureRecordSecret
     mnemonic

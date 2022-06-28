@@ -1,9 +1,11 @@
 open CommonComponents
 open NavStacks.OffBoard
 
+open ReactNative.Style
+
 @react.component
 let make = (~navigation, ~route as _) => {
-  open ReactNative.Style
+  DangerousMnemonicHooks.useWipeOutOnMount()
 
   <Container>
     <ReactNative.View
@@ -20,11 +22,11 @@ let make = (~navigation, ~route as _) => {
       title="Import secret with recovery phrase"
       iconName="format-list-bulleted"
     />
-    <ListItem
-      onPress={_ => navigation->Navigation.navigate("ImportSecret")}
-      title="Restore from backtup"
-      iconName="cloud-download-outline"
-    />
+    // <ListItem
+    //   onPress={_ => navigation->Navigation.navigate("ImportSecret")}
+    //   title="Restore from backtup"
+    //   iconName="cloud-download-outline"
+    // />
     // <ListItem
     //   onPress={_ => navigation->Navigation.navigate("ImportSecret")}
     //   title="Connect with google"

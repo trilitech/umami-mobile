@@ -3,14 +3,24 @@ external fixType: NavStacks.OnBoard.Header.headerProps<'a> => {"route": route, "
   "%identity"
 
 let dangerColor = Colors.Light.error
-let useHeaderStyle = () => {
+
+let useHeaderStyle = (~onBoardingMode=false, ()) => {
   let header = NavStacks.OnBoard.Header.render(p => {
     let goBack = NavUtils.useGoBack()
+    let navigate = NavUtils.useNavigate()
 
     let name = (p->fixType)["route"].name
-    <TopBarAllScreens title=name onPressGoBack={goBack} />
+
+    if onBoardingMode == true {
+      if name == "Welcome" {
+        <TopBarAllScreens />
+      } else {
+        <TopBarAllScreens onPressGoBack={_ => navigate("Welcome")} />
+      }
+    } else {
+      <TopBarAllScreens title=name onPressGoBack={goBack} />
+    }
   })
 
-  let options = NavStacks.OnBoard.options(~header, ())
-  _ => options
+  _ => NavStacks.OnBoard.options(~header, ())
 }

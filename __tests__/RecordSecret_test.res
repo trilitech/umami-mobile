@@ -50,10 +50,8 @@ describe("<RecordSecret />", () => {
     expect(res->Belt.Array.length)->toEqual(5)
   })
 
-  test("it displays next button", () => {
-    let btn = screen.contents->getByText(~matcher=#RegExp(%re("/next/i")))
-    fireEvent->press(btn)
-    fireEvent->press(btn)
+  test("Yolo button bypasses questions", () => {
+    let btn = screen.contents->getByText(~matcher=#RegExp(%re("/yolo/i")))
     fireEvent->press(btn)
 
     let calls = mockFn->MockJs.calls

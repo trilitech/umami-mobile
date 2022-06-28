@@ -60,7 +60,7 @@ module Mnemonic = {
 
 @react.component
 let make = (~navigation, ~route as _) => {
-  let (mnemonic, setMnemonic) = OnboardingMnemonicState.useMnemonic()
+  let (mnemonic, setMnemonic) = DangerousMnemonicHooks.useSuperDangerousMnemonic()
   React.useEffect1(() => {
     generateMnemonic(m => setMnemonic(_ => m->Js.String2.split(" ")))
     None

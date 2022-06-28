@@ -33,7 +33,7 @@ let makeColors = (
     ~backdrop=backdrop(colors),
     ~background=background(colors),
     ~disabled=disabled(colors),
-    ~error=error(colors),
+    ~error=Colors.Light.error,
     ~placeholder=placeholder(colors),
     ~surface=surfaceColor->Belt.Option.getWithDefault(surface(colors)),
     ~text=text(colors),
@@ -96,6 +96,10 @@ let useSurfaceColor = () => {
   useTheme()->Theme.colors->Theme.Colors.surface
 }
 
+let useErrorColor = () => {
+  open Paper.ThemeProvider
+  useTheme()->Theme.colors->Theme.Colors.error
+}
 @react.component
 let make = (~children) => {
   let (newDark, newDefault) = makeThemes()

@@ -3,7 +3,7 @@ let make = (~navigation as _, ~route as _) => {
   let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
   let (_, setSelectedAccount) = Store.useSelectedAccount()
 
-  let (mnemonic, _) = OnboardingMnemonicState.useMnemonic()
+  let (mnemonic, _) = DangerousMnemonicHooks.useSuperDangerousMnemonic()
 
   let (loading, setLoading) = React.useState(_ => false)
 

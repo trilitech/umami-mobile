@@ -20,6 +20,7 @@ let useNavigate = () => {
     ->Belt.Option.map(nav => {
       nav->NavStacks.OnBoard.Navigation.navigate(route)
     })
+    ->ignore
   }
 }
 
