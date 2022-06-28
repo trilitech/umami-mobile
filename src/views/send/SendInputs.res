@@ -110,7 +110,6 @@ module CurrencyPicker = {
     let items = tokensToSelectItems(tokens)
 
     <ReactNative.Text testID="currency-picker">
-      {"foo"->React.string}
       <StyledPicker
         items
         value={getLabel(value)}
