@@ -19,6 +19,7 @@ type rec assertion =
   | ArraySuperset(modifier<(array<'a>, array<'a>)>): assertion
   | Be(modifier<('a, 'a)>): assertion
   | TestInstanceContainsText(modifier<('a, 'b)>): assertion
+  | TestInstanceHasProp(modifier<('a, 'b, 'c)>): assertion
   | Equal(modifier<('a, 'a)>): assertion
   | FloatCloseTo(modifier<(float, float)>): assertion
   | FloatSoCloseTo(modifier<(float, float, int)>): assertion
@@ -89,6 +90,8 @@ module LLExpect: {
     | Be(#Not(a, b)) => expect(a)["not"]["toBe"](b)
     | TestInstanceContainsText(#Just(a, b)) => expect(a)["toHaveTextContent"](b)
     | TestInstanceContainsText(#Not(a, b)) => expect(a)["not"]["toHaveTextContent"](b)
+    | TestInstanceHasProp(#Just(a, b, c)) => expect(a)["toHaveProp"](. b, c)
+    | TestInstanceHasProp(#Not(a, b, c)) => expect(a)["not"]["toHaveProp"](. b, c)
     | Equal(#Just(a, b)) => expect(a)["toEqual"](b)
     | Equal(#Not(a, b)) => expect(a)["not"]["toEqual"](b)
     | FloatCloseTo(#Just(a, b)) => expect(a)["toBeCloseTo"](b)
@@ -352,6 +355,7 @@ module Expect = {
 
   let toBe = (b, p) => Be(mapMod(a => (a, p), b))
   let toHaveTextContent = (b, p) => TestInstanceContainsText(mapMod(a => (a, p), b))
+  let toHaveProp = (b, prop, value) => TestInstanceHasProp(mapMod(a => (a, prop, value), b))
   /* toHaveBeenCalled* */
   let toBeCloseTo = (b, p) => FloatCloseTo(mapMod(a => (a, p), b))
   let toBeSoCloseTo = (b, ~digits, p) => FloatSoCloseTo(mapMod(a => (a, p, digits), b))

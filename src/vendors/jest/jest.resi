@@ -100,6 +100,7 @@ module Expect: {
 
   let toBe: ([< partial<'a>], 'a) => assertion
   let toHaveTextContent: ([< partial<'b>], 'a) => assertion
+  let toHaveProp: ([< partial<'b>], string, string) => assertion
   let toBeCloseTo: ([< partial<float>], float) => assertion
   let toBeSoCloseTo: ([< partial<float>], ~digits: int, float) => assertion
   let toBeGreaterThan: ([< partial<'a>], 'a) => assertion
