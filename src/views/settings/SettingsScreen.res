@@ -3,22 +3,16 @@ open CommonComponents
 open Paper
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let (theme, setTheme) = Store.useTheme()
   let navigate = NavUtils.useNavigate()
 
   let reset = Store.useReset()
-  let makeRadio = value =>
-    <LabeledRadio
-      onPress={_ => setTheme(_ => value)}
-      label=value
-      status={theme == value ? #checked : #unchecked}
-      value
-    />
 
   <Container>
-    <List.Section title="Theme">
-      {makeRadio("dark")} {makeRadio("light")} {makeRadio("system")}
-    </List.Section>
+    <CustomListItem
+      onPress={_ => navigate("Theme")->ignore}
+      center={<Text> {React.string("Theme")} </Text>}
+      right={<CommonComponents.Icon name="chevron-right" />}
+    />
     <CustomListItem
       onPress={_ => navigate("Contacts")->ignore}
       center={<Text> {React.string("Contacts")} </Text>}

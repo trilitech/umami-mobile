@@ -10,6 +10,7 @@ let make = () => {
       />
       <Screen name="NFT" options={headerStyles} component=DisplayNFTScreen.make />
       <Screen name="Network" options={headerStyles} component=NetworkScreen.make />
+      <Screen name="Theme" options={headerStyles} component=ThemeScreen.make />
       <Screen name="Accounts" options={headerStyles} component=AccountsScreen.make />
       <Screen name="EditAccount" options={headerStyles} component=EditAccountScreen.make />
       <Screen name="CreateAccount" options={headerStyles} component=CreateAccountScreen.make />
