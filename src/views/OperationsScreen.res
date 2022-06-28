@@ -203,19 +203,21 @@ let makePrettyOperations = (~myTz1, ~operations, ~tokens, ~indexerLastBlock) => 
 module HistoryDisplay = {
   @react.component
   let make = (~tz1, ~operations: array<Operation.t>, ~indexerLastBlock: int, ~tokens) => {
-    let els =
+    let operationEls =
       operations
       ->Belt.Array.map(el => makeDisplayElement(el, tz1, indexerLastBlock, tokens))
       ->Helpers.filterNone
+      ->Belt.Array.mapWithIndex((i, t) =>
+        <TransactionItem key={t.hash ++ t.date ++ Js.Int.toString(i)} transaction=t />
+      )
 
     <Container>
       <ScrollView>
-        {els
-        // ->Belt.Array.mapWithIndex((i, t) => <ListItem key={makeKey(t, i)} title=t.destination />)
-        ->Belt.Array.mapWithIndex((i, t) =>
-          <TransactionItem key={t.hash ++ t.date ++ Js.Int.toString(i)} transaction=t />
-        )
-        ->React.array}
+        {if operationEls == [] {
+          <DefaultView title="No Operations yet" subTitle="Your operations will appear here..." />
+        } else {
+          operationEls->React.array
+        }}
       </ScrollView>
     </Container>
   }
@@ -225,17 +227,21 @@ module HistoryDisplay = {
 let make = (~route as _, ~navigation as _) => {
   let operations = useCurrentAccountOperations()
   let tokens = Store.useTokens()
+  let notify = SnackBar.useNotification()
   let (indexerLastBlock, setIndexerLastBlock) = React.useState(_ => None)
   let isTestNet = Store.useIsTestNet()
 
   React.useEffect1(() => {
     MezosAPI.getIndexerLastBlock(~isTestNet)
-    ->Promise.thenResolve(lastBlock => {
-      setIndexerLastBlock(_ => Some(lastBlock))
+    ->Promise.thenResolve(lastBlock => setIndexerLastBlock(_ => Some(lastBlock)))
+    ->Promise.catch(err => {
+      notify("Failed fetchting index last block. Reaston: " ++ Helpers.getMessage(err))
+      Promise.reject(err)
     })
     ->ignore
     None
   }, [operations])
+
   let account = Store.useActiveAccount()
 
   switch (account, indexerLastBlock) {

@@ -65,6 +65,11 @@ module NftGallery = {
     let navigate = NavUtils.useNavigateWithParams()
     let (search, setSearch) = React.useState(_ => "")
 
+    let nftEls =
+      tokens
+      ->Belt.Array.keep(token => search == "" || tokenNameContainsStr(token, search))
+      ->Belt.Array.map(tokenToElement(navigate))
+
     <>
       <Paper.Searchbar
         placeholder="Search NFT"
@@ -75,10 +80,13 @@ module NftGallery = {
       />
       <ScrollView>
         <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
-          {tokens
-          ->Belt.Array.keep(token => search == "" || tokenNameContainsStr(token, search))
-          ->Belt.Array.map(tokenToElement(navigate))
-          ->React.array}
+          {if nftEls == [] {
+            <DefaultView
+              title="No result" subTitle={`There was no result for ${search}. Try a new search`}
+            />
+          } else {
+            nftEls->React.array
+          }}
         </Wrapper>
       </ScrollView>
     </>
