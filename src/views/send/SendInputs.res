@@ -14,7 +14,14 @@ module Sender = {
 }
 
 let update = (p, xf, onChange) =>
-  p->Int.fromString->Option.map(xf)->Option.map(Int.toString)->Option.map(onChange)->ignore
+  p
+  ->Int.fromString
+  ->Option.map(xf)
+  ->Option.flatMap(i => i > 0 ? Some(i) : None)
+  ->Option.map(Int.toString)
+  ->Option.map(onChange)
+  ->ignore
+
 module EditionsInput = {
   @react.component
   let make = (~prettyAmount: string, ~onChange) => {
@@ -113,12 +120,8 @@ module CurrencyPicker = {
   }
 }
 
-let re = %re("/.*\..*\..*/")
-
-let hasMoreThan1Comma = s => re->Js.Re.test_(s)
-
-let validFloatRepresentation = (t: string) =>
-  t->Float.fromString->Option.isSome && !hasMoreThan1Comma(t)
+let re = %re("/^\d+\.?\d*$/")
+let representsPositiveFloat = s => re->Js.Re.test_(s)
 
 module MultiCurrencyInput = {
   @react.component
@@ -132,7 +135,7 @@ module MultiCurrencyInput = {
         onChangeText={t => {
           if t == "" {
             onChangeAmount("")
-          } else if validFloatRepresentation(t) {
+          } else if representsPositiveFloat(t) {
             onChangeAmount(t)
           }
         }}
@@ -141,5 +144,42 @@ module MultiCurrencyInput = {
       />
       <CurrencyPicker value=currency onChange=onChangeSymbol />
     </Wrapper>
+  }
+}
+
+module Recipient = {
+  @react.component
+  let make = (~recipient: option<string>) => {
+    let getAlias = Alias.useGetAlias()
+    let navigateWithParams = NavUtils.useNavigateWithParams()
+
+    let recipientEl = recipient->Option.mapWithDefault(
+      <Text> {"Add recipient..."->React.string} </Text>,
+      tz1 => {
+        getAlias(tz1)->Option.mapWithDefault(
+          <Wrapper>
+            <Text> {TezHelpers.formatTz1(tz1)->React.string} </Text>
+            <PressableIcon
+              name="account-plus"
+              style={style(~marginLeft=8.->dp, ())}
+              size=30
+              onPress={_ =>
+                navigateWithParams(
+                  "EditContact",
+                  {
+                    tz1: recipient,
+                    derivationIndex: None,
+                    token: None,
+                  },
+                )}
+            />
+          </Wrapper>,
+          alias => {
+            <Text> {alias.name->React.string} </Text>
+          },
+        )
+      },
+    )
+    recipientEl
   }
 }

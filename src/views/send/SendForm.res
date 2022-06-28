@@ -17,11 +17,6 @@ let vMargin = FormStyles.styles["verticalMargin"]
 @react.component
 let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
   let notify = SnackBar.useNotification()
-  let getAlias = Alias.useGetAlias()
-  let navigateWithParams = NavUtils.useNavigateWithParams()
-
-  let {recipient} = trans
-
   let disabled = !validTrans(trans) || isLoading
   let navigate = NavUtils.useNavigate()
 
@@ -55,44 +50,13 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
   let handleSenderPress = _ => navigate("Accounts")->ignore
   let handleAddressBookPress = _ => navigate("Contacts")->ignore
 
-  let recipientEl = recipient->Option.mapWithDefault(
-    <Text> {"Add recipient "->React.string} </Text>,
-    tz1 => {
-      open ReactNative.Style
-      //   <Text> {"Add bar "->React.string} </Text>
-      getAlias(tz1)->Option.mapWithDefault(
-        <Wrapper>
-          <Text> {TezHelpers.formatTz1(tz1)->React.string} </Text>
-          <PressableIcon
-            name="account-plus"
-            style={style(~marginLeft=8.->dp, ())}
-            size=30
-            onPress={_ =>
-              navigateWithParams(
-                "EditContact",
-                {
-                  tz1: trans.recipient,
-                  derivationIndex: None,
-                  token: None,
-                },
-              )}
-          />
-        </Wrapper>,
-        alias => {
-          <Text> {alias.name->React.string} </Text>
-        },
-      )
-    },
-  )
-
   <>
     {amountInput}
-    // Only allow sender change when sending Tez
     <Sender onPress=handleSenderPress disabled={SendTypes.isNft(trans.assetType)} />
     <Caption> {React.string("recipient")} </Caption>
     <CustomListItem
       onPress={handleAddressBookPress}
-      center={recipientEl}
+      center={<Recipient recipient=trans.recipient />}
       right={<CommonComponents.Icon name="chevron-right" />}
     />
     <Wrapper justifyContent=#center>
@@ -113,7 +77,7 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
                 ...prev,
                 recipient: recipient->Some,
               })
-            } else {
+            } else if recipient != "" {
               notify(`${recipient} is not a valid pkh`)
             }
           })
@@ -123,7 +87,6 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
         style={FormStyles.styles["hMargin"]}
       />
     </Wrapper>
-    // </Wrapper>
     <Button disabled loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("review")}
     </Button>
