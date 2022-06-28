@@ -45,10 +45,11 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
       currency={currency}
       onChangeSymbol=handleChangeSymbol
     />
-  | NftAsset(_, m) => <>
+  | NftAsset(_, m) =>
+    <ReactNative.View testID="nft-input">
       <NFTInput imageUrl={m.displayUri} name={m.name} />
       <EditionsInput prettyAmount={prettyAmount} onChange=handleChangeAmount />
-    </>
+    </ReactNative.View>
   }
 
   let handleSenderPress = _ => navigate("Accounts")->ignore

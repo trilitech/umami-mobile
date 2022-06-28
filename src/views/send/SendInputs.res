@@ -19,7 +19,13 @@ module EditionsInput = {
   @react.component
   let make = (~prettyAmount: string, ~onChange) => {
     <Wrapper>
-      <TextInput style={style(~flex=1., ())} mode=#flat placeholder="editions" value=prettyAmount />
+      <TextInput
+        testID="nft-editions"
+        style={style(~flex=1., ())}
+        mode=#flat
+        placeholder="editions"
+        value=prettyAmount
+      />
       <NicerIconBtn iconName="minus" onPress={_ => prettyAmount->update(a => a - 1, onChange)} />
       <NicerIconBtn iconName="plus" onPress={_ => prettyAmount->update(a => a + 1, onChange)} />
     </Wrapper>
@@ -96,11 +102,14 @@ module CurrencyPicker = {
 
     let items = tokensToSelectItems(tokens)
 
-    <StyledPicker
-      items
-      value={getLabel(value)}
-      onChange={symbol => symbol->symbolToCurrencyData(tokens)->Option.map(onChange)->ignore}
-    />
+    <ReactNative.Text testID="currency-picker">
+      {"foo"->React.string}
+      <StyledPicker
+        items
+        value={getLabel(value)}
+        onChange={symbol => symbol->symbolToCurrencyData(tokens)->Option.map(onChange)->ignore}
+      />
+    </ReactNative.Text>
   }
 }
 

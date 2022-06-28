@@ -40,6 +40,8 @@ module PureSendScreen = {
     ~notifyAdvanced,
     ~navigate,
     ~isTestNet,
+    ~send: SendAPI.send,
+    ~simulate: SendAPI.simulate,
   ) => {
     let initialPrettyAmount = switch nft {
     | Some((_, _)) => "1"
@@ -65,7 +67,7 @@ module PureSendScreen = {
         prettyAmount,
         recipientTz1,
       )) =>
-        SendAPI.send(
+        send(
           ~recipientTz1,
           ~prettyAmount,
           ~assetType=trans.assetType,
@@ -80,7 +82,7 @@ module PureSendScreen = {
         (prettyAmount, recipientTz1),
         (),
       ) =>
-        SendAPI.simulate(
+        simulate(
           ~recipientTz1,
           ~prettyAmount,
           ~assetType=trans.assetType,
@@ -165,6 +167,16 @@ let make = (~navigation as _, ~route) => {
   let navigate = NavUtils.useNavigate()
   let isTestNet = Store.useIsTestNet()
   Store.useWithAccount(account =>
-    <PureSendScreen tz1FromQr sender=account nft notify notifyAdvanced navigate isTestNet />
+    <PureSendScreen
+      tz1FromQr
+      sender=account
+      nft
+      notify
+      notifyAdvanced
+      navigate
+      isTestNet
+      send=SendAPI.send
+      simulate=SendAPI.simulate
+    />
   )
 }

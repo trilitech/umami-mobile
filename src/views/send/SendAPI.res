@@ -1,6 +1,22 @@
 open SendTypes
 
-let simulate = (~recipientTz1, ~prettyAmount, ~assetType, ~senderTz1, ~senderPk, ~isTestNet) => {
+type simulate = (
+  ~recipientTz1: string,
+  ~prettyAmount: float,
+  ~assetType: SendTypes.assetType,
+  ~senderTz1: string,
+  ~senderPk: string,
+  ~isTestNet: bool,
+) => Promise.t<Taquito.Toolkit.estimation>
+
+let simulate: simulate = (
+  ~recipientTz1,
+  ~prettyAmount,
+  ~assetType,
+  ~senderTz1,
+  ~senderPk,
+  ~isTestNet,
+) => {
   let estimate = TaquitoUtils.estimateSendToken(~recipientTz1, ~senderTz1, ~senderPk)
   switch assetType {
   | CurrencyAsset(currency) =>
@@ -34,7 +50,25 @@ let simulate = (~recipientTz1, ~prettyAmount, ~assetType, ~senderTz1, ~senderPk,
   }
 }
 
-let send = (~prettyAmount, ~recipientTz1, ~assetType, ~senderTz1, ~sk, ~passphrase, ~isTestNet) => {
+type send = (
+  ~prettyAmount: float,
+  ~recipientTz1: string,
+  ~assetType: SendTypes.assetType,
+  ~senderTz1: string,
+  ~sk: string,
+  ~passphrase: string,
+  ~isTestNet: bool,
+) => Promise.t<Taquito.Toolkit.operation>
+
+let send: send = (
+  ~prettyAmount,
+  ~recipientTz1,
+  ~assetType,
+  ~senderTz1,
+  ~sk,
+  ~passphrase,
+  ~isTestNet,
+) => {
   let sendToken = TaquitoUtils.sendToken(~passphrase, ~sk, ~senderTz1, ~recipientTz1)
 
   switch assetType {
