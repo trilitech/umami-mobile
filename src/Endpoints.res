@@ -10,10 +10,10 @@ let umamiWallet: endpoint = {
 
 let tzkt = {
   mainNet: "api.mainnet.tzkt.io",
-  testNet: "api.ithacanet.tzkt.io",
+  testNet: "api.ghostnet.tzkt.io",
 }
 
 let tezosNode = {
   mainNet: "mainnet.smartpy.io",
-  testNet: "ithacanet.ecadinfra.com",
+  testNet: "ghostnet.ecadinfra.com",
 }
