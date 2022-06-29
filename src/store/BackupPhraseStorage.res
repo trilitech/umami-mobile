@@ -3,13 +3,13 @@ Encrypt the backup phrase in AES.
 Store the backup phrase in the Filestem.
 */
 
-exception MyOwnError(string)
+exception BackupPhraseError(string)
 
 let save = (backupPhrase: string, passphrase: string) => {
-  BackupphraseCrypto.encrypt(backupPhrase, passphrase)->Promise.then(encrypted => {
+  AESCrypto.encrypt(backupPhrase, passphrase)->Promise.then(encrypted => {
     switch Js.Json.stringifyAny(encrypted) {
     | Some(d) => Storage.set("backupPhrase", d)
-    | None => Promise.reject(MyOwnError("Failed to parse backup phrase"))
+    | None => Promise.reject(BackupPhraseError("Failed to parse backup phrase"))
     }
   })
 }
@@ -22,9 +22,9 @@ let load = passphrase => {
     switch encrypted {
     | Some(s) => {
         let encrypted = parseBackupPhrase(s)
-        BackupphraseCrypto.decrypt(encrypted, passphrase)
+        AESCrypto.decrypt(encrypted, passphrase)
       }
-    | None => Promise.reject(MyOwnError("Failed to load backup phrase"))
+    | None => Promise.reject(BackupPhraseError("Failed to load backup phrase"))
     }
   )
 }

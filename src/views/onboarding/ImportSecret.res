@@ -47,7 +47,7 @@ let make = (~navigation as _, ~route as _) => {
     if accounts == [] {
       notify("No accounts revealed for this secret...")
     } else {
-      BackupphraseCrypto.encrypt(backupPhrase, passphrase)
+      AESCrypto.encrypt(backupPhrase, passphrase)
       ->Promise.thenResolve(_ => ReplaceAll(accounts)->dispatch)
       ->ignore
     }

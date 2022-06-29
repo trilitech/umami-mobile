@@ -34,7 +34,7 @@ let make = (~navigation as _, ~route as _) => {
   }
 
   <>
-    <OnboardingIntructions
+    <InstructionsPanel
       step="Step 3 of 4"
       title="Set a passcode to secure your wallet"
       instructions="Please note that this password is not recorded anywhere and only applies to this machine. "

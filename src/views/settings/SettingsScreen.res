@@ -1,31 +1,28 @@
 open CommonComponents
 
-open Paper
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let navigate = NavUtils.useNavigate()
 
   let reset = Store.useReset()
+  let dangerColor = ThemeProvider.useErrorColor()
+
+  open Paper
+  let makeListItem = (route, label) =>
+    <CustomListItem
+      onPress={_ => navigate(route)->ignore}
+      center={<Text> {React.string(label)} </Text>}
+      right={<CommonComponents.Icon name="chevron-right" />}
+    />
 
   <Container>
-    <CustomListItem
-      onPress={_ => navigate("Theme")->ignore}
-      center={<Text> {React.string("Theme")} </Text>}
-      right={<CommonComponents.Icon name="chevron-right" />}
-    />
-    <CustomListItem
-      onPress={_ => navigate("Contacts")->ignore}
-      center={<Text> {React.string("Contacts")} </Text>}
-      right={<CommonComponents.Icon name="chevron-right" />}
-    />
-    <CustomListItem
-      onPress={_ => navigate("Network")->ignore}
-      center={<Text> {React.string("Network")} </Text>}
-      right={<CommonComponents.Icon name="chevron-right" />}
-    />
+    {makeListItem("Theme", "Theme")}
+    {makeListItem("Contacts", "Contacts")}
+    {makeListItem("Network", "Network")}
+    {makeListItem("BackupPhrase", "Show backup phrase")}
     <List.Section title="Storage">
-      <Button mode=#contained onPress={_ => reset()}>
-        <Paper.Text> {React.string("Erase secret")} </Paper.Text>
+      <Button mode=#contained onPress={_ => reset()} color=dangerColor>
+        <Text> {React.string("Erase secret")} </Text>
       </Button>
     </List.Section>
     <Version />

@@ -67,7 +67,7 @@ module VerifySecret = {
     }
 
     <>
-      <OnboardingIntructions
+      <InstructionsPanel
         step="Step 2 of 4"
         title="Record your recovery phrase"
         instructions=" We will now verify that you’ve properly recorded your recovery phrase. To demonstrate this, please select the word that corresponds to each sequence number."
