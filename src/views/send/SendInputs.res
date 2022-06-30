@@ -41,9 +41,10 @@ module EditionsInput = {
 module NFTInput = {
   @react.component
   let make = (~imageUrl, ~name) => {
+    let source = ReactNative.Image.uriSource(~uri=imageUrl, ())
     <CustomListItem
-      left={<Image
-        url=imageUrl resizeMode=#contain style={style(~height=40.->dp, ~width=40.->dp, ())}
+      left={<FastImage
+        source resizeMode=#contain style={style(~height=40.->dp, ~width=40.->dp, ())}
       />}
       center={<Text> {React.string(name)} </Text>}
     />

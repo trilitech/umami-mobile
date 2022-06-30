@@ -2,7 +2,6 @@
 open ReactNative.Style
 open CommonComponents
 open Paper
-
 let vMargin = FormStyles.styles["verticalMargin"]
 module DisplayNFT = {
   @react.component
@@ -13,12 +12,12 @@ module DisplayNFT = {
     let {displayUri, name, description} = metadata
 
     let url = displayUri
-
+    let source = ReactNative.Image.uriSource(~uri=url, ())
     <Container>
       <Wrapper flexDirection=#column justifyContent=#flexStart alignItems=#center>
         <Title style=vMargin> {React.string(name)} </Title>
-        <Image
-          url resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} key=url
+        <FastImage
+          source resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} key=url
         />
         <Text style=vMargin> {description->React.string} </Text>
         <Paper.FAB

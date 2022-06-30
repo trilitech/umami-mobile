@@ -186,16 +186,6 @@ module CustomListItem = {
   }
 }
 
-module Image = {
-  @react.component
-  let make = (~url: string, ~style, ~resizeMode) => {
-    let source = ReactNative.Image.uriSource(~uri=url, ())
-    <ReactNative.Image
-      resizeMode style key=url source={source->ReactNative.Image.Source.fromUriSource}
-    />
-  }
-}
-
 module NicerIconBtn = {
   @react.component
   let make = (~onPress, ~small=true, ~iconName, ~style as extraStyle=style()) => {
