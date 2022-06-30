@@ -8,7 +8,7 @@ module DisplayNFT = {
   let make = (~token: Token.tokenNFT) => {
     let navigate = NavUtils.useNavigateWithParams()
 
-    let (_, metadata) = token
+    let (b, metadata) = token
     let {displayUri, name, description} = metadata
 
     let url = displayUri
@@ -20,7 +20,9 @@ module DisplayNFT = {
           source resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} key=url
         />
         <Text style=vMargin> {description->React.string} </Text>
+        <Text style=vMargin> {("Editions: " ++ b.balance->Js.Int.toString)->React.string} </Text>
         <Paper.FAB
+          style=vMargin
           onPress={_ =>
             navigate(
               "Send",

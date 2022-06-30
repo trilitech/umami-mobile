@@ -12,15 +12,16 @@ let makeRow = (title, content) =>
 
 @react.component
 let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
-  let amountStr = trans.prettyAmount
+  let prettyAmount = trans.prettyAmount
 
   let amountDisplay = switch trans.assetType {
   | CurrencyAsset(currency) =>
     switch currency {
-    | CurrencyTez => makeRow("Subtotal", amountStr ++ " " ++ SendInputs.tezSymbol)
-    | CurrencyToken(b, _) => makeRow("Subtotal", amountStr ++ " " ++ b.symbol)
+    | CurrencyTez => makeRow("Subtotal", prettyAmount ++ " " ++ SendInputs.tezSymbol)
+    | CurrencyToken(b, _) => makeRow("Subtotal", prettyAmount ++ " " ++ b.symbol)
     }
-  | NftAsset(_, m) => <SendInputs.NFTInput imageUrl={m.displayUri} name=m.name />
+  | NftAsset(_, m) =>
+    <SendInputs.NFTInput imageUrl={m.displayUri} name=m.name editions=prettyAmount />
   }
   <>
     <Headline style={style(~textAlign=#center, ())}> {"Recap"->React.string} </Headline>

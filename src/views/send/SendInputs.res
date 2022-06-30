@@ -40,13 +40,16 @@ module EditionsInput = {
 }
 module NFTInput = {
   @react.component
-  let make = (~imageUrl, ~name) => {
+  let make = (~imageUrl, ~name, ~editions=?) => {
     let source = ReactNative.Image.uriSource(~uri=imageUrl, ())
     <CustomListItem
       left={<FastImage
         source resizeMode=#contain style={style(~height=40.->dp, ~width=40.->dp, ())}
       />}
       center={<Text> {React.string(name)} </Text>}
+      right={editions->Helpers.reactFold(editions =>
+        <Paper.Chip mode=#outlined> {React.string("Editions: " ++ editions)} </Paper.Chip>
+      )}
     />
   }
 }
