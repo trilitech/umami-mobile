@@ -33,7 +33,7 @@ module CurrencyIem = {
     let prettyCurrency = Belt.Float.toString(balance) ++ " " ++ symbol->Option.getWithDefault("tez")
     let icon = Option.isSome(symbol)
       ? <Icon size=40 name="stop-circle-outline" />
-      : <CustomImage
+      : <SquareImage
           size=40. source={Option.isSome(symbol) ? tokenLogoImagePath : tezLogoImagePath}
         />
 

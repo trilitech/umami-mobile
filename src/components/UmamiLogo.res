@@ -12,5 +12,5 @@ let getSource = makiColor => {
 let make = (~size, ~style as extraStyles=style(), ~makiColor=#salmon) => {
   let source = getSource(makiColor)
 
-  <CustomImage size style=extraStyles source />
+  <SquareImage size style=extraStyles source />
 }

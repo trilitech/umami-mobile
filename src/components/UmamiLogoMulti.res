@@ -18,7 +18,7 @@ module Base = {
         ~alignItems=#center,
         (),
       )}>
-      <CustomImage size source />
+      <SquareImage size source />
     </View>
   }
 }
