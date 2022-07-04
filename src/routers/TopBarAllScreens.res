@@ -8,7 +8,7 @@ let make = (~onPressGoBack=?, ~title=?) => {
       {onPressGoBack->Helpers.reactFold(onPressGoBack =>
         <PressableIcon onPress={_ => onPressGoBack()} name="chevron-left" />
       )}
-      {title->Helpers.reactFold(title => <Text> {React.string(title)} </Text>)}
     </>}
+    center={title->Helpers.reactFold(title => <Text> {React.string(title)} </Text>)}
   />
 }

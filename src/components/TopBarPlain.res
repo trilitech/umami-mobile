@@ -21,10 +21,9 @@ let make = (~left=React.null, ~right=React.null, ~center=React.null) => {
       ),
     ])}>
     <Wrapper style={style(~left=0.->dp, ~position=#absolute, ())}> {left} </Wrapper>
-    {isTestNet
-      ? <Text> {"Ithacanet"->React.string} </Text>
-      : <Text> {"Mainnet"->React.string} </Text>}
-    {center}
+    {<Wrapper flexDirection=#column alignItems=#center>
+      {center} <Caption> {(isTestNet ? "Ithacanet" : "Mainnet")->React.string} </Caption>
+    </Wrapper>}
     <Wrapper style={style(~right=0.->dp, ~position=#absolute, ())}> {right} </Wrapper>
   </Appbar.Header>
 }
