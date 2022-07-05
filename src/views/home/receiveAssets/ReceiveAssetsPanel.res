@@ -13,12 +13,12 @@ module PureReceiveModal = {
           (),
         )}>
         <Qr value=tz1 size=250 />
-        <Wrapper justifyContent=#flexStart style={array([FormStyles.styles["verticalMargin"]])}>
+        <Wrapper justifyContent=#flexStart style={array([StyleUtils.makeVMargin()])}>
           <NicerIconBtn
-            onPress=handleCopy iconName="content-copy" style={FormStyles.styles["hMargin"]}
+            onPress=handleCopy iconName="content-copy" style={StyleUtils.makeHMargin()}
           />
           <NicerIconBtn
-            onPress=handleShare iconName="share-variant" style={FormStyles.styles["hMargin"]}
+            onPress=handleShare iconName="share-variant" style={StyleUtils.makeHMargin()}
           />
         </Wrapper>
       </ReactNative.View>

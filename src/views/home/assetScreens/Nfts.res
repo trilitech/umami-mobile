@@ -70,7 +70,7 @@ module NftGallery = {
         placeholder="Search NFT"
         onChangeText={t => setSearch(_ => t)}
         value=search
-        style={FormStyles.styles["verticalMargin"]}
+        style={StyleUtils.makeVMargin()}
         onIconPress={t => setSearch(_ => "")}
       />
       <ScrollView>

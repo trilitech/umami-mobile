@@ -2,7 +2,7 @@
 open ReactNative.Style
 open CommonComponents
 open Paper
-let vMargin = FormStyles.styles["verticalMargin"]
+let vMargin = StyleUtils.makeVMargin()
 module DisplayNFT = {
   @react.component
   let make = (~token: Token.tokenNFT) => {

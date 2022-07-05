@@ -12,7 +12,7 @@ let validTrans = (trans: SendTypes.formState) =>
   trans.recipient->Option.mapWithDefault(false, t => t->TaquitoUtils.tz1IsValid) &&
     trans.prettyAmount->validPrettyAmount
 
-let vMargin = FormStyles.styles["verticalMargin"]
+let vMargin = StyleUtils.makeVMargin()
 
 @react.component
 let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
@@ -66,7 +66,7 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
           ()
         }}
         iconName="qrcode-scan"
-        style={FormStyles.styles["hMargin"]}
+        style={StyleUtils.makeVMargin()}
       />
       <NicerIconBtn
         onPress={_ => {
@@ -84,7 +84,7 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
           ->ignore
         }}
         iconName="content-copy"
-        style={FormStyles.styles["hMargin"]}
+        style={StyleUtils.makeHMargin()}
       />
     </Wrapper>
     <Button disabled loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>

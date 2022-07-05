@@ -1,7 +1,7 @@
 open Paper
 open ContactFormTypes
 
-let style = FormStyles.styles["verticalMargin"]
+let style = StyleUtils.makeVMargin()
 
 @react.component
 let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {

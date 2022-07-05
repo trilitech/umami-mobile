@@ -3,7 +3,7 @@ open ReactNative.Style
 open SendTypes
 open Paper
 
-let vMargin = FormStyles.styles["verticalMargin"]
+let vMargin = StyleUtils.makeVMargin()
 
 let makeRow = (title, content) =>
   <Wrapper justifyContent=#spaceBetween style=vMargin>

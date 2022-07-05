@@ -11,7 +11,7 @@ let make = (~onSubmit, ~loading=false) => {
   <>
     <Title> {React.string("Enter and confirm passphrase")} </Title>
     <TextInput
-      style={FormStyles.styles["verticalMargin"]}
+      style={StyleUtils.makeVMargin()}
       disabled=loading
       secureTextEntry=true
       placeholder="Passcode"
@@ -21,7 +21,7 @@ let make = (~onSubmit, ~loading=false) => {
       onChangeText={s => setValue1(_ => s)}
     />
     <TextInput
-      style={FormStyles.styles["verticalMargin"]}
+      style={StyleUtils.makeVMargin()}
       disabled=loading
       secureTextEntry=true
       placeholder="Confirm passcode"
@@ -33,7 +33,7 @@ let make = (~onSubmit, ~loading=false) => {
     <Button
       disabled={!formValid(value1, value2) || loading}
       loading
-      style={FormStyles.styles["verticalMargin"]}
+      style={StyleUtils.makeVMargin()}
       mode=#contained
       onPress={_ => onSubmit(value1)}>
       {React.string("Submit")}

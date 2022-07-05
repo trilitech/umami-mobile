@@ -1,6 +1,6 @@
 open Paper
 
-let vMargin = FormStyles.styles["verticalMargin"]
+let vMargin = StyleUtils.makeVMargin()
 
 @react.component
 let make = (~onSubmit, ~loading=false) => {

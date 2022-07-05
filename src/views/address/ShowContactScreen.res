@@ -5,7 +5,7 @@ open Belt
 open ReactNative
 open ReactNative.Style
 
-let vMargin = FormStyles.styles["verticalMargin"]
+let vMargin = StyleUtils.makeVMargin()
 
 module ContactBox = {
   @react.component
