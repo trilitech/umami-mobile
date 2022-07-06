@@ -145,11 +145,19 @@ let matchAmount = (a: displayAmount) => {
 }
 let isCredit = (a: displayAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
 
+let useLinkToTzkt = () => {
+  let isTestNet = Store.useIsTestNet()
+  let host = isTestNet ? "ithacanet" : "mainnet"
+  hash => ReactNative.Linking.openURL(`https://${host}.tzkt.io/${hash}`)->ignore
+}
+
 module TransactionItem = {
   open Paper
   @react.component
   let make = (~transaction) => {
     open Colors.Light
+
+    let goToTzktTransaction = useLinkToTzkt()
 
     let statusIcon = switch transaction.status {
     | Done => "check"
@@ -180,13 +188,9 @@ module TransactionItem = {
         <Caption style={style(~color=isCredit ? positive : negative, ())}>
           {matchAmount(transaction.prettyAmountDisplay)->React.string}
         </Caption>
+        <Paper.IconButton icon={Paper.Icon.name(statusIcon)} size={15} />
         <Paper.IconButton
-        // onPress={_ =>
-          icon={Paper.Icon.name(statusIcon)} size={15}
-        />
-        <Paper.IconButton
-          onPress={_ =>
-            ReactNative.Linking.openURL("https://ithacanet.tzkt.io/" ++ transaction.hash)->ignore}
+          onPress={_ => goToTzktTransaction(transaction.hash)}
           icon={Paper.Icon.name("open-in-new")}
           size={15}
         />
