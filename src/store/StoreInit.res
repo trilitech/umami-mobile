@@ -30,6 +30,8 @@ let _useIniter = (hook, key: string, deserializer) => {
 
 let useIniter = atom => _useIniter(() => Jotai.Atom.use(atom))
 
+// Triggers store initialization.
+// Returns true when store is updated against RNStorage.
 let useInit = () => {
   open Deserializers
   let (done, setDone) = React.useState(_ => false)

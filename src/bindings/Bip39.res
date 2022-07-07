@@ -1,4 +1,3 @@
-// TODO move to common
 @module("bip39") external generate: int => string = "generateMnemonic"
 @module("bip39") external entropyToMnemonic: 'a => string = "entropyToMnemonic"
 
