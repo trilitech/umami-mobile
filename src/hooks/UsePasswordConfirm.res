@@ -1,4 +1,4 @@
-let usePassphraseConfirm = (~hoc, ~onConfirm, ~isLoading=false, ~creation=false, ()) => {
+let usePasswordConfirm = (~hoc, ~onConfirm, ~isLoading=false, ~creation=false, ()) => {
   let (step, setStep) = React.useState(_ => #fill)
   let el: React.element = hoc(~onSubmit=_ => setStep(_ => #confirm))
 

@@ -72,7 +72,7 @@ let make = (~navigation as _, ~route as _) => {
     )
   }
 
-  let element = UsePassphraseConfirm.usePassphraseConfirm(
+  let element = UsePasswordConfirm.usePasswordConfirm(
     ~hoc,
     ~onConfirm,
     ~creation=true,

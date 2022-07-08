@@ -46,11 +46,11 @@ export const encryptSK = (sk, password) => {
       const salt = Base64.toByteArray(saltStr);
       return pbkdf2
         .deriveAsync(parse(password), salt, 32768, 32, 'sha512')
-        .then(derivedPassphrase => {
+        .then(derivedPassword => {
           return Sodium.crypto_secretbox_easy(
             Base64.fromByteArray(sk),
             Base64.fromByteArray(new Uint8Array(24)),
-            Base64.fromByteArray(derivedPassphrase),
+            Base64.fromByteArray(derivedPassword),
           ).then(boxed => {
             const encryptedSK = b58cencode(
               mergebuf(salt, Base64.toByteArray(boxed)),
