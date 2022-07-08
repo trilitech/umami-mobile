@@ -24,6 +24,10 @@ let useNavigate = () => {
   }
 }
 
+let useRouteName = () => {
+  let route = ReactNavigation.Native.useRoute()
+  route->Js.Nullable.toOption->Belt.Option.map(r => r.name)
+}
 let useGoBack = () => {
   let nav = ReactNavigation.Native.useNavigation()
 
@@ -46,3 +50,11 @@ let getToken = (route: NavStacks.OnBoard.route) => {
 let getTz1FromQr = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.tz1)
 }
+
+type route = {name: string}
+// Type in binding is broken.
+// TODO: PR
+external fixType: NavStacks.OnBoard.Header.headerProps<'a> => {"route": route, "back": bool} =
+  "%identity"
+
+let getRouteName = headerProps => (headerProps->fixType)["route"].name

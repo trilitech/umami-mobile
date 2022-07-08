@@ -5,8 +5,6 @@ open ReactNative.Style
 
 @react.component
 let make = (~navigation, ~route as _) => {
-  DangerousMnemonicHooks.useWipeOutOnMount()
-
   <Container>
     <ReactNative.View
       style={style(~display=#flex, ~flexDirection=#row, ~justifyContent=#center, ())}>

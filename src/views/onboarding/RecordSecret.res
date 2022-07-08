@@ -32,7 +32,7 @@ module Redirect = {
 }
 
 let useWordIndex = word => {
-  let (mnemonic, _) = DangerousMnemonicHooks.useSuperDangerousMnemonic()
+  let (mnemonic, _) = DangerousMnemonicHooks.useMnemonic()
   mnemonic->Belt.Array.getIndexBy(e => e == word)
 }
 
@@ -133,7 +133,7 @@ module PureRecordSecret = {
 
 @react.component
 let make = (~navigation, ~route as _) => {
-  let (mnemonic, _) = DangerousMnemonicHooks.useSuperDangerousMnemonic()
+  let (mnemonic, _) = DangerousMnemonicHooks.useMnemonic()
 
   <PureRecordSecret
     mnemonic

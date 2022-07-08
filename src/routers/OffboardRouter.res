@@ -1,8 +1,9 @@
 open NavStacks.OffBoard
 @react.component
 let make = () => {
-  DangerousMnemonicHooks.useWipeOutOnUnmount()
   let headerStyles = HeaderStyle.useHeaderStyle(~onBoardingMode=true, ())
+  DangerousMnemonicHooks.useResetOnUnmount()
+
   <Navigator>
     <Group>
       <Screen name="Welcome" options=headerStyles component=Welcome.make />

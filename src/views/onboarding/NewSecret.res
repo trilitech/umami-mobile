@@ -7,7 +7,7 @@ let generateMnemonic = cb =>
 
 @react.component
 let make = (~navigation, ~route as _) => {
-  let (mnemonic, setMnemonic) = DangerousMnemonicHooks.useSuperDangerousMnemonic()
+  let (mnemonic, setMnemonic) = DangerousMnemonicHooks.useMnemonic()
   React.useEffect1(() => {
     generateMnemonic(m => setMnemonic(_ => m->Js.String2.split(" ")))
     None
