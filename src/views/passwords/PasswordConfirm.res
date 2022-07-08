@@ -12,7 +12,7 @@ let make = (~onSubmit, ~loading=false) => {
       secureTextEntry=true
       placeholder="password"
       value
-      label="passphrase"
+      label="password"
       mode=#flat
       onChangeText={t => setValue(_ => t)}
       style=vMargin

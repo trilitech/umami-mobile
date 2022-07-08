@@ -7,8 +7,8 @@ exception BackupPhraseError(string)
 @scope("JSON") @val
 external parseBackupPhrase: string => AES.aesEncrypted = "parse"
 
-let save = (backupPhrase: string, passphrase: string) => {
-  AESCrypto.encrypt(backupPhrase, passphrase)->Promise.then(encrypted => {
+let save = (backupPhrase: string, password: string) => {
+  AESCrypto.encrypt(backupPhrase, password)->Promise.then(encrypted => {
     switch Js.Json.stringifyAny(encrypted) {
     | Some(d) => Storage.set("backupPhrase", d)
     | None => Promise.reject(BackupPhraseError("Failed to parse backup phrase"))
@@ -16,12 +16,12 @@ let save = (backupPhrase: string, passphrase: string) => {
   })
 }
 
-let load = passphrase => {
+let load = password => {
   Storage.get("backupPhrase")->Promise.then(encrypted =>
     switch encrypted {
     | Some(s) => {
         let encrypted = parseBackupPhrase(s)
-        AESCrypto.decrypt(encrypted, passphrase)
+        AESCrypto.decrypt(encrypted, password)
       }
     | None => Promise.reject(BackupPhraseError("Failed to load backup phrase"))
     }

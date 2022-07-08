@@ -106,12 +106,12 @@ module PureSendScreen = {
       None
     }, (tz1FromQr, setTrans))
 
-    let handleSubmit = (passphrase: string) =>
+    let handleSubmit = (password: string) =>
       send
       ->Option.map(send => {
         setLoading(_ => true)
 
-        send(~passphrase)
+        send(~password)
         ->Promise.thenResolve(({hash}) => {
           hash->makeNotif->Some->notifyAdvanced
           navigate("Home")->ignore

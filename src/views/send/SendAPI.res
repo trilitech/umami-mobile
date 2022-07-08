@@ -56,7 +56,7 @@ type send = (
   ~assetType: SendTypes.assetType,
   ~senderTz1: string,
   ~sk: string,
-  ~passphrase: string,
+  ~password: string,
   ~isTestNet: bool,
 ) => Promise.t<Taquito.Toolkit.operation>
 
@@ -66,10 +66,10 @@ let send: send = (
   ~assetType,
   ~senderTz1,
   ~sk,
-  ~passphrase,
+  ~password,
   ~isTestNet,
 ) => {
-  let sendToken = TaquitoUtils.sendToken(~passphrase, ~sk, ~senderTz1, ~recipientTz1)
+  let sendToken = TaquitoUtils.sendToken(~password, ~sk, ~senderTz1, ~recipientTz1)
 
   switch assetType {
   | CurrencyAsset(currency) =>
@@ -78,7 +78,7 @@ let send: send = (
       TaquitoUtils.sendTez(
         ~recipient=recipientTz1,
         ~amount=prettyAmount,
-        ~passphrase,
+        ~password,
         ~sk,
         ~isTestNet,
       )

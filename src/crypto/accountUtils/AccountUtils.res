@@ -1,9 +1,9 @@
-let getTz1AndPk = (~sk, ~passphrase) =>
-  Promise.all2((TaquitoUtils.getTz1(~sk, ~passphrase), TaquitoUtils.getPk(~sk, ~passphrase)))
+let getTz1AndPk = (~sk, ~password) =>
+  Promise.all2((TaquitoUtils.getTz1(~sk, ~password), TaquitoUtils.getPk(~sk, ~password)))
 
-let generateKeys = (~mnemonic, ~passphrase, ~derivationPathIndex=0, ()) =>
-  CryptoUtils.mnemonicToSK(~mnemonic, ~passphrase, ~derivationPathIndex, ())->Promise.then(sk =>
-    getTz1AndPk(~sk, ~passphrase)->Promise.thenResolve(((tz1, pk)) => {
+let generateKeys = (~mnemonic, ~password, ~derivationPathIndex=0, ()) =>
+  CryptoUtils.mnemonicToSK(~mnemonic, ~password, ~derivationPathIndex, ())->Promise.then(sk =>
+    getTz1AndPk(~sk, ~password)->Promise.thenResolve(((tz1, pk)) => {
       let result: PureAccountUtils.keys = {
         derivationPathIndex: derivationPathIndex,
         pk: pk,

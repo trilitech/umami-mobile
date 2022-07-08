@@ -9,7 +9,7 @@ let make = (~onSubmit, ~loading=false) => {
   let (value1, setValue1) = EphemeralState.useEphemeralState("")
   let (value2, setValue2) = EphemeralState.useEphemeralState("")
   <>
-    <Title> {React.string("Enter and confirm passphrase")} </Title>
+    <Title> {React.string("Enter and confirm password")} </Title>
     <TextInput
       style={StyleUtils.makeVMargin()}
       disabled=loading

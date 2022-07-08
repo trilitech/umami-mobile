@@ -14,7 +14,7 @@ let make = (~navigation as _, ~route as _) => {
     ->Promise.then(() =>
       AccountUtils.generateAccount(
         ~mnemonic,
-        ~passphrase=password,
+        ~password,
         ~derivationPathIndex=0,
         (),
       )->Promise.thenResolve(account => {

@@ -7,7 +7,7 @@ type keys = {
 module type Deps = {
   let generateKeys: (
     ~mnemonic: string,
-    ~passphrase: string,
+    ~password: string,
     ~derivationPathIndex: int=?,
     unit,
   ) => Promise.t<keys>
@@ -25,12 +25,12 @@ module Make = (M: Deps) => {
 
   let generateAccount = (
     ~mnemonic,
-    ~passphrase,
+    ~password,
     ~derivationPathIndex=0,
     ~name: option<string>=?,
     (),
   ) =>
-    generateKeys(~mnemonic, ~passphrase, ~derivationPathIndex, ())->Promise.thenResolve(keys => {
+    generateKeys(~mnemonic, ~password, ~derivationPathIndex, ())->Promise.thenResolve(keys => {
       let nameXf =
         name->Belt.Option.mapWithDefault(
           i => i,
@@ -42,16 +42,16 @@ module Make = (M: Deps) => {
 
   let backupPhraseIsValid = s => s->Js.String2.splitByRe(%re("/\s+/"))->Array.length == 24
 
-  let rec _restoreKeys = (~mnemonic, ~passphrase, ~accounts=[], ~onDone, ()) => {
+  let rec _restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
     let derivationPathIndex = accounts->Array.length
 
-    generateKeys(~mnemonic, ~passphrase, ~derivationPathIndex, ())
+    generateKeys(~mnemonic, ~password, ~derivationPathIndex, ())
     ->Promise.then(account => {
       checkExists(~tz1=account.tz1)->Promise.thenResolve(exists => {
         if exists {
           _restoreKeys(
             ~mnemonic,
-            ~passphrase,
+            ~password,
             ~accounts=Belt.Array.concat(accounts, [account]),
             ~onDone,
             (),
@@ -69,17 +69,17 @@ module Make = (M: Deps) => {
     ->ignore
   }
 
-  let restoreKeys = (~mnemonic, ~passphrase, ~accounts=[], ~onDone, ()) => {
+  let restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
     assert backupPhraseIsValid(mnemonic)
     // TODO investigate how to handle this error
-    _restoreKeys(~mnemonic, ~passphrase, ~accounts, ~onDone, ())
+    _restoreKeys(~mnemonic, ~password, ~accounts, ~onDone, ())
   }
 
-  let restore = (~mnemonic, ~passphrase) =>
+  let restore = (~mnemonic, ~password) =>
     Promise.make((resolve, reject) => {
       restoreKeys(
         ~mnemonic,
-        ~passphrase,
+        ~password,
         ~onDone=res => {
           switch res {
           | Ok(accounts) => resolve(. accounts)

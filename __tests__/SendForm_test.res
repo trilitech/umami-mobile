@@ -20,7 +20,7 @@ describe("<RecordSecret />", () => {
     ~assetType as _,
     ~senderTz1 as _,
     ~sk as _,
-    ~passphrase as _,
+    ~password as _,
     ~isTestNet as _,
   ) => {
     let mockReponse: Taquito.Toolkit.operation = Obj.magic({"hash": "mockHash"})

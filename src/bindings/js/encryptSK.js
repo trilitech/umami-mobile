@@ -40,12 +40,12 @@ function mergebuf(b1, b2) {
   return r;
 }
 
-export const encryptSK = (sk, passphrase) => {
+export const encryptSK = (sk, password) => {
   return Sodium.randombytes_buf(8)
     .then(saltStr => {
       const salt = Base64.toByteArray(saltStr);
       return pbkdf2
-        .deriveAsync(parse(passphrase), salt, 32768, 32, 'sha512')
+        .deriveAsync(parse(password), salt, 32768, 32, 'sha512')
         .then(derivedPassphrase => {
           return Sodium.crypto_secretbox_easy(
             Base64.fromByteArray(sk),

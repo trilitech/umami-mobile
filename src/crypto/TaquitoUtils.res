@@ -77,9 +77,9 @@ let getBalance = (~tz1, ~isTestNet) =>
   })
   ->Promise.catch(err => Promise.reject(BalanceFetchFailure(Helpers.getMessage(err))))
 
-let sendTez = (~recipient, ~amount, ~passphrase, ~sk, ~isTestNet) => {
+let sendTez = (~recipient, ~amount, ~password, ~sk, ~isTestNet) => {
   let tezos = _makeToolkit(~isTestNet)
-  Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
+  Taquito.fromSecretKey(sk, password)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
     tezos.contract->Taquito.Toolkit.transfer({"to": recipient, "amount": amount})
   })
@@ -129,7 +129,7 @@ let estimateSendToken = (
 }
 
 let sendToken = (
-  ~passphrase,
+  ~password,
   ~sk,
   ~contractAddress,
   ~tokenId,
@@ -142,16 +142,16 @@ let sendToken = (
 ) => {
   let tezos = _makeToolkit(~isTestNet)
 
-  Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => {
+  Taquito.fromSecretKey(sk, password)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
     _sendToken(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1, ~isFa1, ())
   })
 }
 
-let getTz1 = (~sk, ~passphrase) =>
-  Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => signer->Taquito.publicKeyHash())
+let getTz1 = (~sk, ~password) =>
+  Taquito.fromSecretKey(sk, password)->Promise.then(signer => signer->Taquito.publicKeyHash())
 
-let getPk = (~sk, ~passphrase) =>
-  Taquito.fromSecretKey(sk, passphrase)->Promise.then(signer => signer->Taquito.publicKey())
+let getPk = (~sk, ~password) =>
+  Taquito.fromSecretKey(sk, password)->Promise.then(signer => signer->Taquito.publicKey())
 
 let tz1IsValid = address => Taquito.validateAddress(address) == 3

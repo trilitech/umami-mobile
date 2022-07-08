@@ -1,11 +1,11 @@
 open Paper
 
-let addNewAccount = (~name, ~passphrase, ~derivationIndex) => {
-  BackupPhraseStorage.load(passphrase)->Promise.then(b => {
+let addNewAccount = (~name, ~password, ~derivationIndex) => {
+  BackupPhraseStorage.load(password)->Promise.then(b => {
     AccountUtils.generateAccount(
       ~name,
       ~mnemonic=b,
-      ~passphrase,
+      ~password,
       ~derivationPathIndex=derivationIndex,
       (),
     )
@@ -44,7 +44,7 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
         loading
         onSubmit={p => {
           setLooading(_ => true)
-          addNewAccount(~name=accountName, ~passphrase=p, ~derivationIndex)
+          addNewAccount(~name=accountName, ~password=p, ~derivationIndex)
           ->Promise.thenResolve(a => {
             Add([a])->dispatch
 

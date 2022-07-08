@@ -45,24 +45,24 @@ let make = (~navigation as _, ~route as _) => {
 
   let hoc = (~onSubmit) => <ImportSecret dangerousText setDangerousText onSubmit />
 
-  let handleAccounts = (accounts: array<Account.t>, passphrase) => {
+  let handleAccounts = (accounts: array<Account.t>, password) => {
     if accounts == [] {
       notify("No accounts revealed for this secret...")
     } else {
-      AESCrypto.encrypt(dangerousText, passphrase)
+      AESCrypto.encrypt(dangerousText, password)
       ->Promise.thenResolve(_ => ReplaceAll(accounts)->dispatch)
       ->ignore
     }
   }
-  let onConfirm = passphrase => {
+  let onConfirm = password => {
     setLoading(_ => true)
     AccountUtils.restoreKeys(
       ~mnemonic=dangerousText->formatForMnemonic,
-      ~passphrase,
+      ~password,
       ~onDone=accounts => {
         switch accounts {
         | Ok(accounts) =>
-          handleAccounts(accounts->Belt.Array.map(AccountUtils.keysToAccount), passphrase)
+          handleAccounts(accounts->Belt.Array.map(AccountUtils.keysToAccount), password)
         | Error(_) => ()
         }
 

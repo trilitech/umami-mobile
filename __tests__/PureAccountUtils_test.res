@@ -19,7 +19,7 @@ describe("PureAccountUtils", () => {
       fn()
     }
 
-    let mockGenerateKeys = (~mnemonic as _, ~passphrase as _, ~derivationPathIndex=0, ()) =>
+    let mockGenerateKeys = (~mnemonic as _, ~password as _, ~derivationPathIndex=0, ()) =>
       Promise.resolve({
         derivationPathIndex: derivationPathIndex,
         pk: "mockPk",
@@ -55,7 +55,7 @@ describe("PureAccountUtils", () => {
     let mockMnemonic =
       "foo foo foo foo foo foo foo foo foo foo foo foo" ++ " foo foo foo foo foo foo foo foo foo foo foo foo"
 
-    AccountUtils.restore(~mnemonic=mockMnemonic, ~passphrase="mockPass")
+    AccountUtils.restore(~mnemonic=mockMnemonic, ~password="mockPass")
     ->Promise.thenResolve(result =>
       if result == expected {
         finish(pass)
