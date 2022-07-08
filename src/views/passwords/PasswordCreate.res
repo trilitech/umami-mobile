@@ -14,9 +14,9 @@ let make = (~onSubmit, ~loading=false) => {
       style={StyleUtils.makeVMargin()}
       disabled=loading
       secureTextEntry=true
-      placeholder="Passcode"
+      placeholder="password"
       value=value1
-      label="Passcode"
+      label="password"
       mode=#flat
       onChangeText={s => setValue1(_ => s)}
     />
@@ -24,9 +24,9 @@ let make = (~onSubmit, ~loading=false) => {
       style={StyleUtils.makeVMargin()}
       disabled=loading
       secureTextEntry=true
-      placeholder="Confirm passcode"
+      placeholder="Confirm password"
       value=value2
-      label="Confirm passcode"
+      label="Confirm password"
       mode=#flat
       onChangeText={s => setValue2(_ => s)}
     />
