@@ -11,20 +11,20 @@ let inputIsValid = (s: string) => s->formatForMnemonic->AccountUtils.backupPhras
 
 module ImportSecret = {
   @react.component
-  let make = (~onSubmit, ~backupPhrase, ~setBackupPhrase) => {
+  let make = (~onSubmit, ~dangerousText, ~setDangerousText) => {
     <Container>
       <Caption> {React.string("Recovery phrase")} </Caption>
       <TextInput
-        value=backupPhrase
+        value=dangerousText
         style={ReactNative.Style.style(~height=130.->ReactNative.Style.dp, ())}
         multiline=true
         mode=#outlined
-        onChangeText={t => setBackupPhrase(_ => t)}
+        onChangeText={t => setDangerousText(_ => t)}
       />
       <Button
-        disabled={!inputIsValid(backupPhrase)}
+        disabled={!inputIsValid(dangerousText)}
         onPress={_ => {
-          onSubmit(backupPhrase)
+          onSubmit(dangerousText)
         }}
         style={ReactNative.Style.style(~marginVertical=10.->ReactNative.Style.dp, ())}
         mode=#contained>
@@ -36,18 +36,20 @@ module ImportSecret = {
 
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let (backupPhrase, setBackupPhrase) = React.useState(_ => "")
+  let (dangerousText, setDangerousText) = EphemeralState.useEphemeralState("")
+
   let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
   let notify = SnackBar.useNotification()
 
   let (loading, setLoading) = React.useState(_ => false)
-  let hoc = (~onSubmit) => <ImportSecret backupPhrase setBackupPhrase onSubmit />
+
+  let hoc = (~onSubmit) => <ImportSecret dangerousText setDangerousText onSubmit />
 
   let handleAccounts = (accounts: array<Account.t>, passphrase) => {
     if accounts == [] {
       notify("No accounts revealed for this secret...")
     } else {
-      AESCrypto.encrypt(backupPhrase, passphrase)
+      AESCrypto.encrypt(dangerousText, passphrase)
       ->Promise.thenResolve(_ => ReplaceAll(accounts)->dispatch)
       ->ignore
     }
@@ -55,7 +57,7 @@ let make = (~navigation as _, ~route as _) => {
   let onConfirm = passphrase => {
     setLoading(_ => true)
     AccountUtils.restoreKeys(
-      ~mnemonic=backupPhrase->formatForMnemonic,
+      ~mnemonic=dangerousText->formatForMnemonic,
       ~passphrase,
       ~onDone=accounts => {
         switch accounts {

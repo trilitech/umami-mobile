@@ -6,8 +6,8 @@ let formValid = (s1: string, s2: string) => {
 
 @react.component
 let make = (~onSubmit, ~loading=false) => {
-  let (value1, setValue1) = React.useState(_ => "")
-  let (value2, setValue2) = React.useState(_ => "")
+  let (value1, setValue1) = EphemeralState.useEphemeralState("")
+  let (value2, setValue2) = EphemeralState.useEphemeralState("")
   <>
     <Title> {React.string("Enter and confirm passphrase")} </Title>
     <TextInput

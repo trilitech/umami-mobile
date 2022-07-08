@@ -1,15 +1,7 @@
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let isFocused = ReactNavigation.Native.useIsFocused()
-  let (dangerouseStorage, setDangerousStorage) = React.useState(_ => [])
+  let (dangerouseStorage, setDangerousStorage) = EphemeralState.useEphemeralState([])
   let goBack = NavUtils.useGoBack()
-
-  React.useEffect1(() => {
-    if !isFocused {
-      setDangerousStorage(_ => [])
-    }
-    None
-  }, [isFocused])
 
   <Container>
     {if dangerouseStorage == [] {

@@ -4,7 +4,7 @@ let vMargin = StyleUtils.makeVMargin()
 
 @react.component
 let make = (~onSubmit, ~loading=false) => {
-  let (value, setValue) = React.useState(_ => "")
+  let (value, setValue) = EphemeralState.useEphemeralState("")
   <>
     <Title> {React.string("Enter password to continue")} </Title>
     <TextInput
