@@ -1,6 +1,14 @@
 open Jest
 open RNTestingLibrary
 let mockFn = JestJs.fn(() => ())
+%%raw(`
+jest.mock('@react-navigation/native', () => {
+  return {
+    useIsFocused: () => true,
+    useRoute: () => "bar"
+  }
+})
+`)
 
 describe("<RecordSecret />", () => {
   open Expect
