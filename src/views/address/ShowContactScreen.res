@@ -44,29 +44,44 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
   let goBack = NavUtils.useGoBack()
   let navigateWithParams = NavUtils.useNavigateWithParams()
 
-  let element =
-    <Controls
-      onPressDelete={_ => {
-        tz1->Option.map(tz1 => dispatch(Delete(tz1)))->ignore
-        goBack()
-      }}
-      onPressEdit={_ => {
-        tz1
-        ->Option.map(tz1 => {
-          navigateWithParams(
-            "EditContact",
-            {
-              tz1: tz1->Some,
-              derivationIndex: None,
-              token: None,
-            },
-          )
-        })
-        ->ignore
-      }}
-    />
+  let handlePressEdit = _ => {
+    tz1
+    ->Option.map(tz1 => {
+      navigateWithParams(
+        "EditContact",
+        {
+          tz1: tz1->Some,
+          derivationIndex: None,
+          token: None,
+        },
+      )
+    })
+    ->ignore
+    setIsOpen(_ => false)
+  }
 
-  let drawer = UseBottomDrawer.useBottomSheet(~element, ~isOpen, ~setIsOpen, ~snapPoint="30%", ())
+  let handlePressDelete = _ => {
+    tz1->Option.map(tz1 => dispatch(Delete(tz1)))->ignore
+    setIsOpen(_ => false)
+    goBack()
+  }
+
+  let element = <Controls onPressDelete={handlePressDelete} onPressEdit={handlePressEdit} />
+
+  let (drawer, close) = BottomSheet.useBottomSheet(
+    ~element,
+    ~isOpen,
+    ~setIsOpen,
+    ~snapPoint="30%",
+    (),
+  )
+
+  React.useEffect1(() => {
+    if !isOpen {
+      close()
+    }
+    None
+  }, [isOpen])
 
   <Container>
     {tz1

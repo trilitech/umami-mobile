@@ -61,7 +61,7 @@ let make = (~navigation, ~route as _) => {
   let navigate = (route, ()) => navigation->Navigation.navigate(route)
   let (isOpen, setIsOpen) = React.useState(_ => false)
 
-  let receiveDrawer = UseBottomDrawer.useBottomSheet(
+  let (receiveDrawer, _) = BottomSheet.useBottomSheet(
     ~element=<ReceiveAssetsPanel />,
     ~isOpen,
     ~setIsOpen,
