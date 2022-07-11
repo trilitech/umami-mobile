@@ -153,36 +153,8 @@ module MultiCurrencyInput = {
 module Recipient = {
   @react.component
   let make = (~recipient: option<string>) => {
-    let getAlias = Alias.useGetAlias()
-    let navigateWithParams = NavUtils.useNavigateWithParams()
+    let alias = AliasDisplayer.useAliasDisplay()
 
-    let recipientEl = recipient->Option.mapWithDefault(
-      <Text> {"Add recipient..."->React.string} </Text>,
-      tz1 => {
-        getAlias(tz1)->Option.mapWithDefault(
-          <Wrapper>
-            <Text> {TezHelpers.formatTz1(tz1)->React.string} </Text>
-            <PressableIcon
-              name="account-plus"
-              style={style(~marginLeft=8.->dp, ())}
-              size=30
-              onPress={_ =>
-                navigateWithParams(
-                  "EditContact",
-                  {
-                    tz1: recipient,
-                    derivationIndex: None,
-                    token: None,
-                  },
-                )}
-            />
-          </Wrapper>,
-          alias => {
-            <Text> {alias.name->React.string} </Text>
-          },
-        )
-      },
-    )
-    recipientEl
+    recipient->Option.mapWithDefault(<Text> {"Add recipient..."->React.string} </Text>, alias)
   }
 }

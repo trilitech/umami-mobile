@@ -102,7 +102,7 @@ let makeDisplayElement = (
       let sign = "+"
 
       {
-        target: op.src->TezHelpers.formatTz1,
+        target: op.src,
         date: date,
         hash: op.hash,
         prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
@@ -112,7 +112,7 @@ let makeDisplayElement = (
       let sign = "-"
 
       {
-        target: op.destination->TezHelpers.formatTz1,
+        target: op.destination,
         date: date,
         hash: op.hash,
         prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
@@ -151,6 +151,18 @@ let useLinkToTzkt = () => {
   hash => ReactNative.Linking.openURL(`https://${host}.tzkt.io/${hash}`)->ignore
 }
 
+module Target = {
+  open Paper
+  @react.component
+  let make = (~tz1) => {
+    let getAlias = AliasDisplayer.useAliasDisplay(
+      ~textRender=tz1 => <Caption> {React.string(tz1)} </Caption>,
+      ~addUserIconSize=20,
+      (),
+    )
+    getAlias(tz1)
+  }
+}
 module TransactionItem = {
   open Paper
   @react.component
@@ -181,8 +193,7 @@ module TransactionItem = {
     <CustomListItem
       left={arrowIcon}
       center={<ReactNative.View>
-        <Caption> {transaction.target->React.string} </Caption>
-        <Caption> {transaction.date->React.string} </Caption>
+        <Target tz1={transaction.target} /> <Caption> {transaction.date->React.string} </Caption>
       </ReactNative.View>}
       right={<Wrapper>
         <Caption style={style(~color=isCredit ? positive : negative, ())}>

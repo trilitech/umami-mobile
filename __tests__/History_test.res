@@ -22,28 +22,28 @@ describe("History functions", () => {
     )
     expect(result)->toEqual([
       {
-        target: "tz1UN...oBUB3",
+        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
         date: "01/06/2022 15:14:35",
         prettyAmountDisplay: Currency("+10 KLD"),
         hash: "opUU1cokKoxbBQBJu6VsXR6g6CA66gnuUcvF7hGAYxwYGxPE8jZ",
         status: Done,
       },
       {
-        target: "tz1UN...oBUB3",
+        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
         date: "01/06/2022 15:13:20",
         prettyAmountDisplay: Currency("+2 KL2"),
         hash: "onrvxGZ9iMqcCmQ1zG9ZTr3dDC5cqY3ADmg4PhWNN1ydFrdeYN5",
         status: Done,
       },
       {
-        target: "tz1aW...2T1Z9",
+        target: "tz1aWXP237BLwNHJcCD4b3DutCevhqq2T1Z9",
         date: "01/06/2022 08:05:15",
         prettyAmountDisplay: Currency("+26.4249 tez"),
         hash: "opWYyTWguCwH8Ph1dNya5eTNfhBRKhZWo2aQCyh7vpN2jAZbX4y",
         status: Done,
       },
       {
-        target: "tz1UN...oBUB3",
+        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
         date: "01/06/2022 14:04:15",
         prettyAmountDisplay: Currency("+1 FKR"),
         hash: "ooHKBx5verQK5XcL6U8yJ8WrZJeLUwp7KqfaHkH9TVZxaxUVe9Q",
@@ -118,28 +118,28 @@ describe("History functions", () => {
 
       expect(result)->toEqual([
         {
-          target: "tz1AB...Q4XCD",
+          target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD",
           date: "25/05/2022 12:34:18",
           prettyAmountDisplay: Currency("-100 tez"),
           hash: "hash1",
           status: Mempool,
         },
         {
-          target: "tz1EF...Q4XGH",
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
           date: "25/05/2022 12:34:18",
           prettyAmountDisplay: Currency("+100 tez"),
           hash: "hash2",
           status: Processing,
         },
         {
-          target: "tz1AB...Q4XCD",
+          target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD",
           date: "18/05/2022 10:35:35",
           prettyAmountDisplay: Currency("-1 FKR"),
           hash: "hash3",
           status: Done,
         },
         {
-          target: "tz1EF...Q4XGH",
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
           date: "25/05/2022 19:07:20",
           prettyAmountDisplay: Currency("-10 KL2"),
           hash: "hash4",
