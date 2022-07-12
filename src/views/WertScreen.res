@@ -8,7 +8,6 @@ let make = (~route as _, ~navigation as _) => {
 
   Store.useWithAccount(account => {
     let wertUrl = `https://widget.wert.io/default/widget/?address=${account.tz1}&commodity=XTZ%3ATezos&commodities=XTZ%3ATezos`
-    Js.Console.log(wertUrl)
     <Container>
       <Title> {`Buy tez for account "${account.name}"`->React.string} </Title>
       <Title> {`Address: ${TezHelpers.formatTz1(account.tz1)}`->React.string} </Title>
