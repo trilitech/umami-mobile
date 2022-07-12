@@ -4,9 +4,6 @@ open CommonComponents
 let make = (~navigation as _, ~route as _) => {
   let navigate = NavUtils.useNavigate()
 
-  let reset = Store.useReset()
-  let dangerColor = ThemeProvider.useErrorColor()
-
   open Paper
   let makeListItem = (route, label) =>
     <CustomListItem
@@ -20,11 +17,7 @@ let make = (~navigation as _, ~route as _) => {
     {makeListItem("Contacts", "Contacts")}
     {makeListItem("Network", "Network")}
     {makeListItem("BackupPhrase", "Show backup phrase")}
-    <List.Section title="Storage">
-      <Button mode=#contained onPress={_ => reset()} color=dangerColor>
-        <Text> {React.string("Erase secret")} </Text>
-      </Button>
-    </List.Section>
+    {makeListItem("OffboardWallet", "Offboard Wallet")}
     <Version />
   </Container>
 }

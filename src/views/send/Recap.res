@@ -1,5 +1,4 @@
 open CommonComponents
-open ReactNative.Style
 open SendTypes
 open Paper
 
@@ -24,7 +23,9 @@ let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
     <SendInputs.NFTInput imageUrl={m.displayUri} name=m.name editions=prettyAmount />
   }
   <>
-    <Headline style={style(~textAlign=#center, ())}> {"Recap"->React.string} </Headline>
+    <InstructionsPanel
+      instructions="Please validate the details of the transaction and submit to confirm."
+    />
     {amountDisplay}
     {makeRow("Fee", TezHelpers.formatBalance(fee))}
     {makeRow("Recipient", trans.recipient->Belt.Option.getWithDefault("")->TezHelpers.formatTz1)}
