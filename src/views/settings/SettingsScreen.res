@@ -16,6 +16,7 @@ let make = (~navigation as _, ~route as _) => {
     {makeListItem("Theme", "Theme")}
     {makeListItem("Contacts", "Contacts")}
     {makeListItem("Network", "Network")}
+    {makeListItem("ChangePassword", "Change Password")}
     {makeListItem("BackupPhrase", "Show backup phrase")}
     {makeListItem("OffboardWallet", "Offboard Wallet")}
     <Version />

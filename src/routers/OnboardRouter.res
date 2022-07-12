@@ -25,6 +25,7 @@ let make = () => {
       <Screen name="Operations" options={headerStyles} component=OperationsScreen.make />
       <Screen name="OffboardWallet" options={headerStyles} component=OffboardWalletScreen.make />
       <Screen name="Wert" options={headerStyles} component=WertScreen.make />
+      <Screen name="ChangePassword" options={headerStyles} component=ChangePassword.make />
     </Group>
     // theses views open in modal
     // <Group screenOptions={_optionsProps => options(~presentation=#modal, ())}>
