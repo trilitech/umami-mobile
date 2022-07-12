@@ -51,6 +51,7 @@
     "react-native-sodium": "^0.4.0",
     "react-native-svg": "^12.3.0",
     "react-native-vector-icons": "^9.1.0",
+    "react-native-webview": "^11.22.7",
     "react-query": "^3.34.19",
     "readable-stream": "^3.6.0",
     "use-interval": "^1.4.0",
