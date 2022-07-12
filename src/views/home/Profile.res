@@ -21,6 +21,7 @@ module PureProfile = {
     ~onPressToggle=_ => (),
     ~onPressSend=_ => (),
     ~onPressReceive=_ => (),
+    ~onPressBuyTez=_ => (),
   ) => {
     let {tz1, name} = account
     <Surface>
@@ -44,7 +45,9 @@ module PureProfile = {
             />
           </Wrapper>
           <Wrapper justifyContent=#flexStart style={style(~alignSelf=#stretch, ())}>
-            <TransactionIcon iconName="storefront-outline" label="Buy tez" />
+            <TransactionIcon
+              onPress={_ => onPressBuyTez()} iconName="storefront-outline" label="Buy tez"
+            />
             <TransactionIcon
               onPress={_ => onPressSend()} iconName="arrow-top-right-thin" label="Send"
             />
@@ -62,6 +65,10 @@ module PureProfile = {
 let make = (~onPressReceive) => {
   let navigate = NavUtils.useNavigate()
 
+  let onPressBuyTez = () => {
+    navigate("Wert")->ignore
+  }
+
   let onPressSend = () => {
     navigate("Send")->ignore
   }
@@ -70,5 +77,7 @@ let make = (~onPressReceive) => {
     navigate("Accounts")->ignore
   }
 
-  Store.useWithAccount(account => <PureProfile onPressSend onPressToggle onPressReceive account />)
+  Store.useWithAccount(account =>
+    <PureProfile onPressBuyTez onPressSend onPressToggle onPressReceive account />
+  )
 }
