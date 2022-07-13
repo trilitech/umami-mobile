@@ -76,7 +76,7 @@ let make = (~navigation as _, ~route as _) => {
     ~hoc,
     ~onConfirm,
     ~creation=true,
-    ~isLoading=loading,
+    ~loading,
     (),
   )
   <Container> {element} </Container>

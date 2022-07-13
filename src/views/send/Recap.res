@@ -10,7 +10,7 @@ let makeRow = (title, content) =>
   </Wrapper>
 
 @react.component
-let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
+let make = (~trans, ~fee, ~loading=false, ~onSubmit, ~onCancel) => {
   let prettyAmount = trans.prettyAmount
 
   let amountDisplay = switch trans.assetType {
@@ -29,10 +29,10 @@ let make = (~trans, ~fee, ~isLoading=false, ~onSubmit, ~onCancel) => {
     {amountDisplay}
     {makeRow("Fee", TezHelpers.formatBalance(fee))}
     {makeRow("Recipient", trans.recipient->Belt.Option.getWithDefault("")->TezHelpers.formatTz1)}
-    <Button disabled=isLoading loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>
+    <Button disabled=loading loading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("Submit transaction")}
     </Button>
-    <Button disabled=isLoading onPress=onCancel style={vMargin} mode=#contained>
+    <Button disabled=loading onPress=onCancel style={vMargin} mode=#contained>
       {React.string("Cancel")}
     </Button>
   </>

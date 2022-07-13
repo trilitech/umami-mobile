@@ -15,9 +15,9 @@ let validTrans = (trans: SendTypes.formState) =>
 let vMargin = StyleUtils.makeVMargin()
 
 @react.component
-let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
+let make = (~trans: SendTypes.formState, ~setTrans, ~loading, ~onSubmit) => {
   let notify = SnackBar.useNotification()
-  let disabled = !validTrans(trans) || isLoading
+  let disabled = !validTrans(trans) || loading
   let navigate = NavUtils.useNavigate()
 
   let handleChangeAmount = (a: string) =>
@@ -87,7 +87,7 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~isLoading, ~onSubmit) => {
         style={StyleUtils.makeHMargin()}
       />
     </Wrapper>
-    <Button disabled loading=isLoading onPress=onSubmit style={vMargin} mode=#contained>
+    <Button disabled loading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("review")}
     </Button>
   </>
