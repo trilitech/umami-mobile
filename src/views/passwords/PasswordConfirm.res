@@ -1,6 +1,7 @@
 open Paper
 
 let vMargin = StyleUtils.makeVMargin()
+let isMinLength = pwd => pwd->Js.String2.length > 3
 
 @react.component
 let make = (~onSubmit, ~loading=false) => {
@@ -18,7 +19,7 @@ let make = (~onSubmit, ~loading=false) => {
       style=vMargin
     />
     <Button
-      disabled={!PasswordUtils.isMinLength(value) || loading}
+      disabled={!isMinLength(value) || loading}
       loading
       style={vMargin}
       mode=#contained

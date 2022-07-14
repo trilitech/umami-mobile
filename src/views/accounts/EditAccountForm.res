@@ -1,12 +1,27 @@
 open Paper
+open Belt
+
+open FormValidators.NameValidator
+
 @react.component
 let make = (~name, ~onSubmit) => {
   let (name, setName) = React.useState(_ => name)
   let style = StyleUtils.makeVMargin()
+  let error = getError(name)
+
   <>
-    <TextInput style value=name label="name" mode=#flat onChangeText={t => setName(_ => t)} />
-    <Button
-      disabled={name->Js.String2.length < 4} style mode=#contained onPress={_ => onSubmit(name)}>
+    <TextInput
+      error={error->Option.isSome}
+      style
+      value=name
+      label="name"
+      mode=#flat
+      onChangeText={t => setName(_ => t)}
+    />
+    <HelperText _type=#error visible={error->Option.isSome}>
+      {error->Option.mapWithDefault("", getErrorName)->React.string}
+    </HelperText>
+    <Button disabled={error->Option.isSome} style mode=#contained onPress={_ => onSubmit(name)}>
       {React.string("save")}
     </Button>
   </>
