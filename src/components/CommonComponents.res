@@ -35,7 +35,7 @@ module LabeledRadio = {
   let make = (~status, ~value, ~label, ~onPress=_ => ()) =>
     <Paper.TouchableRipple onPress={_ => onPress()}>
       <Wrapper style={array([makePadding()])}>
-        <Paper.RadioButton.Android status value />
+        <Paper.RadioButton.Android status value onPress={_ => onPress()} />
         <Paper.Caption> {label->React.string} </Paper.Caption>
       </Wrapper>
     </Paper.TouchableRipple>
