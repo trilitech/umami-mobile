@@ -30,6 +30,12 @@ let makeNotif = hash => {
   </CommonComponents.Wrapper>
 }
 
+let getFriendlyMsg = (msg: string) => {
+  switch msg {
+  | "undefined is not an object (evaluating 'payloadAr.length')" => "Wrong password!"
+  | _ => msg
+  }
+}
 module PureSendScreen = {
   @react.component
   let make = (
@@ -117,7 +123,7 @@ module PureSendScreen = {
           navigate("Home")->ignore
         })
         ->Promise.catch(e => {
-          notify("Failed to send. Reason: " ++ Helpers.getMessage(e))->ignore
+          notify("Failed to send. " ++ e->Helpers.getMessage->getFriendlyMsg)->ignore
           Promise.resolve()
         })
         ->Promise.finally(_ => setLoading(_ => false))

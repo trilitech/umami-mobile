@@ -90,7 +90,6 @@ class Tz1 {
         this.init();
       })
       .catch(err => {
-        console.error(err);
         return false;
       });
   }
