@@ -1,31 +1,28 @@
-// open Paper
 open Belt
-// open ReactNative.Style
-// open ReactNative.Style
-open Paper
 open CommonComponents
+
+open Paper
 
 @react.component
 let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
-  // let contacts: array<Contact.t> = []
-  let navigate = NavUtils.useNavigateWithParams()
+  let navigateWithParams = NavUtils.useNavigateWithParams()
+
   let contacts = Store.useContacts()
-  // account-plus
   <Container>
     {if contacts == [] {
       <DefaultView
         title="No contact" subTitle="Your contacts will appear here" icon="account-box"
       />
     } else {
-      {
-        contacts
+      <>
+        {contacts
         ->Array.map(c =>
           <CustomListItem
             key=c.name
             center={<Text> {React.string(c.name)} </Text>}
             right={<PressableIcon
               onPress={_ =>
-                navigate(
+                navigateWithParams(
                   "ShowContact",
                   {
                     tz1: c.tz1->Some,
@@ -36,7 +33,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
               name="chevron-right"
             />}
             onPress={_ =>
-              navigate(
+              navigateWithParams(
                 "Send",
                 {
                   tz1: c.tz1->Some,
@@ -46,8 +43,20 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
               )}
           />
         )
-        ->React.array
-      }
+        ->React.array}
+        <BigPlusBtn
+          onPress={() => {
+            navigateWithParams(
+              "EditContact",
+              {
+                tz1: None,
+                derivationIndex: None,
+                token: None,
+              },
+            )
+          }}
+        />
+      </>
     }}
   </Container>
 }

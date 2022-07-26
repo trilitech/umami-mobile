@@ -16,7 +16,6 @@ let vMargin = StyleUtils.makeVMargin()
 
 @react.component
 let make = (~trans: SendTypes.formState, ~setTrans, ~loading, ~onSubmit) => {
-  let notify = SnackBar.useNotification()
   let disabled = !validTrans(trans) || loading
   let navigate = NavUtils.useNavigate()
 
@@ -59,34 +58,14 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~loading, ~onSubmit) => {
       center={<Recipient recipient=trans.recipient />}
       right={<CommonComponents.Icon name="chevron-right" />}
     />
-    <Wrapper justifyContent=#center>
-      <NicerIconBtn
-        onPress={_ => {
-          navigate("ScanQR")->ignore
-          ()
-        }}
-        iconName="qrcode-scan"
-        style={StyleUtils.makeVMargin()}
-      />
-      <NicerIconBtn
-        onPress={_ => {
-          Clipboard.getString()
-          ->Promise.thenResolve(recipient => {
-            if TaquitoUtils.tz1IsValid(recipient) {
-              setTrans(prev => {
-                ...prev,
-                recipient: recipient->Some,
-              })
-            } else if recipient != "" {
-              notify(`${recipient} is not a valid pkh`)
-            }
-          })
-          ->ignore
-        }}
-        iconName="content-copy"
-        style={StyleUtils.makeHMargin()}
-      />
-    </Wrapper>
+    <AddressInjector
+      onChange={tz1 => {
+        setTrans(prev => {
+          ...prev,
+          recipient: tz1->Some,
+        })
+      }}
+    />
     <Button disabled loading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("review")}
     </Button>

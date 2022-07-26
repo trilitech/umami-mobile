@@ -1,6 +1,3 @@
-open ReactNative.Style
-
-open Paper
 @react.component
 let make = (~navigation, ~route as _) => {
   let (accounts, _) = AccountsReducer.useAccountsDispatcher()
@@ -32,12 +29,8 @@ let make = (~navigation, ~route as _) => {
         />
       })
       ->React.array}
-      <FAB
-        style={style(~alignSelf=#center, ~marginVertical=20.->dp, ())}
-        icon={Icon.name("plus")}
-        onPress={_ => {
-          navigation->NavStacks.OnBoard.Navigation.navigate("CreateAccount")
-        }}
+      <BigPlusBtn
+        onPress={() => navigation->NavStacks.OnBoard.Navigation.navigate("CreateAccount")}
       />
     </CommonComponents.Wrapper>
   </Container>

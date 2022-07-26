@@ -9,11 +9,15 @@ open FormValidators.NameValidator
 @react.component
 let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {
   let (formState, setFormState) = React.useState(_ => initialState)
+  let createMode = initialState.tz1->Option.isNone
 
-  let error = formState.name->Option.flatMap(getError)
+  let nameError = formState.name->Option.flatMap(getError)
+
+  let disabled =
+    nameError->Option.isSome || formState.name->Option.isNone || formState.tz1->Option.isNone
   <>
     <TextInput
-      error={error->Option.isSome}
+      error={nameError->Option.isSome}
       placeholder="Add contact name"
       style
       value={formState.name->Belt.Option.getWithDefault("")}
@@ -21,19 +25,28 @@ let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {
       mode=#flat
       onChangeText={t => setFormState(prev => {...prev, name: t->Some})}
     />
+    <HelperText _type=#error visible={nameError->Option.isSome}>
+      {nameError->Option.mapWithDefault("", getErrorName)->React.string}
+    </HelperText>
     <TextInput
       style
       disabled=true
       value={formState.tz1->Belt.Option.getWithDefault("")}
+      placeholder="Enter tz1"
       label="tz1 address"
       mode=#flat
       onChangeText={t => {()}}
     />
-    <HelperText _type=#error visible={error->Option.isSome}>
-      {error->Option.mapWithDefault("", getErrorName)->React.string}
-    </HelperText>
+    {createMode
+      ? <AddressInjector
+          onChange={tz1 => {
+            setFormState(prev => {...prev, tz1: tz1->Some})
+            ()
+          }}
+        />
+      : React.null}
     <Button
-      disabled={error->Option.isSome}
+      disabled
       style
       mode=#contained
       onPress={_ => {
