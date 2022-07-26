@@ -13,7 +13,11 @@ module ImportSecret = {
   @react.component
   let make = (~onSubmit, ~dangerousText, ~setDangerousText) => {
     <Container>
-      <Caption> {React.string("Recovery phrase")} </Caption>
+      <InstructionsPanel
+        title="Enter your recovery phrase"
+        instructions="Please fill in the recovery phrase in sequence.
+Umami supports 12-, 15-, 18-, 21- and 24-word recovery phrases."
+      />
       <TextInput
         value=dangerousText
         style={ReactNative.Style.style(~height=130.->ReactNative.Style.dp, ())}
