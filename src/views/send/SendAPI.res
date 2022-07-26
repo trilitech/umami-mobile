@@ -87,6 +87,7 @@ let send: send = (
         ~contractAddress=b.contract,
         ~tokenId=b.tokenId,
         ~amount=Token.toRaw(prettyAmount, decimals),
+        ~isFa1=b.symbol == SendInputs.fa1Symbol,
         ~isTestNet,
         (),
       )
