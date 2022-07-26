@@ -57,7 +57,7 @@ describe("History functions", () => {
 
   open Operation
   test(
-    "makeDisplayInfo returns the right value (edge case with status agains indexor leve)",
+    "makeDisplayInfo returns the right value (edge case with status against indexor leve)",
     () => {
       let input = [
         {
@@ -135,6 +135,65 @@ describe("History functions", () => {
           target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD",
           date: "18/05/2022 10:35:35",
           prettyAmountDisplay: Currency("-1 FKR"),
+          hash: "hash3",
+          status: Done,
+        },
+        {
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
+          date: "25/05/2022 19:07:20",
+          prettyAmountDisplay: Currency("-10 KL2"),
+          hash: "hash4",
+          status: Done,
+        },
+      ])
+    },
+  )
+
+  test(
+    "makeDisplayInfo returns the right value (edge case with 2 tokens that have same contract and different id)",
+    () => {
+      let input = [
+        {
+          hash: "hash3",
+          src: myTz1,
+          destination: otherTz1_2,
+          level: 105,
+          timestamp: "2022-05-24T17:07:20Z",
+          amount: Contract({
+            amount: 2000000,
+            tokenId: "1"->Some,
+            contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
+          }),
+          kind: "transaction",
+          blockHash: Some("blockHash3"),
+        },
+        {
+          hash: "hash4",
+          src: myTz1,
+          destination: otherTz1_2,
+          level: 105,
+          timestamp: "2022-05-25T17:07:20Z",
+          amount: Contract({
+            amount: 1000000,
+            tokenId: "0"->Some,
+            contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
+          }),
+          kind: "transaction",
+          blockHash: Some("blockHash3"),
+        },
+      ]
+      let tokens = TokenJSON.jsonString1->parseTokenJSON->Token.decodeJsonArray
+
+      let result =
+        input
+        ->Belt.Array.map(op => OperationsScreen.makeDisplayElement(op, myTz1, 117, tokens))
+        ->Helpers.filterNone
+
+      expect(result)->toEqual([
+        {
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
+          date: "24/05/2022 19:07:20",
+          prettyAmountDisplay: Currency("-20 KL3"),
           hash: "hash3",
           status: Done,
         },

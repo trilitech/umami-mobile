@@ -23,7 +23,7 @@ module JSON = {
     amount: string,
     token: string,
     token_amount: option<string>,
-    token_id: option<string>,
+    token_id: option<string>, // on mezos, fa1.2 tokens have no tokenId
     contract: Js.Nullable.t<string>,
     destination: string,
   }

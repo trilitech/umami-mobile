@@ -44,7 +44,7 @@ type tokenBase = {
   id: int,
   balance: int,
   tz1: string,
-  tokenId: string,
+  tokenId: string, // on tzkt, fa1.2 tokens have a tokenId
   contract: string,
 }
 

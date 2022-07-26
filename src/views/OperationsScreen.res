@@ -33,12 +33,15 @@ let getStatus = (op: Operation.t, indexorLevel) => {
 
 type tokenName = CurrencyName(string) | NFTname(string, string)
 
-let getTokenByAddress = (tokens: array<Token.t>, address) => {
+let getTokenByAddressAndId = (tokens: array<Token.t>, address, tokenId) => {
   tokens->Belt.Array.getBy(t =>
-    switch t {
-    | FA2(b, _) => b.contract == address
-    | NFT(b, _) => b.contract == address
-    | FA1(b) => b.contract == address
+    switch (t, tokenId) {
+    | (FA2(b, _), Some(tokenId))
+    | (NFT(b, _), Some(tokenId)) =>
+      b.contract == address && b.tokenId == tokenId
+    // If we match an FA1 token, we must have provided no tokenId
+    | (FA1(b), None) => b.contract == address
+    | _ => false
     }
   )
 }
@@ -49,7 +52,7 @@ let getName = (a: Operation.amount, tokens: array<Token.t>) => {
   | Tez(_) => CurrencyName("tez")
   | Contract(data) =>
     tokens
-    ->getTokenByAddress(data.contract)
+    ->getTokenByAddressAndId(data.contract, data.tokenId)
     ->Option.map(t =>
       switch t {
       | FA2(_, m) => CurrencyName(m.symbol)
@@ -67,7 +70,7 @@ let operationAmountToAsset = (amount: Operation.amount, tokens: array<Token.t>) 
   | Tez(amount) => Tez(amount)->Some
   | Contract(data) =>
     tokens
-    ->getTokenByAddress(data.contract)
+    ->getTokenByAddressAndId(data.contract, data.tokenId)
     ->Belt.Option.map(t => {
       switch t {
       | FA2(d, m) => FA2({...d, balance: data.amount}, m)
