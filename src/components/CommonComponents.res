@@ -30,12 +30,15 @@ module Wrapper = {
 }
 
 module LabeledRadio = {
+  open StyleUtils
   @react.component
   let make = (~status, ~value, ~label, ~onPress=_ => ()) =>
-    <Wrapper>
-      <Paper.RadioButton.Android status value onPress />
-      <Paper.Caption> {label->React.string} </Paper.Caption>
-    </Wrapper>
+    <Paper.TouchableRipple onPress={_ => onPress()}>
+      <Wrapper style={array([makePadding()])}>
+        <Paper.RadioButton.Android status value />
+        <Paper.Caption> {label->React.string} </Paper.Caption>
+      </Wrapper>
+    </Paper.TouchableRipple>
 }
 
 let makeListItem = (
