@@ -16,6 +16,7 @@ let make = () => {
       <Screen name="EditAccount" options={headerStyles} component=EditAccountScreen.make />
       <Screen name="CreateAccount" options={headerStyles} component=CreateAccountScreen.make />
       <Screen name="Contacts" options={headerStyles} component=ContactsScreen.make />
+      <Screen name="SelectRecipient" options={headerStyles} component=SelectRecipientScreen.make />
       <Screen name="EditContact" options={headerStyles} component=EditContactScreen.make />
       <Screen name="ShowContact" options={headerStyles} component=ShowContactScreen.make />
       <Screen name="CreateAddress" options={headerStyles} component=CreateContactScreen.make />

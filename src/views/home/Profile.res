@@ -37,10 +37,10 @@ module PureProfile = {
         <Wrapper flexDirection=#column style={style(~flex=3., ())}>
           <Wrapper style={style(~alignSelf=#stretch, ())}>
             <ContactDisplay name tz1 />
-            <IconButton
+            <PressableIcon
               style={style(~top=0.->dp, ~right=8.->dp, ~position=#absolute, ())}
               onPress={_ => onPressToggle()}
-              icon={Paper.Icon.name("swap-horizontal")}
+              name="swap-horizontal"
               size={20}
             />
           </Wrapper>

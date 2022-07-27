@@ -1,5 +1,3 @@
-let dangerColor = Colors.Light.error
-
 let useHeaderStyle = (~onBoardingMode=false, ()) => {
   let header = NavStacks.OnBoard.Header.render(p => {
     let goBack = NavUtils.useGoBack()

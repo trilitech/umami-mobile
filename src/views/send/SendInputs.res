@@ -8,7 +8,8 @@ module Sender = {
   @react.component
   let make = (~onPress, ~disabled) => {
     useWithAccount(account => <>
-      <Caption> {React.string("sender")} </Caption> <AccountListItem account onPress disabled />
+      <Caption> {React.string("sender")} </Caption>
+      <AccountListItem account onPress={_ => onPress()} right={<ChevronRight />} disabled />
     </>)
   }
 }
@@ -152,9 +153,30 @@ module MultiCurrencyInput = {
 
 module Recipient = {
   @react.component
-  let make = (~recipient: option<string>) => {
-    let alias = AliasDisplayer.useAliasDisplay()
+  let make = (~recipient: option<string>, ~onPress) => {
+    let getAlias = Alias.useGetAlias()
 
-    recipient->Option.mapWithDefault(<Text> {"Add recipient..."->React.string} </Text>, alias)
+    let el = switch recipient {
+    | None =>
+      <CustomListItem
+        onPress={_ => onPress()}
+        center={<Text> {"Add recipient..."->React.string} </Text>}
+        right={<ChevronRight />}
+      />
+
+    | Some(tz1) =>
+      switch getAlias(tz1) {
+      | Some(contact) =>
+        <ContactListItem contact onPress={_ => onPress()} right={<ChevronRight />} />
+      | None =>
+        <CustomListItem
+          onPress={_ => onPress()}
+          center={<AliasDisplayer.Tz1WithAdd tz1 />}
+          right={<ChevronRight />}
+        />
+      }
+    }
+
+    <> <Caption> {React.string("recipient")} </Caption> {el} </>
   }
 }

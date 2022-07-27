@@ -106,11 +106,15 @@ module Icon = {
   }
 }
 
+module ChevronRight = {
+  @react.component
+  let make = () => <Icon name="chevron-right" />
+}
+
 module PressableIcon = {
   @react.component
-  let make = (~name, ~color=?, ~size=30, ~style=ReactNative.Style.style(), ~onPress=?) => {
-    <ReactNative.Pressable ?onPress> {_ => <Icon name ?color size style />} </ReactNative.Pressable>
-  }
+  let make = (~name, ~color=?, ~size=30, ~style=ReactNative.Style.style(), ~onPress=() => ()) =>
+    <Paper.IconButton style ?color onPress={_ => onPress()} icon={Paper.Icon.name(name)} size />
 }
 
 module ListItem = {

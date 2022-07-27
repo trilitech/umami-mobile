@@ -43,10 +43,9 @@ module CurrencyIem = {
       center={<Wrapper>
         <Paper.Title style={style()}> {React.string(prettyCurrency)} </Paper.Title>
         {standard->Option.mapWithDefault(React.null, standard => <FAStandard standard />)}
-        // <Paper.Chip mode=#outlined> {React.string("fa1")} </Paper.Chip>
       </Wrapper>}
       onPress
-      right={<Icon name="chevron-right" size=40 />}
+      right={<ChevronRight />}
     />
   }
 }

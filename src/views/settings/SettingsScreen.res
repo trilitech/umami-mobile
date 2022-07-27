@@ -9,7 +9,7 @@ let make = (~navigation as _, ~route as _) => {
     <CustomListItem
       onPress={_ => navigate(route)->ignore}
       center={<Text> {React.string(label)} </Text>}
-      right={<CommonComponents.Icon name="chevron-right" />}
+      right={<ChevronRight />}
     />
 
   <Container>

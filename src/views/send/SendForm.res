@@ -1,6 +1,5 @@
 open SendInputs
 open SendTypes
-open CommonComponents
 open Paper
 
 open Belt
@@ -42,22 +41,18 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~loading, ~onSubmit) => {
   | NftAsset(_, m) =>
     <ReactNative.View testID="nft-input">
       <NFTInput imageUrl={m.displayUri} name={m.name} />
+      // {<Caption> {React.string("editions")} </Caption>}
       <EditionsInput prettyAmount={prettyAmount} onChange=handleChangeAmount />
     </ReactNative.View>
   }
 
-  let handleSenderPress = _ => navigate("Accounts")->ignore
-  let handleAddressBookPress = _ => navigate("Contacts")->ignore
+  let handleSenderPress = () => navigate("Accounts")
+  let handleSelectRecipientPress = () => navigate("SelectRecipient")
 
   <>
     {amountInput}
     <Sender onPress=handleSenderPress disabled={SendTypes.isNft(trans.assetType)} />
-    <Caption> {React.string("recipient")} </Caption>
-    <CustomListItem
-      onPress={handleAddressBookPress}
-      center={<Recipient recipient=trans.recipient />}
-      right={<CommonComponents.Icon name="chevron-right" />}
-    />
+    <Recipient onPress={handleSelectRecipientPress} recipient={trans.recipient} />
     <AddressInjector
       onChange={tz1 => {
         setTrans(prev => {

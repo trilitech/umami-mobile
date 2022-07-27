@@ -1,5 +1,4 @@
 open CommonComponents
-// open ContactFormTypes
 
 open Belt
 open ReactNative

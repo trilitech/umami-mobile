@@ -20,21 +20,10 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
           <CustomListItem
             key=c.name
             center={<Text> {React.string(c.name)} </Text>}
-            right={<PressableIcon
-              onPress={_ =>
-                navigateWithParams(
-                  "ShowContact",
-                  {
-                    tz1: c.tz1->Some,
-                    derivationIndex: None,
-                    token: None,
-                  },
-                )}
-              name="chevron-right"
-            />}
+            right={<ChevronRight />}
             onPress={_ =>
               navigateWithParams(
-                "Send",
+                "ShowContact",
                 {
                   tz1: c.tz1->Some,
                   derivationIndex: None,

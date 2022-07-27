@@ -160,7 +160,6 @@ module Target = {
   let make = (~tz1) => {
     let getAlias = AliasDisplayer.useAliasDisplay(
       ~textRender=tz1 => <Caption> {React.string(tz1)} </Caption>,
-      ~addUserIconSize=20,
       (),
     )
     getAlias(tz1)
