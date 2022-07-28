@@ -5,6 +5,7 @@ open CommonComponents
 type status = Done | Processing | Mempool
 
 type displayAmount = Currency(string) | NFT(string, string)
+
 type diplayElement = {
   target: string,
   date: string,
@@ -31,8 +32,6 @@ let getStatus = (op: Operation.t, indexorLevel) => {
   }
 }
 
-type tokenName = CurrencyName(string) | NFTname(string, string)
-
 let getTokenByAddressAndId = (tokens: array<Token.t>, address, tokenId) => {
   tokens->Belt.Array.getBy(t =>
     switch (t, tokenId) {
@@ -44,24 +43,6 @@ let getTokenByAddressAndId = (tokens: array<Token.t>, address, tokenId) => {
     | _ => false
     }
   )
-}
-
-let getName = (a: Operation.amount, tokens: array<Token.t>) => {
-  open Belt
-  switch a {
-  | Tez(_) => CurrencyName("tez")
-  | Contract(data) =>
-    tokens
-    ->getTokenByAddressAndId(data.contract, data.tokenId)
-    ->Option.map(t =>
-      switch t {
-      | FA2(_, m) => CurrencyName(m.symbol)
-      | NFT(_, m) => NFTname(m.symbol, m.thumbnailUri)
-      | FA1(_) => CurrencyName("KLD")
-      }
-    )
-    ->Option.getWithDefault(CurrencyName("Token"))
-  }
 }
 
 let operationAmountToAsset = (amount: Operation.amount, tokens: array<Token.t>) => {
@@ -81,9 +62,6 @@ let operationAmountToAsset = (amount: Operation.amount, tokens: array<Token.t>) 
   }
 }
 
-let getAdjustedAmount = (amount: Operation.amount, tokens: array<Token.t>) =>
-  operationAmountToAsset(amount, tokens)->Belt.Option.map(Asset.toPretty)
-
 let makeDisplayElement = (
   op: Operation.t,
   myAddress: string,
@@ -92,39 +70,27 @@ let makeDisplayElement = (
 ) => {
   let status = getStatus(op, indexorLevel)
   let date = makePrettyDate(op.timestamp)
-  let adjustedAmount =
-    getAdjustedAmount(op.amount, tokens)->Belt.Option.map(a => Js.Float.toString(a))
+  let asset = operationAmountToAsset(op.amount, tokens)
 
-  let symbol = switch getName(op.amount, tokens) {
-  | NFTname(n, _) => n
-  | CurrencyName(n) => n
+  let incoming = op.destination == myAddress
+  let outGoing = op.src == myAddress
+
+  if incoming || outGoing {
+    let fullPrettyAmount = asset->Belt.Option.mapWithDefault("", a => a->Asset.getPrettyDisplay)
+
+    let sign = incoming ? "+" : "-"
+    let target = incoming ? op.src : op.destination
+
+    {
+      target: target,
+      date: date,
+      hash: op.hash,
+      prettyAmountDisplay: Currency(sign ++ fullPrettyAmount),
+      status: status,
+    }->Some
+  } else {
+    None
   }
-
-  adjustedAmount->Belt.Option.flatMap(adjustedAmount =>
-    if op.destination == myAddress {
-      let sign = "+"
-
-      {
-        target: op.src,
-        date: date,
-        hash: op.hash,
-        prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
-        status: status,
-      }->Some
-    } else if op.src == myAddress {
-      let sign = "-"
-
-      {
-        target: op.destination,
-        date: date,
-        hash: op.hash,
-        prettyAmountDisplay: Currency(sign ++ adjustedAmount ++ " " ++ symbol),
-        status: status,
-      }->Some
-    } else {
-      None
-    }
-  )
 }
 
 let useCurrentAccountOperations = () => {
@@ -136,22 +102,20 @@ let useCurrentAccountOperations = () => {
   }
 }
 
-let makeKey = (t: Operation.t, i) => {
-  t.destination ++ t.timestamp ++ t.src ++ i->Belt.Int.toString
-}
+let makeKey = (t: Operation.t, i) => t.destination ++ t.timestamp ++ t.src ++ i->Belt.Int.toString
 
-let matchAmount = (a: displayAmount) => {
+let matchAmount = (a: displayAmount) =>
   switch a {
   | NFT(a, _) => a
   | Currency(a) => a
   }
-}
+
 let isCredit = (a: displayAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
 
 let useLinkToTzkt = () => {
   let isTestNet = Store.useIsTestNet()
-  let host = isTestNet ? "ithacanet" : "mainnet"
-  hash => ReactNative.Linking.openURL(`https://${host}.tzkt.io/${hash}`)->ignore
+  let host = isTestNet ? Endpoints.tzkt.testNet : Endpoints.tzkt.mainNet
+  hash => ReactNative.Linking.openURL(`https://${host}/${hash}`)->ignore
 }
 
 module Target = {
@@ -180,17 +144,13 @@ module TransactionItem = {
     }
 
     let isCredit = isCredit(transaction.prettyAmountDisplay)
-    let arrowIcon = isCredit
-      ? <Paper.Avatar.Icon
-          style={style(~backgroundColor=positive, ())}
-          size={24}
-          icon={Paper.Icon.name("arrow-bottom-left-thin")}
-        />
-      : <Paper.Avatar.Icon
-          style={style(~backgroundColor=negative, ())}
-          size={24}
-          icon={Paper.Icon.name("arrow-top-right-thin")}
-        />
+
+    let arrowIcon =
+      <Paper.Avatar.Icon
+        style={style(~backgroundColor=isCredit ? positive : negative, ())}
+        size={24}
+        icon={Paper.Icon.name(isCredit ? "arrow-bottom-left-thin" : "arrow-top-right-thin")}
+      />
 
     <CustomListItem
       left={arrowIcon}
@@ -240,11 +200,54 @@ module HistoryDisplay = {
   }
 }
 
+module AssetBalanceDisplay = {
+  open Paper
+  @react.component
+  let make = (~assetBalance) => {
+    let prettyAmount = assetBalance->Asset.getPrettyDisplay
+    let icon = assetBalance->Asset.isToken->AssetLogo.getLogo
+
+    <Card>
+      <Wrapper
+        flexDirection=#column
+        justifyContent=#spaceBetween
+        style={StyleUtils.makeVMargin(~size=2, ())}>
+        {icon} <Title> {prettyAmount->React.string} </Title>
+      </Wrapper>
+    </Card>
+  }
+}
+
+let filterOperations = (operations: array<Operation.t>, tokens, selectedAsset: Asset.t) => {
+  operations->Belt.Array.keep(o => {
+    let asset = o.amount->operationAmountToAsset(tokens)
+
+    switch selectedAsset {
+    | Tez(_) =>
+      // Display Tez and NFTs if we select tez
+      asset->Belt.Option.mapWithDefault(false, asset => asset->Asset.isTez || asset->Asset.isNft)
+    | Token(t) =>
+      switch t {
+      | NFT(_) => false // NFTs displayed under tez
+      | FA1(b)
+      | FA2((b, _)) =>
+        asset
+        ->Belt.Option.flatMap(Asset.getTokenBase)
+        ->Belt.Option.mapWithDefault(false, base =>
+          // Keep asset in list only if it matches the identity of the selected asset
+          b.contract == base.contract && b.tokenId == base.tokenId
+        )
+      }
+    }
+  })
+}
+
 @react.component
-let make = (~route as _, ~navigation as _) => {
+let make = (~route, ~navigation as _) => {
   let operations = useCurrentAccountOperations()
   let tokens = Store.useTokens()
   let notify = SnackBar.useNotification()
+  let assetBalance = NavUtils.getAssetBalance(route)
   let (indexerLastBlock, setIndexerLastBlock) = React.useState(_ => None)
   let isTestNet = Store.useIsTestNet()
 
@@ -261,9 +264,14 @@ let make = (~route as _, ~navigation as _) => {
 
   let account = Store.useActiveAccount()
 
-  switch (account, indexerLastBlock) {
-  | (Some(account), Some(indexerLastBlock)) =>
-    <HistoryDisplay tz1=account.tz1 operations indexerLastBlock tokens />
+  switch (account, indexerLastBlock, assetBalance) {
+  | (Some(account), Some(indexerLastBlock), Some(assetBalance)) => {
+      let operations = filterOperations(operations, tokens, assetBalance)
+      <>
+        <AssetBalanceDisplay assetBalance />
+        <HistoryDisplay tz1=account.tz1 operations indexerLastBlock tokens />
+      </>
+    }
   | _ => React.null
   }
 }

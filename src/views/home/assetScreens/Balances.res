@@ -1,9 +1,20 @@
 @react.component
 let make = (~account: Account.t) => {
-  let navigate = NavUtils.useNavigate()
+  let navigateWithParams = NavUtils.useNavigateWithParams()
   <Container>
     <CurrentyBalanceDisplay
-      tokens=account.tokens onPress={_ => navigate("Operations")->ignore} balance=account.balance
+      tokens=account.tokens
+      onPress={asset =>
+        navigateWithParams(
+          "Operations",
+          {
+            tz1: None,
+            derivationIndex: None,
+            token: None,
+            assetBalance: asset->Some,
+          },
+        )}
+      balance=account.balance
     />
   </Container>
 }

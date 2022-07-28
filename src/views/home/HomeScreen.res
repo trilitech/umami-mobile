@@ -42,10 +42,7 @@ module HomeCoreView = {
           let key = s["route"]["key"]
           switch key {
           | "account" => <Balances account />
-          // <DefaultView icon="credit-card" title="Account" subTitle="You have no tez yet..." />
           | "nft" => <Nfts />
-          // | "transfer" =>
-          //   <DefaultView icon="upload" title="Transfer" subTitle="Transfer tez here..." />
           | _ => React.null
           }
         }}
