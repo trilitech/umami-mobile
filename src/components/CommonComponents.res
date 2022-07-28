@@ -185,7 +185,7 @@ module CustomListItem = {
           <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>
           <ReactNative.View style={style(~margin=8.->dp, ())}> {center} </ReactNative.View>
           <ReactNative.View style={style(~position=#absolute, ~right=0.->dp, ())}>
-            {right}
+            {disabled ? React.null : right}
           </ReactNative.View>
         </Wrapper>
       </Surface>

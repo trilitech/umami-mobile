@@ -6,7 +6,7 @@ open Belt
 open SendTypes
 module Sender = {
   @react.component
-  let make = (~onPress, ~disabled) => {
+  let make = (~onPress=() => (), ~disabled) => {
     useWithAccount(account => <>
       <Caption> {React.string("sender")} </Caption>
       <AccountListItem account onPress={_ => onPress()} right={<ChevronRight />} disabled />
@@ -151,32 +151,44 @@ module MultiCurrencyInput = {
   }
 }
 
+let recipientLabel = <Caption> {React.string("recipient")} </Caption>
+module RecipientDisplayOnly = {
+  @react.component
+  let make = (~tz1, ~onPress=() => (), ~disabled=false) => {
+    let getAlias = Alias.useGetAlias()
+
+    let el = switch getAlias(tz1) {
+    | Some(contact) =>
+      <ContactListItem disabled contact onPress={_ => onPress()} right={<ChevronRight />} />
+    | None =>
+      <CustomListItem
+        disabled
+        onPress={_ => onPress()}
+        // center={disabled
+        //   ? <Paper.Text> {tz1->TezHelpers.formatTz1->React.string} </Paper.Text>
+        //   : <AliasDisplayer.Tz1WithAdd tz1 />}
+        center={<AliasDisplayer.Tz1WithAdd tz1 />}
+        right={<ChevronRight />}
+      />
+    }
+    <> {recipientLabel} {el} </>
+  }
+}
+
 module Recipient = {
   @react.component
   let make = (~recipient: option<string>, ~onPress) => {
-    let getAlias = Alias.useGetAlias()
-
-    let el = switch recipient {
-    | None =>
-      <CustomListItem
-        onPress={_ => onPress()}
-        center={<Text> {"Add recipient..."->React.string} </Text>}
-        right={<ChevronRight />}
-      />
-
-    | Some(tz1) =>
-      switch getAlias(tz1) {
-      | Some(contact) =>
-        <ContactListItem contact onPress={_ => onPress()} right={<ChevronRight />} />
-      | None =>
+    switch recipient {
+    | None => <>
+        {recipientLabel}
         <CustomListItem
           onPress={_ => onPress()}
-          center={<AliasDisplayer.Tz1WithAdd tz1 />}
+          center={<Text> {"Add recipient..."->React.string} </Text>}
           right={<ChevronRight />}
         />
-      }
-    }
+      </>
 
-    <> <Caption> {React.string("recipient")} </Caption> {el} </>
+    | Some(tz1) => <RecipientDisplayOnly tz1 onPress />
+    }
   }
 }

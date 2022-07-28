@@ -1,6 +1,7 @@
 open CommonComponents
 open SendTypes
 open Paper
+open SendInputs
 
 let vMargin = StyleUtils.makeVMargin()
 
@@ -28,7 +29,10 @@ let make = (~trans, ~fee, ~loading=false, ~onSubmit, ~onCancel) => {
     />
     {amountDisplay}
     {makeRow("Fee", TezHelpers.formatBalance(fee))}
-    {makeRow("Recipient", trans.recipient->Belt.Option.getWithDefault("")->TezHelpers.formatTz1)}
+    <Sender disabled=true />
+    {trans.recipient->Helpers.reactFold(recipient =>
+      <RecipientDisplayOnly disabled=true tz1=recipient />
+    )}
     <Button disabled=loading loading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("Submit transaction")}
     </Button>
