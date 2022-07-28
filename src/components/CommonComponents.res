@@ -178,7 +178,7 @@ module CustomListItem = {
     <TouchableRipple
       disabled
       rippleColor="red"
-      style={style(~alignSelf=#stretch, ~marginVertical=4.->dp, ())}
+      style={array([style(~alignSelf=#stretch, ()), StyleUtils.makeBottomMargin()])}
       ?onPress>
       <Surface style={style(~borderRadius=4., ~backgroundColor, ())}>
         <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
