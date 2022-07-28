@@ -40,10 +40,12 @@ module CurrencyItem = {
   }
 }
 
+// Get Assets to display in main screen
+// Exclude NFTs
 let getAssets = (balance: option<int>, tokens: array<Token.t>) => {
   open Asset
   let tezAsset = balance->Option.map(b => Tez(b))->Option.mapWithDefault([], a => [a])
-  let tokenAssets = tokens->Array.map(t => Token(t))
+  let tokenAssets = tokens->Array.keep(t => !(t->Token.isNft))->Array.map(t => Token(t))
   Array.concat(tezAsset, tokenAssets)
 }
 

@@ -148,3 +148,10 @@ let printBalance = (rawAmount, token: t) => {
   | FA2(_, m) => fromRaw(rawAmount, m.decimals)
   }
 }
+
+let isNft = (token: t) => {
+  switch token {
+  | NFT(_) => true
+  | _ => false
+  }
+}

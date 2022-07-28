@@ -14,7 +14,7 @@ let toPretty = (amount: t) => {
   }
 }
 
-let getName = (amount: t) => {
+let getSymbol = (amount: t) => {
   switch amount {
   | Tez(_) => CurrencyName("tez")
   | Token(t) =>
@@ -28,7 +28,7 @@ let getName = (amount: t) => {
 
 let getPrettyDisplay = (amount: t) => {
   let prettyAmount = toPretty(amount)->Belt.Float.toString
-  let name = getName(amount)
+  let name = getSymbol(amount)
   let name = switch name {
   | CurrencyName(name) => name
   | NFTname(_) => "FKR"
@@ -48,11 +48,7 @@ let isToken = a => !isTez(a)
 let isNft = amount =>
   switch amount {
   | Tez(_) => false
-  | Token(t) =>
-    switch t {
-    | NFT(_, _) => true
-    | _ => false
-    }
+  | Token(t) => Token.isNft(t)
   }
 
 let getTokenBase = (a: t) =>

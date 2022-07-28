@@ -4,12 +4,12 @@ open CommonComponents
 
 type status = Done | Processing | Mempool
 
-type displayAmount = Currency(string) | NFT(string, string)
+type tradeAmount = CurrencyTrade(string) | NFTTrade(string, string)
 
 type diplayElement = {
   target: string,
   date: string,
-  prettyAmountDisplay: displayAmount,
+  prettyAmountDisplay: tradeAmount,
   hash: string,
   status: status,
 }
@@ -62,6 +62,17 @@ let operationAmountToAsset = (amount: Operation.amount, tokens: array<Token.t>) 
   }
 }
 
+let makeTradeAmount = (a: Asset.t, incoming: bool) => {
+  let symbol = a->Asset.getSymbol
+  let sign = incoming ? "+" : "-"
+  let prettyAmountWithSign = sign ++ a->Asset.getPrettyDisplay
+
+  switch symbol {
+  | CurrencyName(_) => CurrencyTrade(prettyAmountWithSign)
+  | NFTname(_, url) => NFTTrade(prettyAmountWithSign, url)
+  }
+}
+
 let makeDisplayElement = (
   op: Operation.t,
   myAddress: string,
@@ -75,22 +86,21 @@ let makeDisplayElement = (
   let incoming = op.destination == myAddress
   let outGoing = op.src == myAddress
 
-  if incoming || outGoing {
-    let fullPrettyAmount = asset->Belt.Option.mapWithDefault("", a => a->Asset.getPrettyDisplay)
+  asset->Belt.Option.flatMap(asset => {
+    if incoming || outGoing {
+      let target = incoming ? op.src : op.destination
 
-    let sign = incoming ? "+" : "-"
-    let target = incoming ? op.src : op.destination
-
-    {
-      target: target,
-      date: date,
-      hash: op.hash,
-      prettyAmountDisplay: Currency(sign ++ fullPrettyAmount),
-      status: status,
-    }->Some
-  } else {
-    None
-  }
+      {
+        target: target,
+        date: date,
+        hash: op.hash,
+        prettyAmountDisplay: makeTradeAmount(asset, incoming),
+        status: status,
+      }->Some
+    } else {
+      None
+    }
+  })
 }
 
 let useCurrentAccountOperations = () => {
@@ -104,13 +114,13 @@ let useCurrentAccountOperations = () => {
 
 let makeKey = (t: Operation.t, i) => t.destination ++ t.timestamp ++ t.src ++ i->Belt.Int.toString
 
-let matchAmount = (a: displayAmount) =>
+let matchAmount = (a: tradeAmount) =>
   switch a {
-  | NFT(a, _) => a
-  | Currency(a) => a
+  | NFTTrade(a, _) => a
+  | CurrencyTrade(a) => a
   }
 
-let isCredit = (a: displayAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
+let isCredit = (a: tradeAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
 
 let useLinkToTzkt = () => {
   let isTestNet = Store.useIsTestNet()
@@ -129,6 +139,28 @@ module Target = {
     getAlias(tz1)
   }
 }
+
+let makeTradeDisplay = (a: string, isCredit) => {
+  open Paper
+  open Colors.Light
+  <Caption style={style(~color=isCredit ? positive : negative, ())}> {a->React.string} </Caption>
+}
+
+let makeTradeEl = (a: tradeAmount) => {
+  let isCredit = isCredit(a)
+  switch a {
+  | NFTTrade(a, uri) =>
+    <Wrapper>
+      {makeTradeDisplay(a, isCredit)}
+      <FastImage
+        source={ReactNative.Image.uriSource(~uri, ())}
+        resizeMode=#contain
+        style={array([style(~height=20.->dp, ~width=20.->dp, ()), StyleUtils.makeLeftHMargin()])}
+      />
+    </Wrapper>
+  | CurrencyTrade(a) => makeTradeDisplay(a, isCredit)
+  }
+}
 module TransactionItem = {
   open Paper
   @react.component
@@ -145,6 +177,7 @@ module TransactionItem = {
 
     let isCredit = isCredit(transaction.prettyAmountDisplay)
 
+    let amountEl = makeTradeEl(transaction.prettyAmountDisplay)
     let arrowIcon =
       <Paper.Avatar.Icon
         style={style(~backgroundColor=isCredit ? positive : negative, ())}
@@ -158,9 +191,7 @@ module TransactionItem = {
         <Target tz1={transaction.target} /> <Caption> {transaction.date->React.string} </Caption>
       </ReactNative.View>}
       right={<Wrapper>
-        <Caption style={style(~color=isCredit ? positive : negative, ())}>
-          {matchAmount(transaction.prettyAmountDisplay)->React.string}
-        </Caption>
+        {amountEl}
         <Paper.IconButton icon={Paper.Icon.name(statusIcon)} size={15} />
         <Paper.IconButton
           onPress={_ => goToTzktTransaction(transaction.hash)}
