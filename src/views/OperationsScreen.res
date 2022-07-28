@@ -65,11 +65,11 @@ let operationAmountToAsset = (amount: Operation.amount, tokens: array<Token.t>) 
 let makeTradeAmount = (a: Asset.t, incoming: bool) => {
   let symbol = a->Asset.getSymbol
   let sign = incoming ? "+" : "-"
-  let prettyAmountWithSign = sign ++ a->Asset.getPrettyDisplay
+  let prettyStringWithSign = sign ++ a->Asset.getPrettyString
 
   switch symbol {
-  | CurrencyName(_) => CurrencyTrade(prettyAmountWithSign)
-  | NFTname(_, url) => NFTTrade(prettyAmountWithSign, url)
+  | CurrencyName(_) => CurrencyTrade(prettyStringWithSign)
+  | NFTname(_, url) => NFTTrade(prettyStringWithSign, url)
   }
 }
 
@@ -235,7 +235,7 @@ module AssetBalanceDisplay = {
   open Paper
   @react.component
   let make = (~assetBalance) => {
-    let prettyAmount = assetBalance->Asset.getPrettyDisplay
+    let prettyAmount = assetBalance->Asset.getPrettyString
     let icon = assetBalance->Asset.isToken->AssetLogo.getLogo
 
     <Card>

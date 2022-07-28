@@ -23,7 +23,7 @@ module FABadge = {
 module CurrencyItem = {
   @react.component
   let make = (~asset: Asset.t, ~onPress) => {
-    let prettyDisplay = asset->Asset.getPrettyDisplay
+    let prettyDisplay = asset->Asset.getPrettyString
     let icon = asset->Asset.isToken->AssetLogo.getLogo
     let standardBadge =
       asset->Asset.getStandard->Option.mapWithDefault(React.null, standard => <FABadge standard />)
@@ -55,7 +55,7 @@ let make = (~balance: option<int>, ~onPress, ~tokens) => {
   <>
     {assets
     ->Array.map(asset =>
-      <CurrencyItem key={asset->Asset.getPrettyDisplay} asset onPress={_ => onPress(asset)} />
+      <CurrencyItem key={asset->Asset.getPrettyString} asset onPress={_ => onPress(asset)} />
     )
     ->React.array}
   </>

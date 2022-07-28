@@ -126,10 +126,7 @@ let matchBase = (t: t) => {
   }
 }
 
-let positiveBalance = (t: t) => {
-  matchBase(t).balance > 0
-}
-let getBalance = (t: t) => matchBase(t).balance
+let positiveBalance = (t: t) => matchBase(t).balance > 0
 
 let fromRaw = (amount: int, decimals: int) => {
   let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)->Belt.Float.toInt
@@ -139,14 +136,6 @@ let fromRaw = (amount: int, decimals: int) => {
 let toRaw = (amount: float, decimals: int) => {
   let divider = Js.Math.pow_float(~base=10., ~exp=decimals->Belt.Int.toFloat)
   (amount *. divider)->Belt.Float.toInt
-}
-
-let printBalance = (rawAmount, token: t) => {
-  switch token {
-  | NFT(_) => rawAmount->Belt.Int.toFloat
-  | FA1(_) => fromRaw(rawAmount, 6)
-  | FA2(_, m) => fromRaw(rawAmount, m.decimals)
-  }
 }
 
 let isNft = (token: t) => {

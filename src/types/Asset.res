@@ -2,7 +2,7 @@ type t = Tez(int) | Token(Token.t)
 
 type tokenName = CurrencyName(string) | NFTname(string, string)
 
-let toPretty = (amount: t) => {
+let toPrettyAmount = (amount: t) => {
   switch amount {
   | Tez(amount) => Token.fromRaw(amount, Constants.tezCurrencyDecimal)
   | Token(token) =>
@@ -26,8 +26,8 @@ let getSymbol = (amount: t) => {
   }
 }
 
-let getPrettyDisplay = (amount: t) => {
-  let prettyAmount = toPretty(amount)->Belt.Float.toString
+let getPrettyString = (amount: t) => {
+  let prettyAmount = toPrettyAmount(amount)->Belt.Float.toString
   let name = getSymbol(amount)
   let name = switch name {
   | CurrencyName(name) => name
