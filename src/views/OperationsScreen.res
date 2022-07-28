@@ -155,7 +155,7 @@ let makeTradeEl = (a: tradeAmount) => {
       <FastImage
         source={ReactNative.Image.uriSource(~uri, ())}
         resizeMode=#contain
-        style={array([style(~height=20.->dp, ~width=20.->dp, ()), StyleUtils.makeLeftHMargin()])}
+        style={array([style(~height=20.->dp, ~width=20.->dp, ()), StyleUtils.makeLeftMargin()])}
       />
     </Wrapper>
   | CurrencyTrade(a) => makeTradeDisplay(a, isCredit)
