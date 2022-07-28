@@ -46,7 +46,7 @@ describe("History functions", () => {
         target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
         date: "01/06/2022 14:04:15",
         prettyAmountDisplay: NFTTrade(
-          "+1 FKR",
+          "+1",
           "https://ipfs.io/ipfs/zb2rhndGmg3GajqCvCwCr7ripVpxTYUfWNRJat6dsWhPSsvnu",
         ),
         hash: "ooHKBx5verQK5XcL6U8yJ8WrZJeLUwp7KqfaHkH9TVZxaxUVe9Q",
@@ -138,7 +138,7 @@ describe("History functions", () => {
           target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD",
           date: "18/05/2022 10:35:35",
           prettyAmountDisplay: NFTTrade(
-            "-1 FKR",
+            "-1",
             "https://ipfs.io/ipfs/zb2rhndGmg3GajqCvCwCr7ripVpxTYUfWNRJat6dsWhPSsvnu",
           ),
           hash: "hash3",

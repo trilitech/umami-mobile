@@ -29,12 +29,11 @@ let getSymbol = (amount: t) => {
 let getPrettyString = (amount: t) => {
   let prettyAmount = toPrettyAmount(amount)->Belt.Float.toString
   let name = getSymbol(amount)
-  let name = switch name {
-  | CurrencyName(name) => name
-  | NFTname(_) => "FKR"
-  }
+  switch name {
+  | CurrencyName(name) => prettyAmount ++ " " ++ name
 
-  prettyAmount ++ " " ++ name
+  | NFTname(_) => prettyAmount
+  }
 }
 
 let isTez = a =>
