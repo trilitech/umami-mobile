@@ -40,11 +40,8 @@ let useGoBack = () => {
     ->ignore
 }
 
-let getToken = (route: NavStacks.OnBoard.route) => {
-  route.params->Belt.Option.flatMap(p => p.token)
-  // ->Belt.Option.flatMap(i => {
-  //   accounts->Belt.Array.getBy(a => a.derivationPathIndex == i)
-  // })
+let getNft = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.nft)
 }
 
 let getTz1FromQr = (route: NavStacks.OnBoard.route) => {

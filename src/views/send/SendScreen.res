@@ -165,7 +165,7 @@ module PureSendScreen = {
 
 @react.component
 let make = (~navigation as _, ~route) => {
-  let nft = NavUtils.getToken(route)
+  let nft = NavUtils.getNft(route)
   let tz1FromQr = NavUtils.getTz1FromQr(route)
 
   let notify = SnackBar.useNotification()

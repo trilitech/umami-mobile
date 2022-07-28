@@ -21,7 +21,7 @@ let make = (~navigation, ~route as _) => {
               "EditAccount",
               {
                 derivationIndex: Some(a.derivationPathIndex),
-                token: None,
+                nft: None,
                 tz1: None,
                 assetBalance: None,
               },

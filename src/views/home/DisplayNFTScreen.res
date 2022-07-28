@@ -26,7 +26,7 @@ module DisplayNFT = {
             navigate(
               "Send",
               {
-                token: Some(token),
+                nft: Some(token),
                 derivationIndex: None,
                 tz1: None,
                 assetBalance: None,
@@ -41,7 +41,7 @@ module DisplayNFT = {
 
 @react.component
 let make = (~navigation as _, ~route) => {
-  let token = NavUtils.getToken(route)
+  let token = NavUtils.getNft(route)
 
   token->Belt.Option.mapWithDefault(React.null, token => <DisplayNFT token />)
 }

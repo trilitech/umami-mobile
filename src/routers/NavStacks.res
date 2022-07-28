@@ -5,7 +5,7 @@ module OffBoard = ReactNavigation.Stack.Make({
 module OnboardParams = {
   type params = {
     derivationIndex: option<int>,
-    token: option<Token.tokenNFT>,
+    nft: option<Token.tokenNFT>,
     tz1: option<string>,
     assetBalance: option<Asset.t>,
   }

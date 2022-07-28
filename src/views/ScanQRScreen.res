@@ -18,7 +18,7 @@ let make = (~navigation as _, ~route as _) => {
       if tz1->TaquitoUtils.tz1IsValid {
         navigateWithParams(
           "Send",
-          {derivationIndex: None, token: None, tz1: Some(tz1), assetBalance: None},
+          {derivationIndex: None, nft: None, tz1: Some(tz1), assetBalance: None},
         )
       }
     }}

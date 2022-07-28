@@ -38,7 +38,7 @@ let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
         "NFT",
         {
           derivationIndex: None,
-          token: Some(tokenNFT),
+          nft: Some(tokenNFT),
           tz1: None,
           assetBalance: None,
         },

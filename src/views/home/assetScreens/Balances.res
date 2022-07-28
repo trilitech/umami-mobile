@@ -10,7 +10,7 @@ let make = (~account: Account.t) => {
           {
             tz1: None,
             derivationIndex: None,
-            token: None,
+            nft: None,
             assetBalance: asset->Some,
           },
         )}
