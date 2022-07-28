@@ -1,4 +1,3 @@
-// open Paper
 open ReactNative.Style
 open CommonComponents
 open Paper
@@ -30,23 +29,13 @@ module DisplayNFT = {
                 token: Some(token),
                 derivationIndex: None,
                 tz1: None,
+                assetBalance: None,
               },
             )->ignore}
           icon={Paper.Icon.name("arrow-top-right-thin")}
         />
       </Wrapper>
     </Container>
-    // let url = Token.getNftUrl(token.token.metadata.displayUri)
-    // let source = Image.uriSource(~uri=url, ())
-
-    // {
-    //   <ReactNative.Image
-    //     resizeMode=#contain
-    //     style={style(~flex=1., ())}
-    //     key=url
-    //     source={source->ReactNative.Image.Source.fromUriSource}
-    //   />
-    // }
   }
 }
 

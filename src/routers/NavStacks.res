@@ -7,6 +7,7 @@ module OnboardParams = {
     derivationIndex: option<int>,
     token: option<Token.tokenNFT>,
     tz1: option<string>,
+    assetBalance: option<Asset.t>,
   }
 }
 

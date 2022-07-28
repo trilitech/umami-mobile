@@ -51,6 +51,10 @@ let getTz1FromQr = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.tz1)
 }
 
+let getAssetBalance = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.assetBalance)
+}
+
 type route = {name: string}
 // Type in binding is broken.
 // TODO: PR

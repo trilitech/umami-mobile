@@ -28,6 +28,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
                   tz1: c.tz1->Some,
                   derivationIndex: None,
                   token: None,
+                  assetBalance: None,
                 },
               )}
           />
@@ -41,6 +42,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
                 tz1: None,
                 derivationIndex: None,
                 token: None,
+                assetBalance: None,
               },
             )
           }}

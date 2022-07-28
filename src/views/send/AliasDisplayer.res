@@ -24,6 +24,7 @@ module Tz1WithAdd = {
               tz1: tz1->Some,
               derivationIndex: None,
               token: None,
+              assetBalance: None,
             },
           )}
       />
