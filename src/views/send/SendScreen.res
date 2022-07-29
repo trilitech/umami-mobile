@@ -31,9 +31,10 @@ let makeNotif = hash => {
 }
 
 let getFriendlyMsg = (msg: string) => {
-  switch msg {
-  | "undefined is not an object (evaluating 'payloadAr.length')" => "Wrong password!"
-  | _ => msg
+  if msg |> Js.Re.test_(%re("/^undefined is not an object \(evaluating/i")) {
+    "Wrong password!"
+  } else {
+    msg
   }
 }
 module PureSendScreen = {

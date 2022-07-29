@@ -18,9 +18,10 @@ let useLastDerivationIndex = () => {
 }
 
 let getFriendlyMsg = (msg: string) => {
-  switch msg {
-  | "Decrypt failed" => "Wrong password!"
-  | _ => msg
+  if msg |> Js.Re.test_(%re("/^decrypt failed/i")) {
+    "Wrong password!"
+  } else {
+    msg
   }
 }
 
