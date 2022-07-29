@@ -50,11 +50,6 @@ let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
   />
 }
 
-let tokenNameContainsStr = ((_, metadata): Token.tokenNFT, str: string) => {
-  open Js.String2
-  let name = metadata.name
-  name->toLowerCase->includes(str->toLowerCase)
-}
 module NftGallery = {
   @react.component
   let make = (~tokens: array<Token.tokenNFT>) => {
@@ -63,7 +58,7 @@ module NftGallery = {
 
     let nftEls =
       tokens
-      ->Belt.Array.keep(token => search == "" || tokenNameContainsStr(token, search))
+      ->FormUtils.filterBySearch(((_, metadata)) => metadata.name, search)
       ->Belt.Array.map(tokenToElement(navigate))
 
     <>
@@ -77,9 +72,7 @@ module NftGallery = {
       <ScrollView>
         <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
           {if nftEls == [] {
-            <DefaultView
-              title="No result" subTitle={`There was no result for ${search}. Try a new search`}
-            />
+            <NoResult search />
           } else {
             nftEls->React.array
           }}
