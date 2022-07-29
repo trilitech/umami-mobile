@@ -16,8 +16,16 @@ let save = (backupPhrase: string, password: string) => {
   })
 }
 
+let getFriendlyMsg = (msg: string) => {
+  if msg |> Js.Re.test_(%re("/^decrypt failed/i")) {
+    "Wrong password!"
+  } else {
+    msg
+  }
+}
 let load = password => {
-  Storage.get("backupPhrase")->Promise.then(encrypted =>
+  Storage.get("backupPhrase")
+  ->Promise.then(encrypted =>
     switch encrypted {
     | Some(s) => {
         let encrypted = parseBackupPhrase(s)
@@ -26,4 +34,5 @@ let load = password => {
     | None => Promise.reject(BackupPhraseError("Failed to load backup phrase"))
     }
   )
+  ->Promise.catch(exn => exn->Helpers.getMessage->getFriendlyMsg->Js.Exn.raiseError)
 }

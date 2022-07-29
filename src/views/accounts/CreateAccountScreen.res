@@ -17,14 +17,6 @@ let useLastDerivationIndex = () => {
   accounts->Belt.Array.length
 }
 
-let getFriendlyMsg = (msg: string) => {
-  if msg |> Js.Re.test_(%re("/^decrypt failed/i")) {
-    "Wrong password!"
-  } else {
-    msg
-  }
-}
-
 @react.component
 let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
   let (step, setStep) = React.useState(_ => #edit)
@@ -61,7 +53,7 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
             navigation->NavStacks.OnBoard.Navigation.navigate("Accounts")
           })
           ->Promise.catch(e => {
-            notify("Failed to create account. " ++ e->Helpers.getMessage->getFriendlyMsg)
+            notify("Failed to create account. " ++ e->Helpers.getMessage)
             Promise.resolve()
           })
           ->Promise.finally(() => {
