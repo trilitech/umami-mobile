@@ -9,6 +9,7 @@ let useBottomSheet = (~element, ~isOpen=false, ~setIsOpen, ~snapPoint="45%", ())
 
   (
     <BottomSheetComponent
+      backdropComponent={RenderBottomSheet.makeBottomSheetRenderer(0, -1)}
       ref
       backgroundStyle={style(~backgroundColor, ())}
       onChange={i => setIsOpen(_ => i == 0)}

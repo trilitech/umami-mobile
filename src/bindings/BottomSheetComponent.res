@@ -7,4 +7,5 @@ external make: (
   ~onChange: 'c,
   ~children: React.element,
   ~backgroundStyle: ReactNative.Style.t,
+  ~backdropComponent: RenderBottomSheet.bottomSheetRenderer,
 ) => React.element = "default"
