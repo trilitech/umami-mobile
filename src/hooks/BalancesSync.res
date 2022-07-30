@@ -68,7 +68,12 @@ let _handleError = (notify, e) => {
 let useBalancesSync = () => {
   let isTestNet = Store.useIsTestNet()
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
-  let notify = SnackBar.useNotification()
+  // API for fetching balances and operations fails often
+  // So we just console.error messages instead of showing a toast
+  // TODO: implement logging system
+
+  // let notify = SnackBar.useNotification()
+  let notify = Js.Console.error
 
   let isTestNetRef = React.useRef(isTestNet)
   let accountsRef = React.useRef(accounts)
