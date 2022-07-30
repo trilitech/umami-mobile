@@ -9,10 +9,10 @@ let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
   let dispatch = Store.useContactsDispatcher()
   let getAlias = Alias.useGetAlias()
 
+  let editMode = tz1->Option.isSome
   let name = tz1->Option.flatMap(getAlias)->Option.map(a => a.name)
-
   <Container>
-    <Headline> {React.string("Create contact")} </Headline>
+    <Headline> {React.string(`${editMode ? "Edit" : "Create"} contact`)} </Headline>
     <EditContactForm
       initialState={{name: name, tz1: tz1}}
       onSubmit={contact => {
