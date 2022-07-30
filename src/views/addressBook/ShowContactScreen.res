@@ -19,16 +19,21 @@ module ContactBox = {
 module Controls = {
   @react.component
   let make = (~onPressDelete, ~onPressEdit) => {
+    let dangerColor = ThemeProvider.useErrorColor()
     <>
       <CustomListItem
         left={<Icon size=30 name="pencil-outline" />}
         center={<Paper.Text> {React.string("Edit contact")} </Paper.Text>}
         onPress=onPressEdit
+        transparent=true
       />
       <CustomListItem
-        left={<Icon size=30 name="delete-outline" />}
-        center={<Paper.Text> {React.string("Delete contact")} </Paper.Text>}
+        left={<Icon color=dangerColor size=30 name="delete-outline" />}
+        center={<Paper.Text style={style(~color=dangerColor, ())}>
+          {React.string("Delete contact")}
+        </Paper.Text>}
         onPress=onPressDelete
+        transparent=true
       />
     </>
   }

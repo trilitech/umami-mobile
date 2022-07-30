@@ -170,25 +170,31 @@ module CustomListItem = {
     ~selected=false,
     ~onPress=?,
     ~disabled=false,
+    ~transparent=false,
   ) => {
     let theme = useTheme()
 
     let backgroundColor = selected ? Colors.Light.scrim : theme->Theme.colors->Theme.Colors.surface
+
+    let els =
+      <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
+        <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>
+        <ReactNative.View style={style(~margin=8.->dp, ())}> {center} </ReactNative.View>
+        <ReactNative.View style={style(~position=#absolute, ~right=0.->dp, ())}>
+          {disabled ? React.null : right}
+        </ReactNative.View>
+      </Wrapper>
+
+    let wrappedEls = transparent
+      ? <ReactNative.View> {els} </ReactNative.View>
+      : <Surface style={style(~borderRadius=4., ~backgroundColor, ())}> {els} </Surface>
 
     <TouchableRipple
       disabled
       rippleColor="red"
       style={array([style(~alignSelf=#stretch, ()), StyleUtils.makeBottomMargin()])}
       ?onPress>
-      <Surface style={style(~borderRadius=4., ~backgroundColor, ())}>
-        <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
-          <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>
-          <ReactNative.View style={style(~margin=8.->dp, ())}> {center} </ReactNative.View>
-          <ReactNative.View style={style(~position=#absolute, ~right=0.->dp, ())}>
-            {disabled ? React.null : right}
-          </ReactNative.View>
-        </Wrapper>
-      </Surface>
+      {wrappedEls}
     </TouchableRipple>
   }
 }
