@@ -65,9 +65,11 @@ let make = (~navigation as _, ~route as _) => {
       ~password,
       ~onDone=accounts => {
         switch accounts {
-        | Ok(accounts) =>
-          handleAccounts(accounts->Belt.Array.map(AccountUtils.keysToAccount), password)
-        | Error(_) => ()
+        | Ok(accounts) => {
+            notify("Successfully restored accounts!")
+            handleAccounts(accounts->Belt.Array.map(AccountUtils.keysToAccount), password)
+          }
+        | Error(exn) => notify("Failed to restore accounts. " ++ exn->Helpers.getMessage)
         }
 
         setLoading(_ => false)
