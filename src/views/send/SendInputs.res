@@ -114,7 +114,9 @@ module CurrencyPicker = {
 
     let items = tokensToSelectItems(tokens)
 
-    <ReactNative.View style={StyleUtils.makeLeftMargin()} testID="currency-picker">
+    <ReactNative.View
+      style={array([StyleUtils.makeLeftMargin(), StyleUtils.makeTopMargin()])}
+      testID="currency-picker">
       <CustomListItem
         center={<StyledPicker
           items
