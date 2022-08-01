@@ -158,10 +158,9 @@ let recipientLabel = <Caption> {React.string("recipient")} </Caption>
 module RecipientDisplayOnly = {
   @react.component
   let make = (~tz1, ~onPress=() => (), ~disabled=false) => {
-    let getAlias = Alias.useGetAlias()
-    let getAccount = Alias.useGetAccount()
+    let getContactOrAccount = Alias.useGetContactOrAccount()
 
-    let el = switch (getAlias(tz1), getAccount(tz1)) {
+    let el = switch getContactOrAccount(tz1) {
     | (Some(contact), None) =>
       <ContactListItem disabled contact onPress={_ => onPress()} right={<ChevronRight />} />
     | (Some(_), Some(account))

@@ -133,11 +133,10 @@ let useAliasDisplay = (
   ~addUserIconSize=?,
   (),
 ) => {
-  let getAlias = Alias.useGetAlias()
-  let getAccount = Alias.useGetAccount()
+  let getContactOrAccount = Alias.useGetContactOrAccount()
 
   tz1 => {
-    switch (getAlias(tz1), getAccount(tz1)) {
+    switch getContactOrAccount(tz1) {
     | (Some(contact), None) => textRender(contact.name)
     | (None, Some(account)) => textRender(account.name)
     | (Some(_), Some(account)) => textRender(account.name)

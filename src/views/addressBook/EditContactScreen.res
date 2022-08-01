@@ -7,10 +7,10 @@ open Belt
 let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
   let tz1 = route.params->Option.flatMap(p => p.tz1)
   let dispatch = Store.useContactsDispatcher()
-  let getAlias = Alias.useGetAlias()
+  let getContact = Alias.useGetContact()
 
   let editMode = tz1->Option.isSome
-  let name = tz1->Option.flatMap(getAlias)->Option.map(a => a.name)
+  let name = tz1->Option.flatMap(getContact)->Option.map(a => a.name)
   <Container>
     <Headline> {React.string(`${editMode ? "Edit" : "Create"} contact`)} </Headline>
     <EditContactForm

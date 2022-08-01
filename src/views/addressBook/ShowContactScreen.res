@@ -41,7 +41,7 @@ module Controls = {
 
 @react.component
 let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
-  let getAlias = Alias.useGetAlias()
+  let getContact = Alias.useGetContact()
   let (isOpen, setIsOpen) = React.useState(_ => false)
   let tz1 = route.params->Option.flatMap(p => p.tz1)
   let dispatch = Store.useContactsDispatcher()
@@ -90,7 +90,7 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
 
   <Container>
     {tz1
-    ->Belt.Option.flatMap(getAlias)
+    ->Belt.Option.flatMap(getContact)
     ->Option.mapWithDefault(React.null, alias => {
       <View style={style(~flex=1., ())}>
         <View>
