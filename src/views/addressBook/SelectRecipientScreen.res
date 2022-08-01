@@ -26,31 +26,33 @@ module SelectedRecipients = {
       )
     }
     <Container>
-      {cards == []
-        ? <NoResult search />
-        : cards
-          ->Array.map(c =>
-            switch c {
-            | ContactCard(c) =>
-              <ContactListItem key={c.tz1} contact=c onPress={_ => handleTz1(c.tz1)} />
-            | AccountCard(a) =>
-              <AccountListItem key={a.tz1} account=a onPress={_ => handleTz1(a.tz1)} />
-            }
-          )
-          ->React.array}
-      <BigPlusBtn
-        onPress={() => {
-          navigateWithParams(
-            "EditContact",
-            {
-              tz1: None,
-              derivationIndex: None,
-              nft: None,
-              assetBalance: None,
-            },
-          )
-        }}
-      />
+      <ReactNative.ScrollView>
+        {cards == []
+          ? <NoResult search />
+          : cards
+            ->Array.map(c =>
+              switch c {
+              | ContactCard(c) =>
+                <ContactListItem key={c.tz1} contact=c onPress={_ => handleTz1(c.tz1)} />
+              | AccountCard(a) =>
+                <AccountListItem key={a.tz1} account=a onPress={_ => handleTz1(a.tz1)} />
+              }
+            )
+            ->React.array}
+        <BigPlusBtn
+          onPress={() => {
+            navigateWithParams(
+              "EditContact",
+              {
+                tz1: None,
+                derivationIndex: None,
+                nft: None,
+                assetBalance: None,
+              },
+            )
+          }}
+        />
+      </ReactNative.ScrollView>
     </Container>
   }
 }
