@@ -140,7 +140,7 @@ let useAliasDisplay = (
     | (Some(contact), None) => textRender(contact.name)
     | (None, Some(account)) => textRender(account.name)
     | (Some(_), Some(account)) => textRender(account.name)
-    | (None, None) => <AliasDisplayer.Tz1WithAdd ?addUserIconSize tz1 textRender />
+    | (None, None) => <Tz1WithAdd ?addUserIconSize tz1 textRender />
     }
   }
 }

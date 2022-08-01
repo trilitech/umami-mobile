@@ -173,7 +173,7 @@ module RecipientDisplayOnly = {
         // center={disabled
         //   ? <Paper.Text> {tz1->TezHelpers.formatTz1->React.string} </Paper.Text>
         //   : <AliasDisplayer.Tz1WithAdd tz1 />}
-        center={<AliasDisplayer.Tz1WithAdd tz1 />}
+        center={<Tz1WithAdd tz1 />}
         right={<ChevronRight />}
       />
     }
