@@ -128,14 +128,28 @@ let useLinkToTzkt = () => {
   hash => ReactNative.Linking.openURL(`https://${host}/${hash}`)->ignore
 }
 
+let useAliasDisplay = (
+  ~textRender=text => <Text> {text->React.string} </Text>,
+  ~addUserIconSize=?,
+  (),
+) => {
+  let getAlias = Alias.useGetAlias()
+  let getAccount = Alias.useGetAccount()
+
+  tz1 => {
+    switch (getAlias(tz1), getAccount(tz1)) {
+    | (Some(contact), None) => textRender(contact.name)
+    | (None, Some(account)) => textRender(account.name)
+    | (Some(_), Some(account)) => textRender(account.name)
+    | (None, None) => <AliasDisplayer.Tz1WithAdd ?addUserIconSize tz1 textRender />
+    }
+  }
+}
 module Target = {
   open Paper
   @react.component
   let make = (~tz1) => {
-    let getAlias = AliasDisplayer.useAliasDisplay(
-      ~textRender=tz1 => <Caption> {React.string(tz1)} </Caption>,
-      (),
-    )
+    let getAlias = useAliasDisplay(~textRender=tz1 => <Caption> {React.string(tz1)} </Caption>, ())
     getAlias(tz1)
   }
 }

@@ -1,5 +1,4 @@
 open Paper
-open Belt
 open CommonComponents
 open ReactNative.Style
 
@@ -29,19 +28,5 @@ module Tz1WithAdd = {
           )}
       />
     </Wrapper>
-  }
-}
-
-let useAliasDisplay = (
-  ~textRender=text => <Text> {text->React.string} </Text>,
-  ~addUserIconSize=?,
-  (),
-) => {
-  let getAlias = Alias.useGetAlias()
-
-  tz1 => {
-    getAlias(tz1)->Option.mapWithDefault(<Tz1WithAdd ?addUserIconSize tz1 textRender />, alias => {
-      textRender(alias.name)
-    })
   }
 }

@@ -159,11 +159,15 @@ module RecipientDisplayOnly = {
   @react.component
   let make = (~tz1, ~onPress=() => (), ~disabled=false) => {
     let getAlias = Alias.useGetAlias()
+    let getAccount = Alias.useGetAccount()
 
-    let el = switch getAlias(tz1) {
-    | Some(contact) =>
+    let el = switch (getAlias(tz1), getAccount(tz1)) {
+    | (Some(contact), None) =>
       <ContactListItem disabled contact onPress={_ => onPress()} right={<ChevronRight />} />
-    | None =>
+    | (Some(_), Some(account))
+    | (None, Some(account)) =>
+      <AccountListItem disabled account onPress={_ => onPress()} right={<ChevronRight />} />
+    | (None, None) =>
       <CustomListItem
         disabled
         onPress={_ => onPress()}
