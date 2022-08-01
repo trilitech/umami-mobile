@@ -114,13 +114,16 @@ module CurrencyPicker = {
 
     let items = tokensToSelectItems(tokens)
 
-    <ReactNative.Text testID="currency-picker">
-      <StyledPicker
-        items
-        value={getLabel(value)}
-        onChange={symbol => symbol->symbolToCurrencyData(tokens)->Option.map(onChange)->ignore}
+    <ReactNative.View style={StyleUtils.makeLeftMargin()} testID="currency-picker">
+      <CustomListItem
+        center={<StyledPicker
+          items
+          value={getLabel(value)}
+          onChange={symbol => symbol->symbolToCurrencyData(tokens)->Option.map(onChange)->ignore}
+        />}
+        right={<ChevronRight />}
       />
-    </ReactNative.Text>
+    </ReactNative.View>
   }
 }
 

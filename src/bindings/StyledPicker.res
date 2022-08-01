@@ -7,9 +7,7 @@ let make = (~items, ~value, ~onChange) => {
     style={{
       "inputIOS": {
         "color": color,
-        "marginTop": 30.,
-        "marginRight": 8,
-        "marginLeft": 8,
+        "width": 50,
       },
     }}
     items
