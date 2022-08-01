@@ -70,10 +70,10 @@ module PureSendScreen = {
     let (loading, setLoading) = React.useState(_ => false)
 
     let send =
-      Helpers.both(Float.fromString(trans.prettyAmount), trans.recipient)->Option.map(((
-        prettyAmount,
-        recipientTz1,
-      )) =>
+      Helpers.both(
+        SendInputs.parsePrettyAmountStr(trans.prettyAmount),
+        trans.recipient,
+      )->Option.map(((prettyAmount, recipientTz1)) =>
         send(
           ~recipientTz1,
           ~prettyAmount,
@@ -85,10 +85,10 @@ module PureSendScreen = {
       )
 
     let simulate =
-      Helpers.both(Float.fromString(trans.prettyAmount), trans.recipient)->Option.map((
-        (prettyAmount, recipientTz1),
-        (),
-      ) =>
+      Helpers.both(
+        SendInputs.parsePrettyAmountStr(trans.prettyAmount),
+        trans.recipient,
+      )->Option.map(((prettyAmount, recipientTz1), ()) =>
         simulate(
           ~recipientTz1,
           ~prettyAmount,

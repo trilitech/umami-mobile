@@ -4,12 +4,9 @@ open Paper
 
 open Belt
 
-let validPrettyAmount = (amount: string) =>
-  amount->Float.fromString->Option.mapWithDefault(false, a => a > 0.)
-
 let validTrans = (trans: SendTypes.formState) =>
   trans.recipient->Option.mapWithDefault(false, t => t->TaquitoUtils.tz1IsValid) &&
-    trans.prettyAmount->validPrettyAmount
+    trans.prettyAmount->SendInputs.parsePrettyAmountStr->Option.mapWithDefault(false, a => a > 0.)
 
 let vMargin = StyleUtils.makeVMargin()
 

@@ -129,8 +129,16 @@ module CurrencyPicker = {
   }
 }
 
-let re = %re("/^\d+\.?\d*$/")
-let representsPositiveFloat = s => re->Js.Re.test_(s)
+let parsePrettyAmountStr = amount => {
+  let re = %re("/^\d+(\.|\,)?\d*$/")
+  let representsPositiveFloat = s => re->Js.Re.test_(s)
+
+  if representsPositiveFloat(amount) {
+    (amount |> Js.String.replace(",", "."))->Float.fromString
+  } else {
+    None
+  }
+}
 
 module MultiCurrencyInput = {
   @react.component
@@ -144,7 +152,7 @@ module MultiCurrencyInput = {
         onChangeText={t => {
           if t == "" {
             onChangeAmount("")
-          } else if representsPositiveFloat(t) {
+          } else if parsePrettyAmountStr(t)->Option.isSome {
             onChangeAmount(t)
           }
         }}
