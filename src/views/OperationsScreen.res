@@ -232,7 +232,7 @@ module HistoryDisplay = {
         <TransactionItem key={t.hash ++ t.date ++ Js.Int.toString(i)} transaction=t />
       )
 
-    <Container>
+    <Container noVPadding=false>
       <ScrollView>
         {if operationEls == [] {
           <DefaultView title="No Operations yet" subTitle="Your operations will appear here..." />

@@ -9,7 +9,7 @@ module FilteredContacts = {
     let navigateWithParams = NavUtils.useNavigateWithParams()
     let contacts = contacts->FormUtils.filterBySearch(c => c.name, search)
 
-    <Container>
+    <Container noVPadding=true>
       <ReactNative.ScrollView>
         {contacts == []
           ? <NoResult search />

@@ -25,7 +25,7 @@ module SelectedRecipients = {
         },
       )
     }
-    <Container>
+    <Container noVPadding=true>
       <ReactNative.ScrollView>
         {cards == []
           ? <NoResult search />
