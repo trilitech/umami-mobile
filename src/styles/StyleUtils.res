@@ -8,6 +8,8 @@ let makeLeftMargin = (~size=1, ()) => viewStyle(~marginLeft=(size->Js.Int.toFloa
 let makeRightMargin = (~size=1, ()) => viewStyle(~marginLeft=(size->Js.Int.toFloat *. 8.)->dp, ())
 let makeBottomMargin = (~size=1, ()) =>
   viewStyle(~marginBottom=(size->Js.Int.toFloat *. 8.)->dp, ())
-
 let makeTopMargin = (~size=1, ()) => viewStyle(~marginTop=(size->Js.Int.toFloat *. 8.)->dp, ())
+
 let makePadding = (~size=1, ()) => viewStyle(~padding=(size->Js.Int.toFloat *. 8.)->dp, ())
+let makeHPadding = (~size=1, ()) =>
+  viewStyle(~paddingHorizontal=(size->Js.Int.toFloat *. 8.)->dp, ())
