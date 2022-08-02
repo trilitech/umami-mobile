@@ -32,19 +32,6 @@ module FilteredContacts = {
               />
             )
             ->React.array}
-        <BigPlusBtn
-          onPress={() => {
-            navigateWithParams(
-              "EditContact",
-              {
-                tz1: None,
-                derivationIndex: None,
-                nft: None,
-                assetBalance: None,
-              },
-            )
-          }}
-        />
       </ReactNative.ScrollView>
     </Container>
   }
@@ -56,18 +43,37 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
 
   let contacts = Store.useContacts()
 
-  if contacts == [] {
-    <DefaultView title="No contact" subTitle="Your contacts will appear here" icon="account-box" />
-  } else {
-    <>
-      <Paper.Searchbar
-        placeholder="Search contact"
-        onChangeText={t => setSearch(_ => t)}
-        value=search
-        onIconPress={t => setSearch(_ => "")}
-        style={StyleUtils.makeVMargin()}
+  let navigateWithParams = NavUtils.useNavigateWithParams()
+  let gotToAddContact = () =>
+    navigateWithParams(
+      "EditContact",
+      {
+        tz1: None,
+        derivationIndex: None,
+        nft: None,
+        assetBalance: None,
+      },
+    )
+
+  <>
+    <TopBarAllScreens.WithRightIcon
+      title="Address book" logoName="plus" onPressLogo={gotToAddContact}
+    />
+    {if contacts == [] {
+      <DefaultView
+        title="No contact" subTitle="Your contacts will appear here" icon="account-box"
       />
-      {<FilteredContacts contacts search />}
-    </>
-  }
+    } else {
+      <>
+        <Paper.Searchbar
+          placeholder="Search contact"
+          onChangeText={t => setSearch(_ => t)}
+          value=search
+          onIconPress={t => setSearch(_ => "")}
+          style={StyleUtils.makeVMargin()}
+        />
+        {<FilteredContacts contacts search />}
+      </>
+    }}
+  </>
 }

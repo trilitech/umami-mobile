@@ -30,6 +30,7 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
   <Container>
     {switch step {
     | #edit => <>
+        <TopBarAllScreens title="Create account" />
         <Headline> {React.string("Create account")} </Headline>
         <EditAccountForm
           name="New Account"

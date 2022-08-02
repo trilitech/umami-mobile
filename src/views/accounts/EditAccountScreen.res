@@ -12,7 +12,8 @@ let getAccount = (route: NavStacks.OnBoard.route, accounts: array<Account.t>) =>
 let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
 
-  getAccount(route, accounts)->Belt.Option.mapWithDefault(React.null, a =>
+  getAccount(route, accounts)->Belt.Option.mapWithDefault(React.null, a => <>
+    <TopBarAllScreens title="Edit account" />
     <Container>
       <Headline> {React.string("Edit account")} </Headline>
       <EditAccountForm
@@ -23,5 +24,5 @@ let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
         }}
       />
     </Container>
-  )
+  </>)
 }

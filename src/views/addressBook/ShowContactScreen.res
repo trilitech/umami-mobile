@@ -8,11 +8,9 @@ let vMargin = StyleUtils.makeVMargin()
 
 module ContactBox = {
   @react.component
-  let make = (~name, ~tz1, ~onPressControls) =>
+  let make = (~name, ~tz1) =>
     <CustomListItem
-      left={<Icon size=80 name="account-circle-outline" />}
-      center={<ContactDisplay name tz1 />}
-      right={<PressableIcon name="dots-vertical" onPress={_ => onPressControls()} />}
+      left={<Icon size=80 name="account-circle-outline" />} center={<ContactDisplay name tz1 />}
     />
 }
 
@@ -88,33 +86,24 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
     None
   }, [isOpen])
 
-  <Container>
+  <>
     {tz1
     ->Belt.Option.flatMap(getContact)
     ->Option.mapWithDefault(React.null, alias => {
-      <View style={style(~flex=1., ())}>
-        <View>
-          <ContactBox name=alias.name tz1=alias.tz1 onPressControls={_ => setIsOpen(_ => true)} />
-          //   <Paper.Headline> {React.string("bar")} </Paper.Headline>
-          //   <Qr value=alias.tz1 size=250 />
-        </View>
-        <View style={style(~flex=1., ~alignItems=#center, ~justifyContent=#center, ())}>
-          <Qr value=alias.tz1 size=250 />
-        </View>
-      </View>
+      <>
+        <TopBarAllScreens.WithRightIcon
+          title={"Contact"} logoName="dots-vertical" onPressLogo={_ => setIsOpen(_ => true)}
+        />
+        <Container>
+          <View style={style(~flex=1., ())}>
+            <View> <ContactBox name=alias.name tz1=alias.tz1 /> </View>
+            <View style={style(~flex=1., ~alignItems=#center, ~justifyContent=#center, ())}>
+              <Qr value=alias.tz1 size=250 />
+            </View>
+          </View>
+        </Container>
+      </>
     })}
     {drawer}
-  </Container>
-
-  //   let dispatch = Store.useContactsDispatcher()
-
-  //   tz1->Option.mapWithDefault(React.null, tz1 => {
-  //       // <EditContactForm
-  //       //   initialState={{name: None, tz1: tz1}}
-  //       //   onSubmit={contact => {
-  //       //     Upsert(contact)->dispatch
-  //       //     navigation->NavStacks.OnBoard.Navigation.goBack()
-  //       //   }}
-  //       // />
-  //   })
+  </>
 }

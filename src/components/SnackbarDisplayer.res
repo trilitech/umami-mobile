@@ -10,7 +10,7 @@ let make = (~children) => {
   }
 
   open ReactNative.Style
-  let backgroundColor = ThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.surface
+  let backgroundColor = ThemeProvider.useBgColor()
 
   open Paper
   <>

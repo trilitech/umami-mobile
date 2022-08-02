@@ -39,19 +39,6 @@ module SelectedRecipients = {
               }
             )
             ->React.array}
-        <BigPlusBtn
-          onPress={() => {
-            navigateWithParams(
-              "EditContact",
-              {
-                tz1: None,
-                derivationIndex: None,
-                nft: None,
-                assetBalance: None,
-              },
-            )
-          }}
-        />
       </ReactNative.ScrollView>
     </Container>
   }
@@ -67,7 +54,23 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
     contacts->Array.map(c => ContactCard(c)),
   )
 
+  let navigateWithParams = NavUtils.useNavigateWithParams()
+
   <>
+    <TopBarAllScreens.WithRightIcon
+      title="Recipients"
+      logoName="plus"
+      onPressLogo={() =>
+        navigateWithParams(
+          "EditContact",
+          {
+            tz1: None,
+            derivationIndex: None,
+            nft: None,
+            assetBalance: None,
+          },
+        )}
+    />
     <Paper.Searchbar
       placeholder="Search recipient"
       onChangeText={t => setSearch(_ => t)}
