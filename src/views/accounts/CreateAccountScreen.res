@@ -27,43 +27,45 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
   let derivationIndex = useLastDerivationIndex()
   let (loading, setLooading) = React.useState(_ => false)
 
-  <Container>
-    {switch step {
-    | #edit => <>
-        <TopBarAllScreens title="Create account" />
-        <Headline> {React.string("Create account")} </Headline>
-        <EditAccountForm
-          name="New Account"
-          onSubmit={n => {
-            setAccountName(_ => n)
-            setStep(_ => #confirm)
+  <>
+    <TopBarAllScreens title="Create account" />
+    <Container>
+      {switch step {
+      | #edit => <>
+          <Headline> {React.string("Create account")} </Headline>
+          <EditAccountForm
+            name="New Account"
+            onSubmit={n => {
+              setAccountName(_ => n)
+              setStep(_ => #confirm)
+              ()
+            }}
+          />
+        </>
+      | #confirm =>
+        <PasswordConfirm
+          loading
+          onSubmit={p => {
+            setLooading(_ => true)
+            addNewAccount(~name=accountName, ~password=p, ~derivationIndex)
+            ->Promise.thenResolve(a => {
+              Add([a])->dispatch
+
+              notify(`Accounts successfully created: ${accountName}`)
+              navigation->NavStacks.OnBoard.Navigation.navigate("Accounts")
+            })
+            ->Promise.catch(e => {
+              notify("Failed to create account. " ++ e->Helpers.getMessage)
+              Promise.resolve()
+            })
+            ->Promise.finally(() => {
+              setLooading(_ => false)
+            })
+            ->ignore
             ()
           }}
         />
-      </>
-    | #confirm =>
-      <PasswordConfirm
-        loading
-        onSubmit={p => {
-          setLooading(_ => true)
-          addNewAccount(~name=accountName, ~password=p, ~derivationIndex)
-          ->Promise.thenResolve(a => {
-            Add([a])->dispatch
-
-            notify(`Accounts successfully created: ${accountName}`)
-            navigation->NavStacks.OnBoard.Navigation.navigate("Accounts")
-          })
-          ->Promise.catch(e => {
-            notify("Failed to create account. " ++ e->Helpers.getMessage)
-            Promise.resolve()
-          })
-          ->Promise.finally(() => {
-            setLooading(_ => false)
-          })
-          ->ignore
-          ()
-        }}
-      />
-    }}
-  </Container>
+      }}
+    </Container>
+  </>
 }
