@@ -12,8 +12,8 @@ module Word = {
       style={array([
         unsafeStyle({"width": "48%"}),
         style(
-          ~padding=6.->dp,
-          ~marginTop=6.->dp,
+          ~padding=4.->dp,
+          ~marginTop=4.->dp,
           ~textAlign=#center,
           ~borderRadius=4.,
           ~borderWidth=2.,

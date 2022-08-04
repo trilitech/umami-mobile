@@ -18,6 +18,12 @@ Run app in IOS Sim (Mac Only)
 yarn ios
 ```
 
+Run app in simulator with a specified device. See [this answser](https://stackoverflow.com/a/37329896/6797267):
+
+```sh
+npx react-native run-ios --simulator="iPhone 8"
+```
+
 Run tests in watch mode:
 
 ```sh
