@@ -5,7 +5,7 @@ type endpoint = {
 
 let umamiWallet: endpoint = {
   mainNet: "mainnet.umamiwallet.com",
-  testNet: "ithacanet.umamiwallet.com",
+  testNet: "ghostnet.umamiwallet.com",
 }
 
 let tzkt = {
