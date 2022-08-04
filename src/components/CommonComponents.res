@@ -29,18 +29,6 @@ module Wrapper = {
   }
 }
 
-module LabeledRadio = {
-  open StyleUtils
-  @react.component
-  let make = (~status, ~value, ~label, ~onPress=_ => ()) =>
-    <Paper.TouchableRipple onPress={_ => onPress()}>
-      <Wrapper style={array([makePadding()])}>
-        <Paper.RadioButton.Android status value onPress={_ => onPress()} />
-        <Paper.Caption> {label->React.string} </Paper.Caption>
-      </Wrapper>
-    </Paper.TouchableRipple>
-}
-
 let makeListItem = (
   ~theme,
   ~onPress,
@@ -211,4 +199,17 @@ module NicerIconBtn = {
       icon={Paper.Icon.name(iconName)}
     />
   }
+}
+
+module LabeledRadio = {
+  @react.component
+  let make = (~status, ~value, ~label, ~onPress=_ => ()) =>
+    <CustomListItem
+      selected={status == #checked}
+      onPress={_ => onPress()}
+      left={<Wrapper>
+        <Paper.RadioButton.Android status value onPress={_ => onPress()} />
+        <Paper.Caption> {label->React.string} </Paper.Caption>
+      </Wrapper>}
+    />
 }
