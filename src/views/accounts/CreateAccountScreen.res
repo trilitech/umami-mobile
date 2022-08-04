@@ -55,7 +55,9 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
               navigation->NavStacks.OnBoard.Navigation.navigate("Accounts")
             })
             ->Promise.catch(e => {
-              notify("Failed to create account. " ++ e->Helpers.getMessage)
+              let message = "Failed to create account. " ++ e->Helpers.getMessage
+              Logger.error(message)
+              notify(message)
               Promise.resolve()
             })
             ->Promise.finally(() => {
