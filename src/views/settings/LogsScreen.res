@@ -42,6 +42,29 @@ module ClearLogs = {
   }
 }
 
+let useClearLogs = () => {
+  let (loading, setIsLoading) = React.useState(_ => false)
+  let notify = SnackBar.useNotification()
+  let eraseLogs = (~done) => {
+    setIsLoading(_ => true)
+    Logger.deleteLogs()
+    ->Promise.then(_ => {
+      done()
+      Promise.resolve()
+    })
+    ->Promise.catch(exn => {
+      notify("Failed to reset logs" ++ exn->Helpers.getMessage)
+      Promise.resolve()
+    })
+    ->Promise.finally(() => {
+      setIsLoading(_ => false)
+    })
+    ->ignore
+  }
+
+  (loading, eraseLogs)
+}
+
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let (logs, setLogs) = React.useState(_ => None)
@@ -62,25 +85,33 @@ let make = (~navigation as _, ~route as _) => {
     ->ignore
   }, (notify, setLogs))
 
+  let (deleting, clearLogs) = useClearLogs()
   React.useEffect2(() => {
     fetchLogs()
     None
   }, (notify, setLogs))
 
-  <Container>
-    <ReactNative.ScrollView>
-      {logs->Helpers.reactFold(logs => {
-        logs == []
-          ? <DefaultView icon="script-outline" title="You have no logs yet..." />
-          : <>
-              <ClearLogs onReset={_ => {fetchLogs()}} />
-              {logs
-              ->Array.mapWithIndex((i, log) =>
-                <LogCard log key={log.date ++ Belt.Int.toString(i)} />
-              )
-              ->React.array}
-            </>
-      })}
-    </ReactNative.ScrollView>
-  </Container>
+  <>
+    <TopBarAllScreens.WithRightIcon
+      disabled={deleting || logs->Option.mapWithDefault(false, logs => logs == [])}
+      title="Logs"
+      logoName="delete"
+      onPressLogo={() => clearLogs(~done=fetchLogs)}
+    />
+    <Container>
+      <ReactNative.ScrollView>
+        {logs->Helpers.reactFold(logs => {
+          logs == []
+            ? <DefaultView icon="script-outline" title="You have no logs yet..." />
+            : {
+                logs
+                ->Array.mapWithIndex((i, log) =>
+                  <LogCard log key={log.date ++ Belt.Int.toString(i)} />
+                )
+                ->React.array
+              }
+        })}
+      </ReactNative.ScrollView>
+    </Container>
+  </>
 }

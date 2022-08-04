@@ -18,9 +18,9 @@ module Base = {
 
 module WithRightIcon = {
   @react.component
-  let make = (~title, ~logoName, ~onPressLogo) => {
+  let make = (~title, ~logoName, ~onPressLogo, ~disabled=false) => {
     let goBack = NavUtils.useGoBack()
-    <Base onPressGoBack=goBack title right={<RightLogoForTopBar logoName onPressLogo />} />
+    <Base onPressGoBack=goBack title right={<RightLogoForTopBar disabled logoName onPressLogo />} />
   }
 }
 
