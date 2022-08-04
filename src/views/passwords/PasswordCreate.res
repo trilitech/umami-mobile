@@ -1,4 +1,5 @@
 open Paper
+open CommonComponents
 open Belt
 
 %%private(
@@ -35,6 +36,7 @@ open Belt
 let make = (~onSubmit, ~loading=false) => {
   let (value1, setValue1) = EphemeralState.useEphemeralState("")
   let (value2, setValue2) = EphemeralState.useEphemeralState("")
+  let (status, setStatus) = React.useState(_ => #unchecked)
   let pristine = useformIsPristine(value1, value2)
 
   let error = pristine ? None : getError(value1, value2)
@@ -65,8 +67,11 @@ let make = (~onSubmit, ~loading=false) => {
     <HelperText _type=#error visible={error->Option.isSome}>
       {error->Option.mapWithDefault("", getErrorName)->React.string}
     </HelperText>
+    <CheckBoxAndText
+      status setStatus text="I understand that Umami cannot recover this password for me."
+    />
     <Button
-      disabled={error->Option.isSome || loading || pristine}
+      disabled={error->Option.isSome || loading || pristine || status == #unchecked}
       loading
       style={StyleUtils.makeVMargin()}
       mode=#contained

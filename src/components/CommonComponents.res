@@ -213,3 +213,16 @@ module LabeledRadio = {
       </Wrapper>}
     />
 }
+
+module CheckBoxAndText = {
+  @react.component
+  let make = (~status, ~setStatus, ~text) => {
+    open Paper
+    <Wrapper style={StyleUtils.makeVMargin(~size=2, ())}>
+      <Checkbox.Android
+        status onPress={_ => setStatus(s => s == #unchecked ? #checked : #unchecked)}
+      />
+      <Text style={ReactNative.Style.style(~flex=1., ())}> {text->React.string} </Text>
+    </Wrapper>
+  }
+}

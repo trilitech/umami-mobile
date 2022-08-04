@@ -1,5 +1,4 @@
 open CommonComponents
-open ReactNative.Style
 open StyleUtils
 
 let confirmationCode = "wasabi"
@@ -19,12 +18,7 @@ let make = (~navigation as _, ~route as _) => {
   open Paper
   <Container>
     <InstructionsPanel instructions=offbardText danger=true />
-    <Wrapper style={makeVMargin(~size=2, ())}>
-      <Checkbox.Android
-        status onPress={_ => setStatus(s => s == #unchecked ? #checked : #unchecked)}
-      />
-      <Text style={style(~flex=1., ())}> {confirmTextLabel->React.string} </Text>
-    </Wrapper>
+    <CheckBoxAndText status setStatus text=confirmTextLabel />
     <TextInput
       style={makeVMargin()}
       placeholder="Enter code word"
