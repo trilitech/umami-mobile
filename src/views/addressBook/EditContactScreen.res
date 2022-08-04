@@ -12,15 +12,18 @@ let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
   let editMode = tz1->Option.isSome
   let name = tz1->Option.flatMap(getContact)->Option.map(a => a.name)
   let title = `${editMode ? "Edit" : "Create"} contact`
-  <Container>
+
+  <>
     <TopBarAllScreens title />
-    <Headline> {React.string(title)} </Headline>
-    <EditContactForm
-      initialState={{name: name, tz1: tz1}}
-      onSubmit={contact => {
-        Upsert(contact)->dispatch
-        navigation->NavStacks.OnBoard.Navigation.goBack()
-      }}
-    />
-  </Container>
+    <Container>
+      <Headline> {React.string(title)} </Headline>
+      <EditContactForm
+        initialState={{name: name, tz1: tz1}}
+        onSubmit={contact => {
+          Upsert(contact)->dispatch
+          navigation->NavStacks.OnBoard.Navigation.goBack()
+        }}
+      />
+    </Container>
+  </>
 }
