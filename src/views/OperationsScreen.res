@@ -300,7 +300,7 @@ let make = (~route, ~navigation as _) => {
     ->Promise.thenResolve(lastBlock => setIndexerLastBlock(_ => Some(lastBlock)))
     ->Promise.catch(err => {
       notify("Failed fetchting index last block. Reaston: " ++ Helpers.getMessage(err))
-      Promise.reject(err)
+      Promise.resolve()
     })
     ->ignore
     None
