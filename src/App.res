@@ -2,7 +2,23 @@
 require('./ignoreWarnings')
 `)
 
-Logger.init()->ignore
+// TODO refactor all this init boilerplate code
+let useLogInit = () => {
+  let (ready, setReady) = React.useState(_ => false)
+  let notify = SnackBar.useNotification()
+
+  React.useEffect2(() => {
+    Logger.init()
+    ->Promise.thenResolve(_ => setReady(_ => true))
+    ->Promise.catch(exn => {
+      notify("Failed to initialize logger." ++ exn->Helpers.getMessage)
+      Promise.resolve()
+    })
+    ->ignore
+    None
+  }, (notify, setReady))
+  ready
+}
 
 let useHasAccount = () => {
   let (accounts, _) = AccountsReducer.useAccountsDispatcher()
@@ -49,9 +65,9 @@ let client = ReactQuery.Provider.createClient()
 
 module MemoizedApp = {
   @react.component
-  let make = React.memo((~storeIsUpToDate) => {
+  let make = React.memo((~allReady) => {
     <ReactQuery.Provider client>
-      <ThemeProvider> {storeIsUpToDate ? <Router /> : React.null} </ThemeProvider>
+      <ThemeProvider> {allReady ? <Router /> : React.null} </ThemeProvider>
     </ReactQuery.Provider>
   })
 }
@@ -59,7 +75,9 @@ module MemoizedApp = {
 @react.component
 let app = () => {
   let storeIsUpToDate = StoreInit.useInit()
+  let loggerIsReady = useLogInit()
+  let allReady = storeIsUpToDate && loggerIsReady
 
   // Prevent rerenders sinces useInit is hooked to all the states
-  <MemoizedApp storeIsUpToDate />
+  <MemoizedApp allReady />
 }

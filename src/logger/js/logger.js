@@ -5,7 +5,7 @@ import {FileLogger} from 'react-native-file-logger';
 
 const logsDirectory = RNFS.TemporaryDirectoryPath + '/logs';
 
-export const init = () => {
+export const init = () =>
   FileLogger.configure({
     captureConsole: false,
     dailyRolling: true,
@@ -13,7 +13,6 @@ export const init = () => {
     maximumNumberOfFiles: 50,
     logsDirectory,
   });
-};
 
 const escapeNewLines = str => str.replace(/\n/g, '\\n');
 export const debug = msg => FileLogger.debug(escapeNewLines(msg));
