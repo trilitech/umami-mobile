@@ -2,6 +2,8 @@
 require('./ignoreWarnings')
 `)
 
+Logger.init()->ignore
+
 let useHasAccount = () => {
   let (accounts, _) = AccountsReducer.useAccountsDispatcher()
   accounts->Belt.Array.get(0)->Belt.Option.isSome

@@ -124,7 +124,9 @@ module PureSendScreen = {
           navigate("Home")->ignore
         })
         ->Promise.catch(e => {
-          notify("Failed to send. " ++ e->Helpers.getMessage->getFriendlyMsg)->ignore
+          let message = "Failed to send. " ++ e->Helpers.getMessage->getFriendlyMsg
+          notify(message)
+          Logger.error(message)
           Promise.resolve()
         })
         ->Promise.finally(_ => setLoading(_ => false))
@@ -141,7 +143,9 @@ module PureSendScreen = {
           setFee(_ => res.suggestedFeeMutez->Some)
         })
         ->Promise.catch(e => {
-          notify("Invalid transaction: " ++ Helpers.getMessage(e))
+          let message = "Invalid transaction: " ++ Helpers.getMessage(e)
+          notify(message)
+          Logger.error(message)
           Promise.resolve()
         })
         ->Promise.finally(_ => {

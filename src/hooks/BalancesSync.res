@@ -60,20 +60,15 @@ let _parseError = (e: exn) => {
   }
 }
 
-let _handleError = (notify, e) => {
-  e->_parseError->notify
-  Promise.reject(e)
-}
-
 let useBalancesSync = () => {
   let isTestNet = Store.useIsTestNet()
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
-  // API for fetching balances and operations fails often
-  // So we just console.error messages instead of showing a toast
-  // TODO: implement logging system
 
-  // let notify = SnackBar.useNotification()
-  let notify = Js.Console.error
+  let tapError = e => {
+    let message = e->_parseError
+    Logger.error(message)
+    Promise.reject(e)
+  }
 
   let isTestNetRef = React.useRef(isTestNet)
   let accountsRef = React.useRef(accounts)
@@ -88,12 +83,12 @@ let useBalancesSync = () => {
     let operationsPromise =
       getOperations(~isTestNet, ~accounts)
       ->Promise.thenResolve(o => dispatch(UpdateOperations(o)))
-      ->Promise.catch(_handleError(notify))
+      ->Promise.catch(tapError)
 
     let balancesPromise =
       getBalances(~isTestNet, ~accounts)
       ->Promise.thenResolve(b => dispatch(UpdateBalances(b)))
-      ->Promise.catch(_handleError(notify))
+      ->Promise.catch(tapError)
 
     Promise.all2((balancesPromise, operationsPromise))
   }
