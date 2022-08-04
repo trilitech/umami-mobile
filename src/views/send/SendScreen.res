@@ -19,14 +19,14 @@ module SendAndConfirmForm = {
   }
 }
 
-let makeNotif = hash => {
+let makeNotif = _hash => {
   <CommonComponents.Wrapper alignItems=#center>
     <Paper.Text> {React.string("Transaction successful!")} </Paper.Text>
-    <Paper.IconButton
-      onPress={_ => ReactNative.Linking.openURL("https://ithaca.tzstats.com/" ++ hash)->ignore}
-      icon={Paper.Icon.name("open-in-new")}
-      size={15}
-    />
+    // <Paper.IconButton
+    //   onPress={_ => ReactNative.Linking.openURL("https://ithaca.tzstats.com/" ++ hash)->ignore}
+    //   icon={Paper.Icon.name("open-in-new")}
+    //   size={15}
+    // />
   </CommonComponents.Wrapper>
 }
 

@@ -13,7 +13,7 @@ module Deserializers = {
   let deserializeNetwork = s => {
     open Network
     switch s {
-    | "ithacanet" => Ithacanet
+    | "ghostnet" => Ghostnet
     | "mainnet" => Mainnet
     | _ => Mainnet
     }

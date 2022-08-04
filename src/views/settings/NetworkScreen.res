@@ -17,7 +17,7 @@ let make = (~navigation as _, ~route as _) => {
 
   <Container>
     <List.Section title="Selected Network">
-      {makeRadio(Mainnet, network, setNetwork)} {makeRadio(Ithacanet, network, setNetwork)}
+      {makeRadio(Mainnet, network, setNetwork)} {makeRadio(Ghostnet, network, setNetwork)}
     </List.Section>
   </Container>
 }

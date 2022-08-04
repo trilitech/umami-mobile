@@ -1,7 +1,7 @@
-type t = Ithacanet | Mainnet
+type t = Ghostnet | Mainnet
 
 let toString = s =>
   switch s {
-  | Ithacanet => "ithacanet"
+  | Ghostnet => "ghostnet"
   | Mainnet => "mainnet"
   }
