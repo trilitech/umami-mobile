@@ -14,7 +14,10 @@ let make = (~navigation as _, ~route as _) => {
   let dangerColor = ThemeProvider.useErrorColor()
   let (confirmText, setConfirmText) = React.useState(_ => "")
   let (status, setStatus) = React.useState(_ => #unchecked)
+  let (loading, setLoading) = React.useState(_ => false)
   let reset = Store.useReset()
+  let notify = SnackBar.useNotification()
+
   open Paper
   <Container>
     <InstructionsPanel instructions=offbardText danger=true />
@@ -29,9 +32,20 @@ let make = (~navigation as _, ~route as _) => {
     />
     <Button
       style={makeVMargin()}
-      disabled={!formIsValid(confirmText, status)}
+      loading
+      disabled={!formIsValid(confirmText, status) || loading}
       mode=#contained
-      onPress={_ => reset()}
+      onPress={_ => {
+        setLoading(_ => true)
+        BackupPhraseStorage.erase()
+        ->Promise.catch(exn => {
+          notify("Offboarding failed" ++ Helpers.getMessage(exn))
+          Promise.resolve()
+        })
+        ->Promise.thenResolve(_ => reset())
+        ->Promise.finally(_ => setLoading(_ => false))
+        ->ignore
+      }}
       color=dangerColor>
       <Text> {React.string("Erase secret")} </Text>
     </Button>

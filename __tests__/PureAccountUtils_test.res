@@ -55,7 +55,7 @@ describe("PureAccountUtils", () => {
     let mockMnemonic =
       "foo foo foo foo foo foo foo foo foo foo foo foo" ++ " foo foo foo foo foo foo foo foo foo foo foo foo"
 
-    AccountUtils.restore(~mnemonic=mockMnemonic, ~password="mockPass")
+    AccountUtils.restoreKeysPromise(~mnemonic=mockMnemonic, ~password="mockPass")
     ->Promise.thenResolve(result =>
       if result == expected {
         finish(pass)

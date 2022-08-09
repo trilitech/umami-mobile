@@ -42,40 +42,38 @@ module Make = (M: Deps) => {
 
   let backupPhraseIsValid = s => s->Js.String2.splitByRe(%re("/\s+/"))->Array.length == 24
 
-  let rec _restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
-    let derivationPathIndex = accounts->Array.length
+  %%private(
+    let rec _restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
+      let derivationPathIndex = accounts->Array.length
 
-    generateKeys(~mnemonic, ~password, ~derivationPathIndex, ())
-    ->Promise.then(account => {
-      checkExists(~tz1=account.tz1)->Promise.thenResolve(exists => {
-        if exists {
-          _restoreKeys(
-            ~mnemonic,
-            ~password,
-            ~accounts=Belt.Array.concat(accounts, [account]),
-            ~onDone,
-            (),
-          )
-          ()
-        } else {
-          onDone(Ok(accounts))
-          ()
-        }
+      generateKeys(~mnemonic, ~password, ~derivationPathIndex, ())
+      ->Promise.then(account => {
+        checkExists(~tz1=account.tz1)->Promise.thenResolve(exists => {
+          if exists {
+            _restoreKeys(
+              ~mnemonic,
+              ~password,
+              ~accounts=Belt.Array.concat(accounts, [account]),
+              ~onDone,
+              (),
+            )
+            ()
+          } else {
+            onDone(Ok(accounts))
+            ()
+          }
+        })
       })
-    })
-    ->Promise.catch(error => {
-      onDone(Error(error))->Promise.resolve
-    })
-    ->ignore
-  }
+      ->Promise.catch(error => {
+        onDone(Error(error))->Promise.resolve
+      })
+      ->ignore
+    }
+    let restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) =>
+      _restoreKeys(~mnemonic, ~password, ~accounts, ~onDone, ())
+  )
 
-  let restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
-    assert backupPhraseIsValid(mnemonic)
-    // TODO investigate how to handle this error
-    _restoreKeys(~mnemonic, ~password, ~accounts, ~onDone, ())
-  }
-
-  let restore = (~mnemonic, ~password) =>
+  let restoreKeysPromise = (~mnemonic, ~password) =>
     Promise.make((resolve, reject) => {
       restoreKeys(
         ~mnemonic,

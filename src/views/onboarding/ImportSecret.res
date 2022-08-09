@@ -1,4 +1,5 @@
 open Paper
+open Belt
 
 let formatForMnemonic = (s: string) => {
   s
@@ -58,24 +59,24 @@ let make = (~navigation as _, ~route as _) => {
       ->ignore
     }
   }
+  let mnemonic = dangerousText->formatForMnemonic
+
   let onConfirm = password => {
     setLoading(_ => true)
-    AccountUtils.restoreKeys(
-      ~mnemonic=dangerousText->formatForMnemonic,
-      ~password,
-      ~onDone=accounts => {
-        switch accounts {
-        | Ok(accounts) => {
-            notify("Successfully restored accounts!")
-            handleAccounts(accounts->Belt.Array.map(AccountUtils.keysToAccount), password)
-          }
-        | Error(exn) => notify("Failed to restore accounts. " ++ exn->Helpers.getMessage)
-        }
-
-        setLoading(_ => false)
-      },
-      (),
-    )
+    BackupPhraseStorage.save(mnemonic, password)
+    ->Promise.then(_ => AccountUtils.restoreKeysPromise(~mnemonic, ~password))
+    ->Promise.thenResolve(accounts => {
+      notify("Successfully restored accounts!")
+      handleAccounts(accounts->Array.map(AccountUtils.keysToAccount), password)
+    })
+    ->Promise.catch(exn => {
+      notify("Failed to restore accounts. " ++ exn->Helpers.getMessage)
+      Promise.resolve()
+    })
+    ->Promise.finally(_ => {
+      setLoading(_ => false)
+    })
+    ->ignore
   }
 
   let element = UsePasswordConfirm.usePasswordConfirm(

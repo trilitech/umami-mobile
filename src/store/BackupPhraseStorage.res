@@ -36,3 +36,5 @@ let load = password => {
   )
   ->Promise.catch(exn => exn->Helpers.getMessage->getFriendlyMsg->Js.Exn.raiseError)
 }
+
+let erase = () => Storage.remove("backupPhrase")
