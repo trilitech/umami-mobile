@@ -40,51 +40,39 @@ module Controls = {
 @react.component
 let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
   let getContact = Alias.useGetContact()
-  let (isOpen, setIsOpen) = React.useState(_ => false)
   let tz1 = route.params->Option.flatMap(p => p.tz1)
   let dispatch = Store.useContactsDispatcher()
   let goBack = NavUtils.useGoBack()
   let navigateWithParams = NavUtils.useNavigateWithParams()
 
-  let handlePressEdit = _ => {
-    tz1
-    ->Option.map(tz1 => {
-      navigateWithParams(
-        "EditContact",
-        {
-          tz1: tz1->Some,
-          derivationIndex: None,
-          nft: None,
-          assetBalance: None,
-        },
-      )
-    })
-    ->ignore
-    setIsOpen(_ => false)
-  }
-
-  let handlePressDelete = _ => {
-    tz1->Option.map(tz1 => dispatch(Delete(tz1)))->ignore
-    setIsOpen(_ => false)
-    goBack()
-  }
-
-  let element = <Controls onPressDelete={handlePressDelete} onPressEdit={handlePressEdit} />
-
-  let (drawer, close) = BottomSheet.useBottomSheet(
-    ~element,
-    ~isOpen,
-    ~setIsOpen,
-    ~snapPoint="30%",
-    (),
-  )
-
-  React.useEffect1(() => {
-    if !isOpen {
+  let element = close => {
+    let handlePressEdit = _ => {
+      tz1
+      ->Option.map(tz1 => {
+        navigateWithParams(
+          "EditContact",
+          {
+            tz1: tz1->Some,
+            derivationIndex: None,
+            nft: None,
+            assetBalance: None,
+          },
+        )
+      })
+      ->ignore
       close()
     }
-    None
-  }, [isOpen])
+
+    let handlePressDelete = _ => {
+      tz1->Option.map(tz1 => dispatch(Delete(tz1)))->ignore
+      close()
+      goBack()
+    }
+
+    <Controls onPressDelete={handlePressDelete} onPressEdit={handlePressEdit} />
+  }
+
+  let (drawer, _, open_) = BottomSheet.useBottomSheet(~element, ~snapPoint="30%", ())
 
   <>
     {tz1
@@ -92,7 +80,7 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
     ->Option.mapWithDefault(React.null, alias => {
       <>
         <TopBarAllScreens.WithRightIcon
-          title={"Contact"} logoName="dots-vertical" onPressLogo={_ => setIsOpen(_ => true)}
+          title={"Contact"} logoName="dots-vertical" onPressLogo={_ => open_()}
         />
         <Container>
           <View style={style(~flex=1., ())}>
