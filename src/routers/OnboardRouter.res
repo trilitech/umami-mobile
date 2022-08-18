@@ -20,12 +20,16 @@ let make = () => {
       <Screen name="ShowContact" options={noHeader} component=ShowContactScreen.make />
       <Screen name="Settings" options={headerStyles} component=SettingsScreen.make />
       <Screen name="Send" options={headerStyles} component=SendScreen.make />
-      <Screen name="ScanQR" options={headerStyles} component=ScanQRScreen.make />
+      <Screen name="ScanTz1" options={headerStyles} component=ScanQRScreen.ScanTz1.make />
+      <Screen
+        name="ScanTezosDomain" options={headerStyles} component=ScanQRScreen.ScanTezosDomain.make
+      />
       <Screen name="Operations" options={headerStyles} component=OperationsScreen.make />
       <Screen name="OffboardWallet" options={headerStyles} component=OffboardWalletScreen.make />
       <Screen name="Wert" options={headerStyles} component=WertScreen.make />
-      <Screen name="ChangePassword" options={headerStyles} component=ChangePassword.make />
+      <Screen name="ChangePassword" options={headerStyles} component=ChangePasswordScreen.make />
       <Screen name="Logs" options={noHeader} component=LogsScreen.make />
+      <Screen name="NewRecipient" options={headerStyles} component=NewRecipientScreen.make />
     </Group>
     // theses views open in modal
     // <Group screenOptions={_optionsProps => options(~presentation=#modal, ())}>

@@ -42,7 +42,6 @@ module PureSendScreen = {
   let make = (
     ~sender: Account.t,
     ~nft: option<Token.tokenNFT>,
-    ~tz1FromQr: option<string>,
     ~notify,
     ~notifyAdvanced,
     ~navigate,
@@ -98,20 +97,6 @@ module PureSendScreen = {
           ~isTestNet,
         )
       )
-
-    // if present, load QRCode tz1 in transaction
-    React.useEffect2(() => {
-      tz1FromQr
-      ->Option.map(tz1 =>
-        setTrans(prev => {
-          ...prev,
-          recipient: tz1->Some,
-        })
-      )
-      ->ignore
-
-      None
-    }, (tz1FromQr, setTrans))
 
     let handleSubmit = (password: string) =>
       send
@@ -171,7 +156,6 @@ module PureSendScreen = {
 @react.component
 let make = (~navigation as _, ~route) => {
   let nft = NavUtils.getNft(route)
-  let tz1FromQr = NavUtils.getTz1FromQr(route)
 
   let notify = SnackBar.useNotification()
   let notifyAdvanced = SnackBar.useNotificationAdvanced()
@@ -179,7 +163,6 @@ let make = (~navigation as _, ~route) => {
   let isTestNet = Store.useIsTestNet()
   Store.useWithAccount(account =>
     <PureSendScreen
-      tz1FromQr
       sender=account
       nft
       notify

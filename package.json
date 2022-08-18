@@ -33,6 +33,7 @@
     "custom-signer": "link:./src/vendors/custom-signer",
     "events": "^3.3.0",
     "jotai": "^1.6.1",
+    "lodash": "^4.17.21",
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-aes-crypto": "^2.1.0",

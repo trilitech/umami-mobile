@@ -18,10 +18,12 @@ module SelectedRecipients = {
       navigateWithParams(
         "Send",
         {
-          tz1: tz1->Some,
+          tz1ForContact: None,
           derivationIndex: None,
           nft: None,
           assetBalance: None,
+          tz1ForSendRecipient: tz1->Some,
+          injectedAdress: None,
         },
       )
     }
@@ -62,12 +64,14 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
       logoName="plus"
       onPressLogo={() =>
         navigateWithParams(
-          "EditContact",
+          "NewRecipient",
           {
-            tz1: None,
+            tz1ForContact: None,
             derivationIndex: None,
             nft: None,
             assetBalance: None,
+            tz1ForSendRecipient: None,
+            injectedAdress: None,
           },
         )}
     />

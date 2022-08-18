@@ -5,6 +5,7 @@ let getPrettyTitle = (routeName: string) => {
   | "ScanQR" => "Scan QR code"
   | "OffboardWallet" => "Offboard wallet"
   | "ChangePassword" => "Change password"
+  | "NewRecipient" => "Transfer to new recipient"
   | _ => routeName
   }
 }

@@ -28,8 +28,10 @@ let make = (~navigation, ~route as _) => {
                 {
                   derivationIndex: Some(a.derivationPathIndex),
                   nft: None,
-                  tz1: None,
+                  tz1ForContact: None,
                   assetBalance: None,
+                  tz1ForSendRecipient: None,
+                  injectedAdress: None,
                 },
               )
             }}

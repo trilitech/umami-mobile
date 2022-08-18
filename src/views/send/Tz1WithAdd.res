@@ -15,10 +15,12 @@ let make = (~tz1, ~textRender=text => <Text> {text->React.string} </Text>, ~addU
         navigateWithParams(
           "EditContact",
           {
-            tz1: tz1->Some,
+            tz1ForContact: tz1->Some,
             derivationIndex: None,
             nft: None,
             assetBalance: None,
+            tz1ForSendRecipient: None,
+            injectedAdress: None,
           },
         )}
     />

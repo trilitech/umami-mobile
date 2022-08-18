@@ -164,47 +164,49 @@ module MultiCurrencyInput = {
   }
 }
 
-let recipientLabel = <Caption> {React.string("recipient")} </Caption>
 module RecipientDisplayOnly = {
   @react.component
-  let make = (~tz1, ~onPress=() => (), ~disabled=false) => {
+  let make = (~tz1, ~onPressDelete=() => (), ~disabled=false) => {
     let getContactOrAccount = Alias.useGetContactOrAccount()
+    let deleteIcon = <CrossRight onPress={_ => onPressDelete()} />
 
     let el = switch getContactOrAccount(tz1) {
     | (Some(contact), None) =>
-      <ContactListItem disabled contact onPress={_ => onPress()} right={<ChevronRight />} />
+      <ContactListItem disabled contact onPress={_ => ()} right={deleteIcon} />
     | (Some(_), Some(account))
     | (None, Some(account)) =>
-      <AccountListItem disabled account onPress={_ => onPress()} right={<ChevronRight />} />
+      <AccountListItem disabled account onPress={_ => ()} right={deleteIcon} />
     | (None, None) =>
       <CustomListItem
         disabled
-        onPress={_ => onPress()}
+        onPress={_ => ()}
         // center={disabled
         //   ? <Paper.Text> {tz1->TezHelpers.formatTz1->React.string} </Paper.Text>
         //   : <AliasDisplayer.Tz1WithAdd tz1 />}
         center={<Tz1WithAdd tz1 />}
-        right={<ChevronRight />}
+        right={deleteIcon}
       />
     }
-    <> {recipientLabel} {el} </>
+    el
   }
 }
 
 module Recipient = {
   @react.component
-  let make = (~recipient: option<string>, ~onPress) => {
-    switch recipient {
-    | None => <>
-        {recipientLabel}
+  let make = (~recipient: option<string>, ~onPressDelete, ~onPressSelectRecipient) => {
+    let recipientLabel = <Caption> {React.string("recipient")} </Caption>
+    <>
+      {recipientLabel}
+      {switch recipient {
+      | None =>
         <CustomListItem
-          onPress={_ => onPress()}
-          center={<Text> {"Add recipient..."->React.string} </Text>}
+          onPress={_ => onPressSelectRecipient()}
+          center={<Text> {"Select from address book..."->React.string} </Text>}
           right={<ChevronRight />}
         />
-      </>
 
-    | Some(tz1) => <RecipientDisplayOnly tz1 onPress />
-    }
+      | Some(tz1) => <RecipientDisplayOnly tz1 onPressDelete />
+      }}
+    </>
   }
 }

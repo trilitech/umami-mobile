@@ -1,3 +1,4 @@
+open Belt
 let useNavigateWithParams = () => {
   let nav = ReactNavigation.Native.useNavigation()
 
@@ -44,8 +45,16 @@ let getNft = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.nft)
 }
 
-let getTz1FromQr = (route: NavStacks.OnBoard.route) => {
-  route.params->Belt.Option.flatMap(p => p.tz1)
+let getTz1FforContact = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.tz1ForContact)
+}
+
+let getTz1ForSendRecipient = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.tz1ForSendRecipient)
+}
+
+let getInjectedAddress = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.injectedAdress)
 }
 
 let getAssetBalance = (route: NavStacks.OnBoard.route) => {
@@ -59,3 +68,31 @@ external fixType: NavStacks.OnBoard.Header.headerProps<'a> => {"route": route, "
   "%identity"
 
 let getRouteName = headerProps => (headerProps->fixType)["route"].name
+
+// let mockReponse: Taquito.Toolkit.operation = Obj.magic({"hash": "mockHash"})
+
+type myRoute = {name: string}
+type hackedState = {routes: array<myRoute>}
+
+let useGetLastRouteName = () => {
+  let nav = ReactNavigation.Native.useNavigation()
+
+  let state = nav->Js.Nullable.toOption->Option.map(NavStacks.OnBoard.Navigation.getState)
+
+  state->Option.flatMap(state => {
+    let state: hackedState = Obj.magic(state)
+    state.routes->Array.map(r => r.name)->Array.get(state.routes->Belt.Array.length - 2)
+  })
+}
+
+let useGoBackWithParams = () => {
+  let lastRoute = useGetLastRouteName()
+  let navvigateWithParams = useNavigateWithParams()
+  params => {
+    lastRoute
+    ->Option.map(route => {
+      navvigateWithParams(route, params)
+    })
+    ->ignore
+  }
+}

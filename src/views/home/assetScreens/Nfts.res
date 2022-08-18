@@ -39,8 +39,10 @@ let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
         {
           derivationIndex: None,
           nft: Some(tokenNFT),
-          tz1: None,
+          tz1ForContact: None,
           assetBalance: None,
+          tz1ForSendRecipient: None,
+          injectedAdress: None,
         },
       )->ignore
     }}

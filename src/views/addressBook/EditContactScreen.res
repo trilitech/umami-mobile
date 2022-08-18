@@ -5,7 +5,7 @@ open Belt
 
 @react.component
 let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
-  let tz1 = route.params->Option.flatMap(p => p.tz1)
+  let tz1 = route.params->Option.flatMap(p => p.tz1ForContact)
   let dispatch = Store.useContactsDispatcher()
   let getContact = Alias.useGetContact()
 
