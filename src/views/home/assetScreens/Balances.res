@@ -8,10 +8,12 @@ let make = (~account: Account.t) => {
         navigateWithParams(
           "Operations",
           {
-            tz1: None,
+            tz1ForContact: None,
             derivationIndex: None,
             nft: None,
             assetBalance: asset->Some,
+            tz1ForSendRecipient: None,
+            injectedAdress: None,
           },
         )}
       balance=account.balance

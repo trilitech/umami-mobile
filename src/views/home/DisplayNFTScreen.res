@@ -28,8 +28,10 @@ module DisplayNFT = {
               {
                 nft: Some(token),
                 derivationIndex: None,
-                tz1: None,
+                tz1ForContact: None,
                 assetBalance: None,
+                tz1ForSendRecipient: None,
+                injectedAdress: None,
               },
             )->ignore}
           icon={Paper.Icon.name("arrow-top-right-thin")}

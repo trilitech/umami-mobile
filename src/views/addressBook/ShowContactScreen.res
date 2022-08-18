@@ -40,7 +40,7 @@ module Controls = {
 @react.component
 let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
   let getContact = Alias.useGetContact()
-  let tz1 = route.params->Option.flatMap(p => p.tz1)
+  let tz1 = route.params->Option.flatMap(p => p.tz1ForContact)
   let dispatch = Store.useContactsDispatcher()
   let goBack = NavUtils.useGoBack()
   let navigateWithParams = NavUtils.useNavigateWithParams()
@@ -52,10 +52,12 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
         navigateWithParams(
           "EditContact",
           {
-            tz1: tz1->Some,
+            tz1ForContact: tz1->Some,
             derivationIndex: None,
             nft: None,
             assetBalance: None,
+            tz1ForSendRecipient: None,
+            injectedAdress: None,
           },
         )
       })

@@ -3,8 +3,16 @@ let mockFn = JestJs.fn(() => ())
 open Expect
 open RNTestingLibrary
 module Router = ReactNavigation.Native.NavigationContainer
+%%raw(`
+jest.mock('@react-navigation/native', () => {
+  return {
+    useRoute: () => "bar",
+    useNavigation:() => {}
+  }
+})
+`)
 
-describe("<RecordSecret />", () => {
+describe("<SendScreen />", () => {
   let mockAccount = Account.make(
     ~tz1="foo",
     ~balance=30,
@@ -45,19 +53,19 @@ describe("<RecordSecret />", () => {
 
   test("it displays tez input by default", () => {
     let fixture =
-      <Router>
-        <SendScreen.PureSendScreen
-          sender=mockAccount
-          nft=None
-          tz1FromQr=None
-          notify={_ => ()}
-          notifyAdvanced={_ => ()}
-          navigate={_ => ()}
-          isTestNet=false
-          send=mockSend
-          simulate=mockSimulate
-        />
-      </Router>
+      // <Router>
+      <SendScreen.PureSendScreen
+        sender=mockAccount
+        nft=None
+        notify={_ => ()}
+        notifyAdvanced={_ => ()}
+        navigate={_ => ()}
+        isTestNet=false
+        send=mockSend
+        simulate=mockSimulate
+      />
+
+    // </Router>
     screen.contents = RNTestingLibrary.render(fixture)
     let result =
       screen.contents
@@ -81,19 +89,16 @@ describe("<RecordSecret />", () => {
       },
     )
     let fixture =
-      <Router>
-        <SendScreen.PureSendScreen
-          sender=mockAccount
-          nft=Some(nft)
-          tz1FromQr=None
-          notify={_ => ()}
-          notifyAdvanced={_ => ()}
-          navigate={_ => ()}
-          isTestNet=false
-          send=mockSend
-          simulate=mockSimulate
-        />
-      </Router>
+      <SendScreen.PureSendScreen
+        sender=mockAccount
+        nft=Some(nft)
+        notify={_ => ()}
+        notifyAdvanced={_ => ()}
+        navigate={_ => ()}
+        isTestNet=false
+        send=mockSend
+        simulate=mockSimulate
+      />
     screen.contents = RNTestingLibrary.render(fixture)
     let result = screen.contents->getByTestId(~matcher=#Str("nft-editions"))
 

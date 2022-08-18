@@ -105,6 +105,15 @@ module PressableIcon = {
     <Paper.IconButton style ?color onPress={_ => onPress()} icon={Paper.Icon.name(name)} size />
 }
 
+module CrossRight = {
+  @react.component
+  let make = (~onPress) => <PressableIcon size=16 name="window-close" onPress />
+}
+
+module ThreeDotsRight = {
+  @react.component
+  let make = (~onPress) => <PressableIcon size=16 name="dots-vertical" onPress />
+}
 module ListItem = {
   @react.component
   let make = (~onPress=_ => (), ~title, ~iconName=?, ~iconColor=?, ~selected=false, ~testID=?) => {

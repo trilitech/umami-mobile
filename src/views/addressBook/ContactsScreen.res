@@ -23,10 +23,12 @@ module FilteredContacts = {
                   navigateWithParams(
                     "ShowContact",
                     {
-                      tz1: c.tz1->Some,
+                      tz1ForContact: c.tz1->Some,
                       derivationIndex: None,
                       nft: None,
                       assetBalance: None,
+                      tz1ForSendRecipient: None,
+                      injectedAdress: None,
                     },
                   )}
               />
@@ -48,10 +50,12 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
     navigateWithParams(
       "EditContact",
       {
-        tz1: None,
+        tz1ForContact: None,
         derivationIndex: None,
         nft: None,
         assetBalance: None,
+        tz1ForSendRecipient: None,
+        injectedAdress: None,
       },
     )
 
