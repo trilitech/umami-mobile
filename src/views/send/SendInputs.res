@@ -8,7 +8,7 @@ module Sender = {
   @react.component
   let make = (~onPress=() => (), ~disabled) => {
     useWithAccount(account => <>
-      <Caption> {React.string("sender")} </Caption>
+      <Caption> {React.string("Sender")} </Caption>
       <AccountListItem account onPress={_ => onPress()} right={<ChevronRight />} disabled />
     </>)
   }
@@ -164,6 +164,7 @@ module MultiCurrencyInput = {
   }
 }
 
+let recipientLabel = <Caption> {React.string("Recipient")} </Caption>
 module RecipientDisplayOnly = {
   @react.component
   let make = (~tz1, ~onPressDelete=() => (), ~disabled=false) => {

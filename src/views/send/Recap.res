@@ -30,9 +30,9 @@ let make = (~trans, ~fee, ~loading=false, ~onSubmit, ~onCancel) => {
     {amountDisplay}
     {makeRow("Fee", TezHelpers.formatBalance(fee))}
     <Sender disabled=true />
-    {trans.recipient->Helpers.reactFold(recipient =>
-      <RecipientDisplayOnly disabled=true tz1=recipient />
-    )}
+    {trans.recipient->Helpers.reactFold(recipient => <>
+      {recipientLabel} <RecipientDisplayOnly disabled=true tz1=recipient />
+    </>)}
     <Button disabled=loading loading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("Submit transaction")}
     </Button>
