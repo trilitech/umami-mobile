@@ -39,32 +39,28 @@ let getValidator = mode => {
 }
 
 @react.component
-let make = (~onChange, ~mode) => {
-  let notify = SnackBar.useNotification()
-  let navToQRScan = useNavigateToQr(mode)
-  let validator = getValidator(mode)
+let make = (~onChange) => {
+  let navigate = NavUtils.useNavigate()
 
   // Listen for successfull scans
   useOnScannedAddress(onChange)
 
   <Wrapper justifyContent=#center>
     <NicerIconBtn
-      onPress={_ => navToQRScan()} iconName="qrcode-scan" style={StyleUtils.makeVMargin()}
+      onPress={_ => navigate("ScanAddressOrDomain")}
+      iconName="qrcode-scan"
+      style={StyleUtils.makeVMargin()}
     />
     <NicerIconBtn
       onPress={_ => {
         Clipboard.getString()
         ->Promise.thenResolve(recipient => {
-          if validator(recipient) {
-            onChange(recipient)
-          } else if recipient != "" {
-            notify(
-              `${recipient} is not a valid ${switch mode {
-                | Tz1Mode => "Tz1 address"
-                | TezosDomainMode => "Tezos domain"
-                }}!`,
-            )
-          }
+          makeInjectedAddress(recipient)->Option.map(a => {
+            switch a {
+            | Tz1(val) => onChange(val)
+            | TezosDomain(val) => onChange(val)
+            }->ignore
+          })
         })
         ->ignore
       }}

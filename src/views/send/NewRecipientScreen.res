@@ -35,7 +35,7 @@ let make = (~navigation as _, ~route as _) => {
 
   <>
     <InstructionsPanel
-      instructions="You can transfer assets to a tz adress or tezos domain. Please select the type of adress you want to make a transfer to then enter the address. "
+      instructions="You can transfer assets to a tz adress or tezos domain. Please enter the address or domain you want to make a transfer to. "
     />
     <Container>
       <AddressImporter

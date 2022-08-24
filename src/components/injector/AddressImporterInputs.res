@@ -2,7 +2,6 @@ open Belt
 open CommonComponents
 open Paper
 open ReactNative.Style
-open AddressImporterTypes
 open Lodash
 
 %%private(
@@ -31,10 +30,14 @@ open Lodash
     />
   }
 )
+
+let renderTz1 = tz1 =>
+  tz1->Helpers.reactFold(tz1 => <Caption> {tz1->TezHelpers.formatTz1->React.string} </Caption>)
+
 module TzDomainRecipient = {
   @react.component
   let make = (~onChange) => {
-    let (domainTxt, setDomainTxt) = React.useState(_ => "")
+    let (addressTxt, setAddressTxt) = React.useState(_ => "")
     let (tz1, setTz1) = React.useState(_ => None)
     let notify = SnackBar.useNotification()
     let (loading, setLoading) = React.useState(_ => false)
@@ -64,52 +67,31 @@ module TzDomainRecipient = {
     }, (tz1, onChange))
 
     React.useEffect3(() => {
-      if TezosDomains.isTezosDomain(domainTxt) {
-        fetchTz1(domainTxt)
+      if TezosDomains.isTezosDomain(addressTxt) {
+        fetchTz1(addressTxt)
+      } else if TaquitoUtils.tz1IsValid(addressTxt) {
+        setTz1(_ => Some(addressTxt))
       } else {
         setTz1(_ => None)
       }
       None
-    }, (domainTxt, fetchTz1, setTz1))
+    }, (addressTxt, fetchTz1, setTz1))
 
     <>
       <Wrapper>
         {makeInput(
-          ~txt=domainTxt,
-          ~label="Enter tezos domain",
-          ~placeholder="Enter tezos domain",
-          ~onChange={t => setDomainTxt(_ => t)},
+          ~txt=addressTxt,
+          ~label="Enter tz address or tezos domain",
+          ~placeholder="Enter tz address or tezos domain",
+          ~onChange={t => setAddressTxt(_ => t)},
           ~tz1,
         )}
-        <ScanAndPaste mode=TezosDomainMode onChange={domain => setDomainTxt(_ => domain)} />
+        <ScanAndPaste onChange={a => setAddressTxt(_ => a)} />
       </Wrapper>
-      {loading ? <ActivityIndicator /> : React.null}
-    </>
-  }
-}
-
-module Tz1Recipient = {
-  @react.component
-  let make = (~onChange) => {
-    let (tz1text, setTz1Text) = React.useState(_ => "")
-
-    let tz1 = TaquitoUtils.tz1IsValid(tz1text) ? Some(tz1text) : None
-
-    React.useEffect2(() => {
-      onChange(tz1)
-      None
-    }, (tz1, onChange))
-
-    <>
-      <Wrapper>
-        {makeInput(
-          ~txt=tz1text,
-          ~label="Enter tz1 address",
-          ~placeholder="Enter tz1 address",
-          ~onChange={t => setTz1Text(_ => t)},
-          ~tz1,
-        )}
-        <ScanAndPaste mode=Tz1Mode onChange={tz1 => setTz1Text(_ => tz1)} />
+      <Wrapper
+        justifyContent=#center
+        style={array([StyleUtils.makeVMargin(), style(~height=24.->dp, ())])}>
+        {loading ? <ActivityIndicator /> : renderTz1(tz1)}
       </Wrapper>
     </>
   }

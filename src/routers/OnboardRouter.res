@@ -20,9 +20,10 @@ let make = () => {
       <Screen name="ShowContact" options={noHeader} component=ShowContactScreen.make />
       <Screen name="Settings" options={headerStyles} component=SettingsScreen.make />
       <Screen name="Send" options={headerStyles} component=SendScreen.make />
-      <Screen name="ScanTz1" options={headerStyles} component=ScanQRScreen.ScanTz1.make />
       <Screen
-        name="ScanTezosDomain" options={headerStyles} component=ScanQRScreen.ScanTezosDomain.make
+        name="ScanAddressOrDomain"
+        options={headerStyles}
+        component=ScanQRScreen.ScanTezosDomain.make
       />
       <Screen name="Operations" options={headerStyles} component=OperationsScreen.make />
       <Screen name="OffboardWallet" options={headerStyles} component=OffboardWalletScreen.make />

@@ -10,21 +10,11 @@ module QRCodeScanner = {
 }
 
 %%private(
-  let makeScanner = (~isValid, ~makeInjectedAddress, ~title: string, ~subTitle: string) => {
-    let getBackWithparams = NavUtils.useGoBackWithParams()
+  let makeScanner = (~title: string, ~subTitle: string, ~onRead) => {
     <QRCodeScanner
       onRead={e => {
         let scannedString = e["data"]
-        if isValid(scannedString) {
-          getBackWithparams({
-            tz1ForContact: None,
-            derivationIndex: None,
-            nft: None,
-            assetBalance: None,
-            tz1ForSendRecipient: None,
-            injectedAdress: makeInjectedAddress(scannedString),
-          })
-        }
+        onRead(scannedString)
       }}
       topContent={<Headline> {React.string(title)} </Headline>}
       bottomContent={<TouchableRipple> <Text> {React.string(subTitle)} </Text> </TouchableRipple>}
@@ -32,24 +22,28 @@ module QRCodeScanner = {
   }
 )
 
-module ScanTz1 = {
-  @react.component
-  let make = (~navigation as _, ~route as _) => {
-    let isValid = str => TaquitoUtils.tz1IsValid(str)
-    let title = "Tz1"
-    let subTitle = "Scan tz1 address"
-    let makeInjectedAddress = str => Tz1(str)->Some
-    makeScanner(~isValid, ~makeInjectedAddress, ~subTitle, ~title)
-  }
-}
-
 module ScanTezosDomain = {
   @react.component
   let make = (~navigation as _, ~route as _) => {
-    let isValid = str => TezosDomains.isTezosDomain(str)
-    let title = "Tezos domain"
-    let subTitle = "Scan Tezos domain"
-    let makeInjectedAddress = str => TezosDomain(str)->Some
-    makeScanner(~isValid, ~makeInjectedAddress, ~subTitle, ~title)
+    let title = "Tz address or Tezos domain"
+    let subTitle = "Scan Tz Address or Tezos domain"
+
+    let getBackWithparams = NavUtils.useGoBackWithParams()
+
+    makeScanner(~subTitle, ~title, ~onRead=str => {
+      str
+      ->makeInjectedAddress
+      ->Belt.Option.map(a =>
+        getBackWithparams({
+          tz1ForContact: None,
+          derivationIndex: None,
+          nft: None,
+          assetBalance: None,
+          tz1ForSendRecipient: None,
+          injectedAdress: a->Some,
+        })
+      )
+      ->ignore
+    })
   }
 }
