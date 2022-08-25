@@ -1,15 +1,16 @@
 open Belt
 
-type card = ContactCard(Contact.t) | AccountCard(Account.t)
-let getCardName = c =>
+let getCardName = c => {
+  open AccountOrContact
   switch c {
   | ContactCard(c) => c.name
   | AccountCard(c) => c.name
   }
+}
 
 module SelectedRecipients = {
   @react.component
-  let make = (~contacts: array<card>, ~search) => {
+  let make = (~contacts: array<AccountOrContact.t>, ~search) => {
     let navigateWithParams = NavUtils.useNavigateWithParams()
 
     let cards = contacts->FormUtils.filterBySearch(getCardName, search)
@@ -49,12 +50,7 @@ module SelectedRecipients = {
 @react.component
 let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
   let (search, setSearch) = React.useState(_ => "")
-  let contacts = Store.useContacts()
-  let (accounts, _) = Store.useAccounts()
-  let allContacts = Array.concat(
-    accounts->Array.map(a => AccountCard(a)),
-    contacts->Array.map(c => ContactCard(c)),
-  )
+  let allContacts = Store.useAccountsAndContacts()
 
   let navigateWithParams = NavUtils.useNavigateWithParams()
 

@@ -1,13 +1,14 @@
 open Account
 open Atoms
 include SavedStore
+open Belt
 
 let useActiveAccount = () => {
   let (i, _) = useSelectedAccount()
 
   let (accounts, _) = AccountsReducer.useAccountsDispatcher()
 
-  accounts->Belt.Array.get(i)
+  accounts->Array.get(i)
 }
 
 let useSnackBar = () => Jotai.Atom.use(snackBarAtom)
@@ -48,6 +49,17 @@ let useContactsDispatcher = () => {
 let useContacts = () => {
   let (contacts, _) = SavedStore.useContacts()
   contacts
+}
+
+let useAccountsAndContacts = () => {
+  open AccountOrContact
+  let contacts = useContacts()
+  let (accounts, _) = useAccounts()
+  let allContacts = Array.concat(
+    accounts->Array.map(a => AccountCard(a)),
+    contacts->Array.map(c => ContactCard(c)),
+  )
+  allContacts
 }
 
 let useIsTestNet = () => {
