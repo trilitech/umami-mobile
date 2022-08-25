@@ -31,7 +31,7 @@ module PureProfile = {
           alignItems=#flexStart
           style={style(~flex=1., ~alignSelf=#stretch, ())}>
           <Wrapper style={style(~marginVertical=10.->dp, ())}>
-            <UmamiLogoMulti size=60 tz1 />
+            <AvatarDisplay size=120 tz1 isAccount=true />
           </Wrapper>
         </Wrapper>
         <Wrapper flexDirection=#column style={style(~flex=3., ())}>
