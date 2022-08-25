@@ -3,5 +3,11 @@ let snackBarAtom: Jotai.Atom.t<option<React.element>, _, _> = Jotai.Atom.make(No
 let accountsAtom: Jotai.Atom.t<array<Account.t>, _, _> = Jotai.Atom.make([])
 let selectedAccountAtom: Jotai.Atom.t<int, _, _> = Jotai.Atom.make(0)
 let contactsAtom: Jotai.Atom.t<array<Contact.t>, _, _> = Jotai.Atom.make([])
+
+type addressMetatdataMap = Belt.Map.String.t<AddressMetadata.t>
+let addressMetatdadaAtom: Jotai.Atom.t<addressMetatdataMap, _, _> = Jotai.Atom.make(
+  Belt.Map.String.fromArray([]),
+)
+
 open Network
 let networkAtom: Jotai.Atom.t<Network.t, _, _> = Jotai.Atom.make(Mainnet)

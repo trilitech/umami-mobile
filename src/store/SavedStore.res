@@ -5,6 +5,9 @@ module Serializers = {
   let serializeSelectedAccount = s => s->Js.Int.toString->Some
   let serializeTheme = s => s->Some
   let serializeContacts = Js.Json.stringifyAny
+  let serializeAddressMetadatas = (a: Belt.Map.String.t<AddressMetadata.t>) => {
+    a->Belt.Map.String.toArray->Js.Json.stringifyAny
+  }
   let serializeNetwork = (n: Network.t) => n->Network.toString->Some
 }
 
@@ -44,3 +47,9 @@ let useSelectedAccount = withSave(
 let useContacts = withSave(contactsAtom, Serializers.serializeContacts, "contacts")
 
 let useNetwork = withSave(networkAtom, Serializers.serializeNetwork, "network")
+
+let useAddressMetadatas = withSave(
+  addressMetatdadaAtom,
+  Serializers.serializeAddressMetadatas,
+  "addressMetadatas",
+)
