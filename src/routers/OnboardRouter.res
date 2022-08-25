@@ -3,7 +3,9 @@ let noHeader = _ => options(~headerShown=false, ())
 @react.component
 let make = () => {
   let headerStyles = HeaderStyle.useHeaderStyle()
+  InitAddressMetadata.useRefresh()
   BalancesSync.useBalancesSync()
+
   <Navigator initialRouteName="Home">
     <Group>
       <Screen name="Home" options={noHeader} component=HomeScreen.make />

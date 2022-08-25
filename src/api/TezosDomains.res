@@ -1,3 +1,4 @@
+open Belt
 let query = (domain: string) =>
   `
   query getAddres {
@@ -50,7 +51,7 @@ let getAddress = (domain: string) => {
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(parseAddress)
   ->Promise.thenResolve(d => d["data"]["domain"]->Js.Nullable.toOption)
-  ->Promise.thenResolve(res => res->Belt.Option.flatMap(res => res.address->Js.Nullable.toOption))
+  ->Promise.thenResolve(res => res->Option.flatMap(res => res.address->Js.Nullable.toOption))
 }
 
 type reverseRecord = {
@@ -79,6 +80,7 @@ let getDomain = (address: string) => {
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(parseReverse)
   ->Promise.thenResolve(d => d["data"]["reverseRecord"])
+  ->Promise.thenResolve(d => Js.Nullable.toOption(d)->Option.map(res => res["domain"].name))
 }
 
 let isTezosDomain = (str: string) => Js.Re.test_(%re("/^\S+\.tez$/"), str)

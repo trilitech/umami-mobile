@@ -45,5 +45,5 @@ let getProfile = (tz1: string) => {
   ->Promise.thenResolve(Js.Json.decodeObject)
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(parseTzProfile)
-  ->Promise.thenResolve(d => d["data"]["tzprofiles_by_pk"])
+  ->Promise.thenResolve(d => d["data"]["tzprofiles_by_pk"]->Js.Nullable.toOption)
 }
