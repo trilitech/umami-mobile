@@ -13,7 +13,7 @@ let make = (
     disabled
     selected
     onPress
-    left={<UmamiLogoMulti size=40. tz1 />}
+    left={<AvatarDisplay tz1 isAccount=true />}
     center={<>
       <Title> {React.string(name)} </Title>
       <Text>

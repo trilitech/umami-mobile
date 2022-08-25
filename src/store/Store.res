@@ -2,7 +2,6 @@ open Account
 open Belt
 open Atoms
 include SavedStore
-open Belt
 
 let useActiveAccount = () => {
   let (i, _) = useSelectedAccount()

@@ -4,20 +4,10 @@ open ReactNative.Style
 
 module FABadge = {
   @react.component
-  let make = (~standard) => {
-    let borderColor = ThemeProvider.useDisabledColor()
-    <ReactNative.View
-      style={style(
-        ~borderWidth=1.,
-        ~borderRadius=4.,
-        ~paddingHorizontal=4.->dp,
-        ~marginHorizontal=8.->dp,
-        ~borderColor,
-        (),
-      )}>
+  let make = (~standard) =>
+    <Badge style={array([StyleUtils.makeHMargin(), StyleUtils.makeHPadding()])}>
       <Paper.Caption> {React.string(standard)} </Paper.Caption>
-    </ReactNative.View>
-  }
+    </Badge>
 }
 
 module CurrencyItem = {

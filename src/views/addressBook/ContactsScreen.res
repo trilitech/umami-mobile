@@ -3,37 +3,47 @@ open CommonComponents
 
 open Paper
 
+module ContactTile = {
+  @react.component
+  let make = (~contact: Contact.t) => {
+    let navigateWithParams = NavUtils.useNavigateWithParams()
+    let getTezosDomain = Store.useGetTezosDomain()
+    let domain = getTezosDomain(contact.tz1)
+    <CustomListItem
+      left={<AvatarDisplay tz1=contact.tz1 size=50 />}
+      center={<Wrapper>
+        <Text> {React.string(contact.name)} </Text>
+        {domain->Helpers.reactFold(domain =>
+          <TzDomainBadge domain style={StyleUtils.makeLeftMargin()} />
+        )}
+      </Wrapper>}
+      right={<ChevronRight />}
+      onPress={_ =>
+        navigateWithParams(
+          "ShowContact",
+          {
+            tz1ForContact: contact.tz1->Some,
+            derivationIndex: None,
+            nft: None,
+            assetBalance: None,
+            tz1ForSendRecipient: None,
+            injectedAdress: None,
+          },
+        )}
+    />
+  }
+}
+
 module FilteredContacts = {
   @react.component
   let make = (~contacts: array<Contact.t>, ~search) => {
-    let navigateWithParams = NavUtils.useNavigateWithParams()
     let contacts = contacts->FormUtils.filterBySearch(c => c.name, search)
 
     <Container noVPadding=true>
       <ReactNative.ScrollView>
         {contacts == []
           ? <NoResult search />
-          : contacts
-            ->Array.map(c =>
-              <CustomListItem
-                key=c.name
-                center={<Text> {React.string(c.name)} </Text>}
-                right={<ChevronRight />}
-                onPress={_ =>
-                  navigateWithParams(
-                    "ShowContact",
-                    {
-                      tz1ForContact: c.tz1->Some,
-                      derivationIndex: None,
-                      nft: None,
-                      assetBalance: None,
-                      tz1ForSendRecipient: None,
-                      injectedAdress: None,
-                    },
-                  )}
-              />
-            )
-            ->React.array}
+          : contacts->Array.map(c => <ContactTile key=c.tz1 contact=c />)->React.array}
       </ReactNative.ScrollView>
     </Container>
   }

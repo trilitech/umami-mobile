@@ -6,6 +6,7 @@ let source = Image.Source.fromRequired(Packager.require("../assets/maki-trans.pn
 module Base = {
   @react.component
   let make = (~size, ~makiColor) => {
+    let size = size->Js.Int.toFloat
     let offset = size /. 8.
 
     <View

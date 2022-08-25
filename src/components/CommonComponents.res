@@ -235,3 +235,14 @@ module CheckBoxAndText = {
     </Wrapper>
   }
 }
+
+module Badge = {
+  @react.component
+  let make = (~children, ~style as extraStyle=style()) => {
+    let borderColor = ThemeProvider.useDisabledColor()
+    <ReactNative.View
+      style={array([style(~borderWidth=2., ~borderRadius=4., ~borderColor, ()), extraStyle])}>
+      {children}
+    </ReactNative.View>
+  }
+}
