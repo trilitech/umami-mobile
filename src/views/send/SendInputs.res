@@ -8,7 +8,7 @@ module Sender = {
   @react.component
   let make = (~onPress=() => (), ~disabled) => {
     useWithAccount(account => <>
-      <Caption> {React.string("Sender")} </Caption>
+      <Caption> {React.string("Sending account")} </Caption>
       <AccountListItem account onPress={_ => onPress()} right={<ChevronRight />} disabled />
     </>)
   }
@@ -195,7 +195,6 @@ module RecipientDisplayOnly = {
 module Recipient = {
   @react.component
   let make = (~recipient: option<string>, ~onPressDelete, ~onPressSelectRecipient) => {
-    let recipientLabel = <Caption> {React.string("recipient")} </Caption>
     <>
       {recipientLabel}
       {switch recipient {
