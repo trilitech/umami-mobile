@@ -6,21 +6,6 @@ let style = StyleUtils.makeVMargin()
 
 open FormValidators.NameValidator
 
-module Tz1Display = {
-  @react.component
-  let make = (~tz1) => {
-    <TextInput
-      style
-      disabled=true
-      value={tz1->Belt.Option.getWithDefault("")}
-      placeholder="Enter an address"
-      label="Enter an address"
-      mode=#flat
-      onChangeText={t => {()}}
-    />
-  }
-}
-
 @react.component
 let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {
   let (formState, setFormState) = React.useState(_ => initialState)
@@ -43,10 +28,13 @@ let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {
     <HelperText _type=#error visible={nameError->Option.isSome}>
       {nameError->Option.mapWithDefault("", getErrorName)->React.string}
     </HelperText>
-    <Tz1Display tz1={formState.tz1} />
     {createMode
       ? <AddressImporter onChange={tz1 => setFormState(prev => {...prev, tz1: tz1})} />
-      : React.null}
+      : formState.tz1->Helpers.reactFold(tz1 =>
+          <CommonComponents.Wrapper justifyContent=#center style={StyleUtils.makeBottomMargin()}>
+            <AddressDisplay tz1={tz1} />
+          </CommonComponents.Wrapper>
+        )}
     <Button
       disabled
       style
