@@ -1,6 +1,6 @@
 {
   "name": "umamimobile",
-  "version": "0.0.101",
+  "version": "1.0.4",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
