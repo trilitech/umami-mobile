@@ -1,14 +1,6 @@
 open Belt
 open AddressMetadata
 
-let getAddress = c => {
-  open AccountOrContact
-  switch c {
-  | ContactCard(c) => c.tz1
-  | AccountCard(c) => c.tz1
-  }
-}
-
 let getMetadatas = (tz1: string) => {
   let domain = TezosDomains.getDomain(tz1)
   let profile = TzProfiles.getProfile(tz1)
@@ -28,7 +20,7 @@ let useRefresh = () => {
 
   let toUpdate =
     cards
-    ->Array.map(getAddress)
+    ->Array.map(AccountOrContact.getAddress)
     ->Array.keep(tz1 => {
       switch metaDatas->Belt.Map.String.get(tz1) {
       | None => true
