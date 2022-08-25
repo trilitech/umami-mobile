@@ -62,6 +62,13 @@ let useAccountsAndContacts = () => {
   allContacts
 }
 
+let useAddressExists = () => {
+  let accountsAndContacts = useAccountsAndContacts()
+  let allAddresses = accountsAndContacts->Array.map(AccountOrContact.getAddress)
+
+  tz1 => allAddresses->Array.some(existing => existing == tz1)
+}
+
 let useIsTestNet = () => {
   let (network, _) = SavedStore.useNetwork()
   network != Mainnet

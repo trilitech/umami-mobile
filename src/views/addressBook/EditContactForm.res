@@ -1,4 +1,5 @@
 open Paper
+open Helpers
 open ContactFormTypes
 open Belt
 
@@ -11,10 +12,16 @@ let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {
   let (formState, setFormState) = React.useState(_ => initialState)
   let createMode = initialState.tz1->Option.isNone
 
+  let addressExists = Store.useAddressExists()
+  let tz1IsNoneOrAlreadyExists = formState.tz1->Option.mapWithDefault(true, addressExists)
+
   let nameError = formState.name->Option.flatMap(getError)
 
   let disabled =
-    nameError->Option.isSome || formState.name->Option.isNone || formState.tz1->Option.isNone
+    nameError->Option.isSome ||
+    both(formState.name, formState.tz1)->Option.isNone ||
+    (createMode && tz1IsNoneOrAlreadyExists)
+
   <>
     <TextInput
       error={nameError->Option.isSome}

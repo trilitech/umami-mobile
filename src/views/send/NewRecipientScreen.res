@@ -3,8 +3,10 @@ open Belt
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let navigateWithParams = NavUtils.useNavigateWithParams()
-
+  let addressExists = Store.useAddressExists()
   let (tz1, setTz1) = React.useState(_ => None)
+
+  let tz1IsNoneOrAlreadyExists = tz1->Option.mapWithDefault(true, addressExists)
 
   let handleTz1 = () => {
     navigateWithParams(
@@ -45,7 +47,7 @@ let make = (~navigation as _, ~route as _) => {
         }}
       />
       <Button
-        disabled={tz1->Option.isNone}
+        disabled={tz1IsNoneOrAlreadyExists}
         style={StyleUtils.makeVMargin()}
         onPress={_ => addContact()}
         mode={#outlined}>
