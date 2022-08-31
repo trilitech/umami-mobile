@@ -2,9 +2,7 @@ open Atoms
 
 open Belt
 
-@scope("JSON") @val
-external unsafeJSONParse: string => 'a = "parse"
-
+open JSONparse
 module Deserializers = {
   // Totally unsafe
   let deserializeAccounts: string => array<Account.t> = unsafeJSONParse
