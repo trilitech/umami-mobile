@@ -1,7 +1,8 @@
+open RestoreAndSave
 module Display = {
   @react.component
   let make = (~qrPayload: SecretQRPayload.t) => {
-    let restoreAndSave = ImportSecret.useRestoreAndSave()
+    let restoreAndSave = useRestoreAndSave()
     let (loading, setLoading) = React.useState(_ => false)
     let notify = SnackBar.useNotification()
     <>
@@ -17,7 +18,7 @@ module Display = {
           let {recoveryPhrase} = qrPayload
           let {data, iv, salt} = recoveryPhrase
           AESGCM.decrypt(~data, ~iv, ~salt, ~password)
-          ->Promise.then(phrase => restoreAndSave(~dangerousText=phrase, ~password))
+          ->Promise.then(seedPhrase => restoreAndSave(~seedPhrase, ~password))
           ->Promise.catch(exn => {
             notify("Failed to decrypt desktop QR code. " ++ exn->Helpers.getMessage)
             Promise.resolve()

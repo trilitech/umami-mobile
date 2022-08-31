@@ -84,7 +84,7 @@ let make = (~navigation, ~route as _) => {
       onNotificationPress={navigate("Notifications")}
     />
     <Profile onPressReceive={_ => open_()} />
-    <Qr value=data size=300 />
+    <HomeCoreView />
     {receiveDrawer}
   </>
 }

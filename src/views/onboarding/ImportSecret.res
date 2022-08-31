@@ -1,5 +1,4 @@
 open Paper
-open Belt
 
 let formatForMnemonic = (s: string) => {
   s
@@ -10,7 +9,7 @@ let formatForMnemonic = (s: string) => {
 
 let inputIsValid = (s: string) => s->formatForMnemonic->AccountUtils.backupPhraseIsValid
 
-module ImportSecret = {
+module Display = {
   @react.component
   let make = (~onSubmit, ~dangerousText, ~setDangerousText) => {
     <Container>
@@ -39,47 +38,22 @@ Umami supports 12-, 15-, 18-, 21- and 24-word recovery phrases."
   }
 }
 
-let restoreAndSave = (~dangerousText, ~password, ~notify, ~dispatch) => {
-  open AccountsReducer
-  let mnemonic = dangerousText->formatForMnemonic
-
-  BackupPhraseStorage.save(mnemonic, password)
-  ->Promise.then(_ => AccountUtils.restoreKeysPromise(~mnemonic, ~password))
-  ->Promise.thenResolve(keys => {
-    let accounts = keys->Array.map(AccountUtils.keysToAccount)
-    if accounts == [] {
-      Js.Exn.raiseError("No accounts revealed for this secret...")
-    } else {
-      AESCrypto.encrypt(mnemonic, password)
-      ->Promise.thenResolve(_ => ReplaceAll(accounts)->dispatch)
-      ->ignore
-    }
-  })
-  ->Promise.thenResolve(_ => notify("Successfully restored accounts!"))
-  ->Promise.catch(exn => {
-    notify("Failed to restore accounts. " ++ exn->Helpers.getMessage)
-    Promise.resolve()
-  })
-}
-
-let useRestoreAndSave = () => {
-  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
-  let notify = SnackBar.useNotification()
-  restoreAndSave(~dispatch, ~notify)
-}
+open RestoreAndSave
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let (dangerousText, setDangerousText) = EphemeralState.useEphemeralState("")
 
   let (loading, setLoading) = React.useState(_ => false)
 
-  let hoc = (~onSubmit) => <ImportSecret dangerousText setDangerousText onSubmit />
+  let hoc = (~onSubmit) => <Display dangerousText setDangerousText onSubmit />
 
   let restoreAndSave = useRestoreAndSave()
 
   let onConfirm = password => {
     setLoading(_ => true)
-    restoreAndSave(~password, ~dangerousText)->Promise.finally(_ => setLoading(_ => false))->ignore
+    restoreAndSave(~password, ~seedPhrase={formatForMnemonic(dangerousText)})
+    ->Promise.finally(_ => setLoading(_ => false))
+    ->ignore
   }
 
   let element = UsePasswordConfirm.usePasswordConfirm(
