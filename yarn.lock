@@ -1133,6 +1133,11 @@
   resolved "https://registry.yarnpkg.com/@fattafatta/rescript-jotai/-/rescript-jotai-0.1.3.tgz#94b7fcc5f3e5c8c710ab2d1e709ad0ae3fbaba77"
   integrity sha512-OWOagTizT0PGxIRdhbcrlhiNjb+V1C3LAmq7xHH4m+grxjdIa65CwzQJ1+KmOEHzWzVCCpYRZ605tCi3BCEZ/w==
 
+"@glennsl/rescript-json-combinators@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@glennsl/rescript-json-combinators/-/rescript-json-combinators-1.0.0.tgz#a9104597eab540cbaa184356c29fcf5e95dab7a0"
+  integrity sha512-LpdrSfd2M2FIxDH52LsrZ1HBwiUnZz1ypAB7hbY44ocHOEn/MDMoeXvzTfDGpj+u/81WbPyBv02uaKwuFGvq+Q==
+
 "@gorhom/bottom-sheet@^4":
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.3.2.tgz#83de68387f54f6e3cc9419329b8e4f925a3426c8"
@@ -3561,7 +3566,7 @@ emoji-regex@^8.0.0:
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
   integrity sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
 
-encode-utf8@^1.0.3:
+encode-utf8@^1.0.2, encode-utf8@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/encode-utf8/-/encode-utf8-1.0.3.tgz#f30fdd31da07fb596f281beb2f6b027851994cda"
   integrity sha512-ucAnuBEhUK4boH2HjVYG5Q2mQyPorvv0u/ocS+zhdw0S8AlHYY+GOFhP1Gio5z4icpP2ivFSvhtFjQi8+T9ppw==
@@ -3993,6 +3998,11 @@ extglob@^2.0.4:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+fast-base64-encode@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/fast-base64-encode/-/fast-base64-encode-1.0.0.tgz#883945eb67e139dbf5a877bcca57a89e6824c7d4"
+  integrity sha512-z2XCzVK4fde2cuTEHu2QGkLD6BPtJNKJPn0Z7oINvmhq/quUuIIVPYKUdN0gYeZqOyurjJjBH/bUzK5gafyHvw==
 
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
@@ -5686,6 +5696,11 @@ lodash.truncate@^4.4.2:
   resolved "https://registry.yarnpkg.com/lodash.truncate/-/lodash.truncate-4.4.2.tgz#5a350da0b1113b837ecfffd5812cbe58d6eae193"
   integrity sha1-WjUNoLERO4N+z//VgSy+WNbq4ZM=
 
+lodash@4.17.3:
+  version "4.17.3"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.3.tgz#557ed7d2a9438cac5fd5a43043ca60cb455e01f7"
+  integrity sha512-H+sg4+uBLOBrw9833P6gCURJjV+puWPbxM8S3H4ORlhVCmQpF5yCE50bc4Exaqm9U5Nhjw83Okq1azyb1U7mxw==
+
 lodash@^4.17.10, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.21, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -7049,6 +7064,15 @@ react-native-vector-icons@^9.1.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
+react-native-webview-crypto@^0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/react-native-webview-crypto/-/react-native-webview-crypto-0.0.25.tgz#c35506e1f092f7633db684f388f2b449667a05a2"
+  integrity sha512-H1kn5FFk0tBq5JDpkopyonAQTFEDAGoVJG+9Ip84jx4QmHmh5hxaJ5PkOXsMeNb2wHnwuvsg5p3krCOYNf20+A==
+  dependencies:
+    encode-utf8 "^1.0.2"
+    fast-base64-encode "^1.0.0"
+    webview-crypto "^0.1.13"
+
 react-native-webview@^11.22.7:
   version "11.22.7"
   resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-11.22.7.tgz#bf0d1755473af6e1af8486e862668fc7530149b4"
@@ -7312,11 +7336,6 @@ require-main-filename@^2.0.0:
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-2.0.0.tgz#d0b329ecc7cc0f61649f62215be69af54aa8989b"
   integrity sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==
 
-rescript-json@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/rescript-json/-/rescript-json-1.0.2.tgz#10e787007d7f16af619a2fca40c960ca2236df88"
-  integrity sha512-uaqZ5i6b9qlzYq3DKX4qzVfyrvy3uuhPpLgaF2i5r/g2eUijAaNgr+JHhB5n8Cht53xltDjfq/zqkRz2A0VAxw==
-
 rescript-react-native@^0.68.1:
   version "0.68.1"
   resolved "https://registry.yarnpkg.com/rescript-react-native/-/rescript-react-native-0.68.1.tgz#8fd0f1913aa39323d5135a80e4388736133926d8"
@@ -7551,7 +7570,7 @@ send@0.18.0:
     range-parser "~1.2.1"
     statuses "2.0.1"
 
-serialize-error@^2.1.0:
+serialize-error@2.1.0, serialize-error@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-2.1.0.tgz#50b679d5635cdf84667bdc8e59af4e5b81d5f60a"
   integrity sha1-ULZ51WNc34Rme9yOWa9OW4HV9go=
@@ -8452,6 +8471,14 @@ webidl-conversions@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-6.1.0.tgz#9111b4d7ea80acd40f5270d666621afa78b69514"
   integrity sha512-qBIvFLGiBpLjfwmYAaHPXsn+ho5xZnGvyGvsarywGNc8VyQJUMHJ8OBKGGrPER0okBeMDaan4mNBlgBROxuI8w==
+
+webview-crypto@^0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/webview-crypto/-/webview-crypto-0.1.13.tgz#290243e1d3b45712b358d2f8a69952de63c06ee2"
+  integrity sha512-8nRkNvvYchoFi32tooLX6qZzG4iCoxOBGsamZnZ1BnN4Nl6cATiIOUzwWDjUpfMu8Mvf+t3Dn0p9cSLrnZfwtg==
+  dependencies:
+    lodash "4.17.3"
+    serialize-error "2.1.0"
 
 whatwg-encoding@^1.0.5:
   version "1.0.5"

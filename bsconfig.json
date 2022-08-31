@@ -25,6 +25,6 @@
     "@ryyppy/rescript-promise",
     "@rescriptbr/react-query",
     "bs-fetch",
-    "rescript-json"
+    "@glennsl/rescript-json-combinators"
   ]
 }
