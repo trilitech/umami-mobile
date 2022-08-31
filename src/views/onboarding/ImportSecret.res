@@ -39,44 +39,47 @@ Umami supports 12-, 15-, 18-, 21- and 24-word recovery phrases."
   }
 }
 
+let restoreAndSave = (~dangerousText, ~password, ~notify, ~dispatch) => {
+  open AccountsReducer
+  let mnemonic = dangerousText->formatForMnemonic
+
+  BackupPhraseStorage.save(mnemonic, password)
+  ->Promise.then(_ => AccountUtils.restoreKeysPromise(~mnemonic, ~password))
+  ->Promise.thenResolve(keys => {
+    let accounts = keys->Array.map(AccountUtils.keysToAccount)
+    if accounts == [] {
+      Js.Exn.raiseError("No accounts revealed for this secret...")
+    } else {
+      AESCrypto.encrypt(mnemonic, password)
+      ->Promise.thenResolve(_ => ReplaceAll(accounts)->dispatch)
+      ->ignore
+    }
+  })
+  ->Promise.thenResolve(_ => notify("Successfully restored accounts!"))
+  ->Promise.catch(exn => {
+    notify("Failed to restore accounts. " ++ exn->Helpers.getMessage)
+    Promise.resolve()
+  })
+}
+
+let useRestoreAndSave = () => {
+  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
+  let notify = SnackBar.useNotification()
+  restoreAndSave(~dispatch, ~notify)
+}
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let (dangerousText, setDangerousText) = EphemeralState.useEphemeralState("")
-
-  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
-  let notify = SnackBar.useNotification()
 
   let (loading, setLoading) = React.useState(_ => false)
 
   let hoc = (~onSubmit) => <ImportSecret dangerousText setDangerousText onSubmit />
 
-  let handleAccounts = (accounts: array<Account.t>, password) => {
-    if accounts == [] {
-      notify("No accounts revealed for this secret...")
-    } else {
-      AESCrypto.encrypt(dangerousText, password)
-      ->Promise.thenResolve(_ => ReplaceAll(accounts)->dispatch)
-      ->ignore
-    }
-  }
-  let mnemonic = dangerousText->formatForMnemonic
+  let restoreAndSave = useRestoreAndSave()
 
   let onConfirm = password => {
     setLoading(_ => true)
-    BackupPhraseStorage.save(mnemonic, password)
-    ->Promise.then(_ => AccountUtils.restoreKeysPromise(~mnemonic, ~password))
-    ->Promise.thenResolve(accounts => {
-      notify("Successfully restored accounts!")
-      handleAccounts(accounts->Array.map(AccountUtils.keysToAccount), password)
-    })
-    ->Promise.catch(exn => {
-      notify("Failed to restore accounts. " ++ exn->Helpers.getMessage)
-      Promise.resolve()
-    })
-    ->Promise.finally(_ => {
-      setLoading(_ => false)
-    })
-    ->ignore
+    restoreAndSave(~password, ~dangerousText)->Promise.finally(_ => setLoading(_ => false))->ignore
   }
 
   let element = UsePasswordConfirm.usePasswordConfirm(

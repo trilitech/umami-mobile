@@ -12,6 +12,19 @@ let useNavigateWithParams = () => {
   }
 }
 
+let useOffboardNavigateWithParams = () => {
+  let nav = ReactNavigation.Native.useNavigation()
+
+  (route, params) => {
+    nav
+    ->Js.Nullable.toOption
+    ->Belt.Option.map(nav => {
+      nav->NavStacks.OffBoard.Navigation.navigateWithParams(route, params)
+    })
+    ->ignore
+  }
+}
+
 let useNavigate = () => {
   let nav = ReactNavigation.Native.useNavigation()
 
@@ -59,6 +72,10 @@ let getInjectedAddress = (route: NavStacks.OnBoard.route) => {
 
 let getAssetBalance = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.assetBalance)
+}
+
+let getDesktopSeedPhrase = (route: NavStacks.OffBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.desktopSeedPhrase)
 }
 
 type route = {name: string}

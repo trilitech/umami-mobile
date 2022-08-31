@@ -47,3 +47,25 @@ module ScanTezosDomain = {
     })
   }
 }
+
+module ScanDesktopSeedPhrase = {
+  @react.component
+  let make = (~navigation as _, ~route as _) => {
+    let title = "Umami Desktop seed phrase"
+    let subTitle = "Scan Umami Desktop seed phrase"
+
+    let navigateWithParams = NavUtils.useOffboardNavigateWithParams()
+
+    makeScanner(~subTitle, ~title, ~onRead=str => {
+      switch SecretQRPayload.make(str) {
+      | Ok(qrPayload) => navigateWithParams(
+          "RestoreDesktopSeedPhrase",
+          {
+            desktopSeedPhrase: qrPayload->Some,
+          },
+        )
+      | Error(_) => ()
+      }
+    })
+  }
+}

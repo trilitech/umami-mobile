@@ -11,6 +11,16 @@ let make = () => {
       <Screen name="NewSecret" options=headerStyles component=NewSecret.make />
       <Screen name="RecordRecoveryPhrase" options=headerStyles component=RecordSecret.make />
       <Screen name="NewPassword" options=headerStyles component=NewPassword.make />
+      <Screen
+        name="ScanDesktopSeedPhrase"
+        options={headerStyles}
+        component=ScanQRScreen.ScanDesktopSeedPhrase.make
+      />
+      <Screen
+        name="RestoreDesktopSeedPhrase"
+        options={headerStyles}
+        component=RestoreDesktopSeedPhraseScreen.make
+      />
     </Group>
   </Navigator>
 }

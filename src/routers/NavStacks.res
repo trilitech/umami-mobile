@@ -1,6 +1,7 @@
-module OffBoard = ReactNavigation.Stack.Make({
-  type params = unit
-})
+module OffboardParams = {
+  type params = {desktopSeedPhrase: option<SecretQRPayload.t>}
+}
+module OffBoard = ReactNavigation.Stack.Make(OffboardParams)
 
 module OnboardParams = {
   type params = {

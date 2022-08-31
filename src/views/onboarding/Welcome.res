@@ -20,6 +20,11 @@ let make = (~navigation, ~route as _) => {
       title="Import secret with recovery phrase"
       iconName="format-list-bulleted"
     />
+    <ListItem
+      onPress={_ => navigation->Navigation.navigate("ScanDesktopSeedPhrase")}
+      title="Import secret with Umami Desktop QR code"
+      iconName="qrcode-scan"
+    />
     // <ListItem
     //   onPress={_ => navigation->Navigation.navigate("ImportSecret")}
     //   title="Restore from backtup"
