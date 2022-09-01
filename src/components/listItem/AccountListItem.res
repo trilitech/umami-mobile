@@ -19,7 +19,7 @@ let make = (
       <Text>
         {balance->Belt.Option.mapWithDefault("", TezHelpers.formatBalance)->React.string}
       </Text>
-      <Caption> {tz1->TezHelpers.formatTz1->React.string} </Caption>
+      <Caption> {tz1->Pkh.toPretty->React.string} </Caption>
     </>}
     ?right
     ?onPressEdit

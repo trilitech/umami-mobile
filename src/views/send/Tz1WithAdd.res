@@ -3,10 +3,14 @@ open CommonComponents
 open ReactNative.Style
 
 @react.component
-let make = (~tz1, ~textRender=text => <Text> {text->React.string} </Text>, ~addUserIconSize=15) => {
+let make = (
+  ~tz1: Pkh.t,
+  ~textRender=text => <Text> {text->React.string} </Text>,
+  ~addUserIconSize=15,
+) => {
   let navigateWithParams = NavUtils.useNavigateWithParams()
   <Wrapper>
-    {textRender(TezHelpers.formatTz1(tz1))}
+    {textRender(tz1->Pkh.toPretty)}
     <PressableIcon
       name="account-plus"
       style={style(~marginLeft=8.->dp, ~marginVertical=-8.->dp, ())}

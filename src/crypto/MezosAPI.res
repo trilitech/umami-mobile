@@ -6,8 +6,8 @@ let getUmamiWalletHost = isTestNet =>
 exception MezosTransactionFetchFailure(string)
 exception MezosLastBlockFetchFailure(string)
 
-let getTransactions = (~tz1, ~isTestNet) => {
-  Fetch.fetch(`https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1}/operations`)
+let getTransactions = (~tz1: Pkh.t, ~isTestNet) => {
+  Fetch.fetch(`https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1->Pkh.toString}/operations`)
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
   ->Promise.thenResolve(Belt.Option.getExn)
@@ -28,7 +28,7 @@ let getIndexerLastBlock = (~isTestNet) =>
 
 %%private(
   let checkExists = (~tz1, ~isTestNet) => {
-    let existsUrl = `https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1}/exists`
+    let existsUrl = `https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1->Pkh.toString}/exists`
 
     Fetch.fetch(existsUrl)
     ->Promise.then(Fetch.Response.json)

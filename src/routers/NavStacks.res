@@ -7,8 +7,8 @@ module OnboardParams = {
   type params = {
     derivationIndex: option<int>,
     nft: option<Token.tokenNFT>,
-    tz1ForContact: option<string>,
-    tz1ForSendRecipient: option<string>,
+    tz1ForContact: option<Pkh.t>,
+    tz1ForSendRecipient: option<Pkh.t>,
     injectedAdress: option<AddressImporterTypes.payload>,
     assetBalance: option<Asset.t>,
   }

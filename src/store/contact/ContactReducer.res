@@ -1,5 +1,5 @@
 open Belt
-type actions = Upsert(Contact.t) | Delete(string)
+type actions = Upsert(Contact.t) | Delete(Pkh.t)
 
 let reducer = (contacts: array<Contact.t>, action: actions) =>
   switch action {

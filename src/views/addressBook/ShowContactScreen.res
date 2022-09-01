@@ -86,7 +86,7 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
           <View style={style(~flex=1., ())}>
             <View> <ContactBox name=alias.name tz1=alias.tz1 /> </View>
             <View style={style(~flex=1., ~alignItems=#center, ~justifyContent=#center, ())}>
-              <Qr value=alias.tz1 size=250 />
+              <Qr value={alias.tz1->Pkh.toString} size=250 />
             </View>
           </View>
         </Container>

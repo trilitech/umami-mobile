@@ -1,6 +1,6 @@
 open UsePrevious
 
-let getAccountBalance = (~tz1: string, ~isTestNet) => {
+let getAccountBalance = (~tz1: Pkh.t, ~isTestNet) => {
   open AccountsReducer
   Promise.all2((
     TaquitoUtils.getBalance(~tz1, ~isTestNet),
@@ -10,7 +10,7 @@ let getAccountBalance = (~tz1: string, ~isTestNet) => {
   })
 }
 
-let getAccountOperations = (tz1: string, ~isTestNet) => {
+let getAccountOperations = (tz1: Pkh.t, ~isTestNet) => {
   open AccountsReducer
   MezosAPI.getTransactions(~tz1, ~isTestNet)->Promise.thenResolve(operations => {
     {tz1: tz1, operations: operations}

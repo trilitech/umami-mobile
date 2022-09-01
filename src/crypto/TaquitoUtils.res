@@ -14,8 +14,8 @@ let makeContractTransfer = (
   ~contractAddress,
   ~tokenId,
   ~amount,
-  ~senderTz1,
-  ~recipientTz1,
+  ~senderTz1: Pkh.t,
+  ~recipientTz1: Pkh.t,
   ~isFa1=false,
   (),
 ) =>
@@ -24,8 +24,8 @@ let makeContractTransfer = (
     contractAddress,
     tokenId,
     amount,
-    senderTz1,
-    recipientTz1,
+    senderTz1->Pkh.toString,
+    recipientTz1->Pkh.toString,
     isFa1,
   )
 
@@ -34,8 +34,8 @@ let _sendToken = (
   ~contractAddress,
   ~tokenId,
   ~amount,
-  ~senderTz1,
-  ~recipientTz1,
+  ~senderTz1: Pkh.t,
+  ~recipientTz1: Pkh.t,
   ~isFa1=false,
   (),
 ) => {
@@ -56,9 +56,9 @@ let _makeToolkit = (~isTestNet) =>
     "https://" ++ (isTestNet ? Endpoints.tezosNode.testNet : Endpoints.tezosNode.mainNet),
   )
 
-let _getBalance = (~tz1, ~isTestNet) => {
+let _getBalance = (~tz1: Pkh.t, ~isTestNet) => {
   let tezos = _makeToolkit(~isTestNet)
-  let res = tezos.tz->Taquito.Toolkit.getBalance(tz1)
+  let res = tezos.tz->Taquito.Toolkit.getBalance(Pkh.toString(tz1))
   res->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
 }
 
@@ -85,10 +85,10 @@ let sendTez = (~recipient, ~amount, ~password, ~sk, ~isTestNet) => {
   })
 }
 
-let estimateSendTez = (~recipient, ~amount, ~senderTz1, ~senderPk, ~isTestNet) => {
+let estimateSendTez = (~recipient: Pkh.t, ~amount, ~senderTz1: Pkh.t, ~senderPk, ~isTestNet) => {
   let tezos = _makeToolkit(~isTestNet)
   tezos->Taquito.Toolkit.setProvider({
-    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1),
+    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1->Pkh.toString),
   })
 
   tezos.estimate->Taquito.Toolkit.estimateTransfer({"to": recipient, "amount": amount})
@@ -98,7 +98,7 @@ let estimateSendToken = (
   ~contractAddress,
   ~tokenId,
   ~amount,
-  ~senderTz1,
+  ~senderTz1: Pkh.t,
   ~senderPk,
   ~recipientTz1,
   ~isFa1=false,
@@ -107,7 +107,7 @@ let estimateSendToken = (
 ) => {
   let tezos = _makeToolkit(~isTestNet)
   tezos->Taquito.Toolkit.setProvider({
-    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1),
+    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1->Pkh.toString),
   })
 
   let transfer = makeContractTransfer(
@@ -134,8 +134,8 @@ let sendToken = (
   ~contractAddress,
   ~tokenId,
   ~amount,
-  ~senderTz1,
-  ~recipientTz1,
+  ~senderTz1: Pkh.t,
+  ~recipientTz1: Pkh.t,
   ~isFa1=false,
   ~isTestNet,
   (),
@@ -149,7 +149,14 @@ let sendToken = (
 }
 
 let getTz1 = (~sk, ~password) =>
-  Taquito.fromSecretKey(sk, password)->Promise.then(signer => signer->Taquito.publicKeyHash())
+  Taquito.fromSecretKey(sk, password)
+  ->Promise.then(signer => signer->Taquito.publicKeyHash())
+  ->Promise.then(pkhStr =>
+    switch Pkh.build(pkhStr) {
+    | Ok(pkh) => Promise.resolve(pkh)
+    | Error(msg) => Js.Exn.raiseError(msg)
+    }
+  )
 
 let getPk = (~sk, ~password) =>
   Taquito.fromSecretKey(sk, password)->Promise.then(signer => signer->Taquito.publicKey())

@@ -15,7 +15,7 @@ let make = (~navigation, ~route as _) => {
         ->Belt.Array.map(a => {
           let selected = a.derivationPathIndex == selectedAccount
           <AccountListItem
-            key=a.tz1
+            key={a.tz1->Pkh.toString}
             account=a
             selected
             onPress={_ => {

@@ -2,7 +2,7 @@ type keys = {
   derivationPathIndex: int,
   pk: string,
   sk: string,
-  tz1: string,
+  tz1: Pkh.t,
 }
 module type Deps = {
   let generateKeys: (
@@ -12,7 +12,7 @@ module type Deps = {
     unit,
   ) => Promise.t<keys>
 
-  let checkExists: (~tz1: string) => Promise.t<bool>
+  let checkExists: (~tz1: Pkh.t) => Promise.t<bool>
 }
 module Make = (M: Deps) => {
   let generateKeys = M.generateKeys

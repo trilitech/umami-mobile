@@ -16,6 +16,10 @@ let buildOption = (str: string): option<t> => {
   }
 }
 
-let toPretty = (pkh: t) => pkh->toString->TezHelpers.formatTz1
+let formatTz1 = (tz1: string) => {
+  let length = tz1->Js.String2.length
+  tz1->Js.String2.slice(~from=0, ~to_=5) ++ "..." ++ tz1->Js.String2.slice(~from=-5, ~to_=length)
+}
+let toPretty = (pkh: t) => pkh->toString->formatTz1
 
 let notKt = t => !Js.Re.test_(%re("/^kt/i"), t->toString)

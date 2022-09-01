@@ -6,11 +6,11 @@ module Tz1Badge = {
   let make = (~tz1) => {
     let color = ThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.disabled
 
-    let formatted = TezHelpers.formatTz1(tz1)
+    let formatted = tz1->Pkh.toPretty
     let copy = ClipboardCopy.useCopy()
     <Wrapper
       style={style(~backgroundColor=color, ~borderRadius=4., ~paddingHorizontal=10.->dp, ())}>
-      <Paper.TouchableRipple onPress={_ => copy(tz1)}>
+      <Paper.TouchableRipple onPress={_ => copy(tz1->Pkh.toString)}>
         <Paper.Caption testID="tez-display"> {React.string(formatted)} </Paper.Caption>
       </Paper.TouchableRipple>
     </Wrapper>
@@ -20,9 +20,9 @@ module Tz1Badge = {
 module Tz1Display = {
   open Paper
   @react.component
-  let make = (~tz1) => {
+  let make = (~tz1: Pkh.t) => {
     let getDomain = Store.useGetTezosDomain()
-    let domain = getDomain(tz1)
+    let domain = getDomain(tz1->Pkh.toString)
     <Wrapper alignItems=#center>
       {domain->Helpers.reactFold(domain =>
         <Title style={StyleUtils.makeRightMargin()}> {domain->React.string} </Title>

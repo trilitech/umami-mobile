@@ -15,4 +15,4 @@ let isNft = (a: assetType) =>
   | _ => false
   }
 
-type formState = {recipient: option<string>, prettyAmount: string, assetType: assetType}
+type formState = {recipient: option<Pkh.t>, prettyAmount: string, assetType: assetType}

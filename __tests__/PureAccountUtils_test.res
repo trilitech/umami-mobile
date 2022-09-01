@@ -24,7 +24,7 @@ describe("PureAccountUtils", () => {
         derivationPathIndex: derivationPathIndex,
         pk: "mockPk",
         sk: "mockSk",
-        tz1: "mockTz1",
+        tz1: "mockTz1"->Pkh.unsafeBuild,
       })
 
     module AccountUtils = Make({
@@ -37,19 +37,19 @@ describe("PureAccountUtils", () => {
         derivationPathIndex: 0,
         pk: "mockPk",
         sk: "mockSk",
-        tz1: "mockTz1",
+        tz1: "mockTz1"->Pkh.unsafeBuild,
       },
       {
         derivationPathIndex: 1,
         pk: "mockPk",
         sk: "mockSk",
-        tz1: "mockTz1",
+        tz1: "mockTz1"->Pkh.unsafeBuild,
       },
       {
         derivationPathIndex: 2,
         pk: "mockPk",
         sk: "mockSk",
-        tz1: "mockTz1",
+        tz1: "mockTz1"->Pkh.unsafeBuild,
       },
     ]
     let mockMnemonic =

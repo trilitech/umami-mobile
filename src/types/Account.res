@@ -1,7 +1,7 @@
 type t = {
   name: string,
   balance: option<int>,
-  tz1: string,
+  tz1: Pkh.t,
   pk: string,
   sk: string,
   derivationPathIndex: int,

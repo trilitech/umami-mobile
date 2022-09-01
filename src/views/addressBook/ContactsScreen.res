@@ -8,7 +8,7 @@ module ContactTile = {
   let make = (~contact: Contact.t) => {
     let navigateWithParams = NavUtils.useNavigateWithParams()
     let getTezosDomain = Store.useGetTezosDomain()
-    let domain = getTezosDomain(contact.tz1)
+    let domain = getTezosDomain(contact.tz1->Pkh.toString)
     <CustomListItem
       left={<AvatarDisplay tz1=contact.tz1 size=50 />}
       center={<Wrapper>
@@ -43,7 +43,9 @@ module FilteredContacts = {
       <ReactNative.ScrollView>
         {contacts == []
           ? <NoResult search />
-          : contacts->Array.map(c => <ContactTile key=c.tz1 contact=c />)->React.array}
+          : contacts
+            ->Array.map(c => <ContactTile key={c.tz1->Pkh.toString} contact=c />)
+            ->React.array}
       </ReactNative.ScrollView>
     </Container>
   }

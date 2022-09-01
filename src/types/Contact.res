@@ -1,4 +1,4 @@
 type t = {
   name: string,
-  tz1: string,
+  tz1: Pkh.t,
 }

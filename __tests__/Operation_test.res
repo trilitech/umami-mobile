@@ -97,8 +97,8 @@ describe("Operation functions", () => {
     expect(result)->toEqual([
       {
         hash: "op4LvXr33jDwo1bBFXpv3UJqQsohKR6JvLW2Y6xq6LmgX3yAchY",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
+        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild,
         level: 586915,
         timestamp: "2022-05-25T10:34:18Z",
         amount: Tez(100000000),
@@ -107,8 +107,8 @@ describe("Operation functions", () => {
       },
       {
         hash: "oniXhaqU7eev5P3sJm6FyvcS72VQDkPV7x23qpqr4s9aGDA2ZuQ",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-        destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
+        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
+        destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"->Pkh.unsafeBuild,
         level: 549850,
         timestamp: "2022-05-18T08:35:35Z",
         amount: Contract({
@@ -121,8 +121,8 @@ describe("Operation functions", () => {
       },
       {
         hash: "opSLAFTwZj25fZ79uJQrJicea2ZVWHQyRhhRPHidifytRBj4V2d",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-        destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t",
+        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
+        destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t"->Pkh.unsafeBuild,
         level: 588389,
         timestamp: "2022-05-25T17:07:20Z",
         amount: Contract({
@@ -171,8 +171,8 @@ describe("Operation functions", () => {
     expect(result)->toEqual([
       {
         hash: "opUU1cokKoxbBQBJu6VsXR6g6CA66gnuUcvF7hGAYxwYGxPE8jZ",
-        src: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
-        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+        src: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"->Pkh.unsafeBuild,
+        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild,
         level: 624184,
         timestamp: "2022-06-01T13:14:35Z",
         amount: Contract({
@@ -373,8 +373,8 @@ describe("Operation functions", () => {
     expect(result)->toEqual([
       {
         hash: "op4LvXr33jDwo1bBFXpv3UJqQsohKR6JvLW2Y6xq6LmgX3yAchY",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
+        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild,
         level: 586915,
         timestamp: "2022-05-25T10:34:18Z",
         amount: Tez(100000000),
@@ -383,8 +383,8 @@ describe("Operation functions", () => {
       },
       {
         hash: "oniXhaqU7eev5P3sJm6FyvcS72VQDkPV7x23qpqr4s9aGDA2ZuQ",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-        destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
+        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
+        destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"->Pkh.unsafeBuild,
         level: 549850,
         timestamp: "2022-05-18T08:35:35Z",
         amount: Contract({
@@ -397,8 +397,8 @@ describe("Operation functions", () => {
       },
       {
         hash: "opSLAFTwZj25fZ79uJQrJicea2ZVWHQyRhhRPHidifytRBj4V2d",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-        destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t",
+        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
+        destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t"->Pkh.unsafeBuild,
         level: 588389,
         timestamp: "2022-05-25T17:07:20Z",
         amount: Contract({

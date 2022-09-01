@@ -1,13 +1,13 @@
 open Belt
 
 type balancePayload = {
-  tz1: string,
+  tz1: Pkh.t,
   tokens: array<Token.t>,
   balance: option<int>,
 }
 
 type operationPayload = {
-  tz1: string,
+  tz1: Pkh.t,
   operations: array<Operation.t>,
 }
 
@@ -36,7 +36,7 @@ type actions =
   | Reset
   | UpdateBalances(array<balancePayload>)
   | UpdateOperations(array<operationPayload>)
-  | RenameAccount({"name": string, "tz1": string})
+  | RenameAccount({"name": string, "tz1": Pkh.t})
   | ResetAssets
 
 let reducer = (accounts: array<Account.t>, action) => {

@@ -31,12 +31,12 @@ open Lodash
   }
 )
 
-let renderTz1 = tz1 =>
-  tz1->Helpers.reactFold(tz1 => <Caption> {tz1->TezHelpers.formatTz1->React.string} </Caption>)
+let renderTz1 = (tz1: option<Pkh.t>) =>
+  tz1->Helpers.reactFold(tz1 => <Caption> {tz1->Pkh.toPretty->React.string} </Caption>)
 
 module TzDomainRecipient = {
   @react.component
-  let make = (~onChange) => {
+  let make = (~onChange: option<Pkh.t> => unit) => {
     let (addressTxt, setAddressTxt) = React.useState(_ => "")
     let (tz1, setTz1) = React.useState(_ => None)
     let notify = SnackBar.useNotification()
@@ -69,11 +69,10 @@ module TzDomainRecipient = {
     React.useEffect3(() => {
       if TezosDomains.isTezosDomain(addressTxt) {
         fetchTz1(addressTxt)
-      } else if TaquitoUtils.tz1IsValid(addressTxt) {
-        setTz1(_ => Some(addressTxt))
       } else {
-        setTz1(_ => None)
+        setTz1(_ => Pkh.buildOption(addressTxt))
       }
+
       None
     }, (addressTxt, fetchTz1, setTz1))
 

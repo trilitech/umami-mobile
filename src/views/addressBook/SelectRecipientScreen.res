@@ -36,9 +36,13 @@ module SelectedRecipients = {
             ->Array.map(c =>
               switch c {
               | ContactCard(c) =>
-                <ContactListItem key={c.tz1} contact=c onPress={_ => handleTz1(c.tz1)} />
+                <ContactListItem
+                  key={c.tz1->Pkh.toString} contact=c onPress={_ => handleTz1(c.tz1)}
+                />
               | AccountCard(a) =>
-                <AccountListItem key={a.tz1} account=a onPress={_ => handleTz1(a.tz1)} />
+                <AccountListItem
+                  key={a.tz1->Pkh.toString} account=a onPress={_ => handleTz1(a.tz1)}
+                />
               }
             )
             ->React.array}

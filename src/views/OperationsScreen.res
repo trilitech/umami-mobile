@@ -7,7 +7,7 @@ type status = Done | Processing | Mempool
 type tradeAmount = CurrencyTrade(string) | NFTTrade(string, string)
 
 type diplayElement = {
-  target: string,
+  target: Pkh.t,
   date: string,
   prettyAmountDisplay: tradeAmount,
   hash: string,
@@ -75,7 +75,7 @@ let makeTradeAmount = (a: Asset.t, incoming: bool) => {
 
 let makeDisplayElement = (
   op: Operation.t,
-  myAddress: string,
+  myAddress: Pkh.t,
   indexorLevel: int,
   tokens: array<Token.t>,
 ) => {
@@ -112,7 +112,8 @@ let useCurrentAccountOperations = () => {
   }
 }
 
-let makeKey = (t: Operation.t, i) => t.destination ++ t.timestamp ++ t.src ++ i->Belt.Int.toString
+let makeKey = (t: Operation.t, i) =>
+  t.destination->Pkh.toString ++ t.timestamp ++ t.src->Pkh.toString ++ i->Belt.Int.toString
 
 let matchAmount = (a: tradeAmount) =>
   switch a {
@@ -147,7 +148,7 @@ let useAliasDisplay = (
 module Target = {
   open Paper
   @react.component
-  let make = (~tz1) => {
+  let make = (~tz1: Pkh.t) => {
     let getAlias = useAliasDisplay(~textRender=tz1 => <Caption> {React.string(tz1)} </Caption>, ())
     getAlias(tz1)
   }
@@ -216,7 +217,7 @@ module TransactionItem = {
   }
 }
 
-let makePrettyOperations = (~myTz1, ~operations, ~tokens, ~indexerLastBlock) => {
+let makePrettyOperations = (~myTz1: Pkh.t, ~operations, ~tokens, ~indexerLastBlock) => {
   operations
   ->Belt.Array.map(el => makeDisplayElement(el, myTz1, indexerLastBlock, tokens))
   ->Helpers.filterNone

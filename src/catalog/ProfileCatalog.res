@@ -1,6 +1,6 @@
 let mockAccount: Account.t = {
   name: "foo",
-  tz1: "cool",
+  tz1: "cool"->Pkh.unsafeBuild,
   balance: Some(3),
   tokens: [],
   sk: "",

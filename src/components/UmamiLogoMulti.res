@@ -27,6 +27,6 @@ module Base = {
 let colors = ["blue", "brown", "pink", "green", "purple"]
 @react.component
 let make = (~size, ~tz1) => {
-  let makiColor = ColorHash.generateColor(tz1)
+  let makiColor = ColorHash.generateColor(tz1->Pkh.toString)
   <Base size makiColor />
 }

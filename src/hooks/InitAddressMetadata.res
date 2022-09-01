@@ -22,14 +22,14 @@ let useRefresh = () => {
     cards
     ->Array.map(AccountOrContact.getAddress)
     ->Array.keep(tz1 => {
-      switch metaDatas->Belt.Map.String.get(tz1) {
+      switch metaDatas->Belt.Map.String.get(tz1->Pkh.toString) {
       | None => true
       | Some(_) => false
       }
     })
 
   React.useEffect1(() => {
-    Promise.all(toUpdate->Belt.Array.map(getMetadatas))
+    Promise.all(toUpdate->Belt.Array.map(tz1 => getMetadatas(Pkh.toString(tz1))))
     ->Promise.thenResolve(d =>
       d->Array.forEach(d => setMetaDatas(_ => Map.String.set(metaDatas, d.tz1, d)))
     )

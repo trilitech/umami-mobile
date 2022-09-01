@@ -12,7 +12,7 @@ module PureReceiveModal = {
           ~justifyContent=#spaceAround,
           (),
         )}>
-        <Qr value=tz1 size=250 />
+        <Qr value={tz1->Pkh.toString} size=250 />
         <Wrapper justifyContent=#flexStart style={array([StyleUtils.makeVMargin()])}>
           <NicerIconBtn
             onPress=handleCopy iconName="content-copy" style={StyleUtils.makeHMargin()}
@@ -42,8 +42,8 @@ let make = () => {
 
   useWithAccount(account => {
     <PureReceiveModal
-      handleCopy={_ => handleCopy(account.tz1)}
-      handleShare={_ => handleShare(account.tz1)}
+      handleCopy={_ => handleCopy(account.tz1->Pkh.toString)}
+      handleShare={_ => handleShare(account.tz1->Pkh.toString)}
       tz1=account.tz1
     />
   })

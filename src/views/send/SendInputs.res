@@ -194,7 +194,7 @@ module RecipientDisplayOnly = {
 
 module Recipient = {
   @react.component
-  let make = (~recipient: option<string>, ~onPressDelete, ~onPressSelectRecipient) => {
+  let make = (~recipient: option<Pkh.t>, ~onPressDelete, ~onPressSelectRecipient) => {
     <>
       {recipientLabel}
       {switch recipient {

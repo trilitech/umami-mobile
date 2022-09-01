@@ -2,7 +2,7 @@ open SendTypes
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let trans = {
-    recipient: "bar"->Some,
+    recipient: "bar"->Pkh.unsafeBuild->Some,
     prettyAmount: "3",
     assetType: CurrencyAsset(CurrencyTez),
   }

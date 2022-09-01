@@ -1,10 +1,10 @@
 open SendTypes
 
 type simulate = (
-  ~recipientTz1: string,
+  ~recipientTz1: Pkh.t,
   ~prettyAmount: float,
   ~assetType: SendTypes.assetType,
-  ~senderTz1: string,
+  ~senderTz1: Pkh.t,
   ~senderPk: string,
   ~isTestNet: bool,
 ) => Promise.t<Taquito.Toolkit.estimation>
@@ -52,9 +52,9 @@ let simulate: simulate = (
 
 type send = (
   ~prettyAmount: float,
-  ~recipientTz1: string,
+  ~recipientTz1: Pkh.t,
   ~assetType: SendTypes.assetType,
-  ~senderTz1: string,
+  ~senderTz1: Pkh.t,
   ~sk: string,
   ~password: string,
   ~isTestNet: bool,

@@ -8,9 +8,9 @@ type contractData = {
 type amount = Tez(int) | Contract(contractData)
 
 type t = {
-  src: string,
+  src: Pkh.t,
   hash: string,
-  destination: string,
+  destination: Pkh.t,
   level: int,
   timestamp: string,
   amount: amount,
@@ -102,10 +102,14 @@ let decodeDataField = (data: JSON.data) => {
 let decodeJson = (json: JSON.t) => {
   json.data
   ->decodeDataField
-  ->Option.flatMap(amount => {
-    Belt.Int.fromString(json.level)->Option.map(level => {
-      src: json.src,
-      destination: json.data.destination,
+  ->Option.flatMap(amount =>
+    Helpers.three(
+      Belt.Int.fromString(json.level),
+      json.src->Pkh.buildOption,
+      json.data.destination->Pkh.buildOption,
+    )->Option.map(((level, src, destination)) => {
+      src: src,
+      destination: destination,
       level: level,
       timestamp: json.op_timestamp,
       amount: amount,
@@ -113,14 +117,12 @@ let decodeJson = (json: JSON.t) => {
       hash: json.hash,
       blockHash: json.block_hash->Js.Nullable.toOption,
     })
-  })
+  )
 }
 
 let decodeJsonArray = arr => arr->Belt.Array.map(decodeJson)->Helpers.filterNone
 
 let keepRelevant = ops =>
-  ops->Belt.Array.keep(op =>
-    op.kind == "transaction" && !Js.Re.test_(%re("/^kt1/i"), op.destination)
-  )
+  ops->Belt.Array.keep(op => op.kind == "transaction" && op.destination->Pkh.notKt)
 
 let handleJSONArray = arr => arr->decodeJsonArray->keepRelevant

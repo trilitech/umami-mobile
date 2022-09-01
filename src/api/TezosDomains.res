@@ -51,7 +51,9 @@ let getAddress = (domain: string) => {
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(parseAddress)
   ->Promise.thenResolve(d => d["data"]["domain"]->Js.Nullable.toOption)
-  ->Promise.thenResolve(res => res->Option.flatMap(res => res.address->Js.Nullable.toOption))
+  ->Promise.thenResolve(res =>
+    res->Option.flatMap(res => res.address->Js.Nullable.toOption->Option.flatMap(Pkh.buildOption))
+  )
 }
 
 type reverseRecord = {

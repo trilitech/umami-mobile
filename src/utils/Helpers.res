@@ -6,9 +6,13 @@ let update = (arr: array<'a>, i: int, newVal: 'a) => {
 let both = (o1: option<'a>, o2: option<'b>): option<('a, 'b)> =>
   switch (o1, o2) {
   | (Some(o1), Some(o2)) => Some((o1, o2))
-  | (None, _)
-  | (_, None) =>
-    None
+  | (_, _) => None
+  }
+
+let three = (o1: option<'a>, o2: option<'b>, o3: option<'c>): option<('a, 'b, 'c)> =>
+  switch (o1, o2, o3) {
+  | (Some(o1), Some(o2), Some(o3)) => Some((o1, o2, o3))
+  | (_, _, _) => None
   }
 
 let reactFold = (o, fn) => o->Belt.Option.mapWithDefault(React.null, fn)

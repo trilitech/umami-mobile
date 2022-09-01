@@ -5,7 +5,7 @@ open Paper
 open Belt
 
 let validTrans = (trans: SendTypes.formState) =>
-  trans.recipient->Option.mapWithDefault(false, t => t->TaquitoUtils.tz1IsValid) &&
+  trans.recipient->Option.isSome &&
     trans.prettyAmount->SendInputs.parsePrettyAmountStr->Option.mapWithDefault(false, a => a > 0.)
 
 let vMargin = StyleUtils.makeVMargin()

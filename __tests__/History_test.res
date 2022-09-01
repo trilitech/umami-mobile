@@ -8,7 +8,7 @@ external parseOperationJSON: string => array<Operation.JSON.t> = "parse"
 
 describe("History functions", () => {
   open Expect
-  let myTz1 = "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"
+  let myTz1 = "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild
 
   test("makeDisplayInfo returns the right value", () => {
     let operations = OperationJSON.jsonString1->parseOperationJSON->Operation.handleJSONArray
@@ -22,28 +22,28 @@ describe("History functions", () => {
     )
     expect(result)->toEqual([
       {
-        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
+        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"->Pkh.unsafeBuild,
         date: "01/06/2022 15:14:35",
         prettyAmountDisplay: CurrencyTrade("+10 KLD"),
         hash: "opUU1cokKoxbBQBJu6VsXR6g6CA66gnuUcvF7hGAYxwYGxPE8jZ",
         status: Done,
       },
       {
-        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
+        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"->Pkh.unsafeBuild,
         date: "01/06/2022 15:13:20",
         prettyAmountDisplay: CurrencyTrade("+2 KL2"),
         hash: "onrvxGZ9iMqcCmQ1zG9ZTr3dDC5cqY3ADmg4PhWNN1ydFrdeYN5",
         status: Done,
       },
       {
-        target: "tz1aWXP237BLwNHJcCD4b3DutCevhqq2T1Z9",
+        target: "tz1aWXP237BLwNHJcCD4b3DutCevhqq2T1Z9"->Pkh.unsafeBuild,
         date: "01/06/2022 08:05:15",
         prettyAmountDisplay: CurrencyTrade("+26.4249 tez"),
         hash: "opWYyTWguCwH8Ph1dNya5eTNfhBRKhZWo2aQCyh7vpN2jAZbX4y",
         status: Done,
       },
       {
-        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
+        target: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"->Pkh.unsafeBuild,
         date: "01/06/2022 14:04:15",
         prettyAmountDisplay: NFTTrade(
           "+1",
@@ -54,9 +54,9 @@ describe("History functions", () => {
       },
     ])
   })
-  let myTz1 = "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"
-  let otherTz1_1 = "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD"
-  let otherTz1_2 = "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH"
+  let myTz1 = "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild
+  let otherTz1_1 = "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD"->Pkh.unsafeBuild
+  let otherTz1_2 = "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH"->Pkh.unsafeBuild
 
   open Operation
   test(
@@ -121,21 +121,21 @@ describe("History functions", () => {
 
       expect(result)->toEqual([
         {
-          target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD",
+          target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD"->Pkh.unsafeBuild,
           date: "25/05/2022 12:34:18",
           prettyAmountDisplay: CurrencyTrade("-100 tez"),
           hash: "hash1",
           status: Mempool,
         },
         {
-          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH"->Pkh.unsafeBuild,
           date: "25/05/2022 12:34:18",
           prettyAmountDisplay: CurrencyTrade("+100 tez"),
           hash: "hash2",
           status: Processing,
         },
         {
-          target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD",
+          target: "tz1ABVk9dxDALJUp4w1UTnC41ssvRa7Q4XCD"->Pkh.unsafeBuild,
           date: "18/05/2022 10:35:35",
           prettyAmountDisplay: NFTTrade(
             "-1",
@@ -145,7 +145,7 @@ describe("History functions", () => {
           status: Done,
         },
         {
-          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH"->Pkh.unsafeBuild,
           date: "25/05/2022 19:07:20",
           prettyAmountDisplay: CurrencyTrade("-10 KL2"),
           hash: "hash4",
@@ -197,14 +197,14 @@ describe("History functions", () => {
 
       expect(result)->toEqual([
         {
-          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH"->Pkh.unsafeBuild,
           date: "24/05/2022 19:07:20",
           prettyAmountDisplay: CurrencyTrade("-20 KL3"),
           hash: "hash3",
           status: Done,
         },
         {
-          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH",
+          target: "tz1EFVk9dxDALJUp4w1UTnC41ssvRa7Q4XGH"->Pkh.unsafeBuild,
           date: "25/05/2022 19:07:20",
           prettyAmountDisplay: CurrencyTrade("-10 KL2"),
           hash: "hash4",

@@ -19,9 +19,9 @@ module RoundImage = {
 }
 
 @react.component
-let make = (~tz1, ~size=80, ~isAccount=false) => {
+let make = (~tz1: Pkh.t, ~size=80, ~isAccount=false) => {
   let getProfile = Store.useGetTezosProfile()
-  let profile = getProfile(tz1)->Option.flatMap(p => p.logo->Js.Nullable.toOption)
+  let profile = getProfile(tz1->Pkh.toString)->Option.flatMap(p => p.logo->Js.Nullable.toOption)
   let marginHack = -(size / 4)->Js.Int.toFloat->dp
   <>
     {profile->Option.mapWithDefault(
