@@ -12,7 +12,7 @@ function b58cencode(data, prefix) {
   return bs58check.encode(Buffer.from(buffer, 'hex'));
 }
 
-const parse = text => {
+export const parse = text => {
   const byteString = encodeURI(text);
   const out = new Uint8Array(byteString.length);
 

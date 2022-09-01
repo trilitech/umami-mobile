@@ -37,6 +37,12 @@ external create: string => Toolkit.toolkit = "TezosToolkit"
 @module("@taquito/utils")
 external validateAddress: string => int = "validateAddress"
 
+@module("@taquito/utils")
+external getPkhfromPk: string => string = "getPkhfromPk"
+
+@module("@taquito/utils")
+external verifySignature: (~content: string, ~pk: string, ~sig: string) => bool = "verifySignature"
+
 @module("./js/dummySigner")
 external createDummySigner: (~pk: string, ~pkh: string) => signer = "create"
 
@@ -45,3 +51,6 @@ external fromSecretKey: (string, string) => Promise.t<signer> = "fromSecretKey"
 
 @send external publicKeyHash: (signer, unit) => Promise.t<string> = "publicKeyHash"
 @send external publicKey: (signer, unit) => Promise.t<string> = "publicKey"
+
+type signed = {sig: string}
+@send external sign: (signer, string) => Promise.t<signed> = "sign"
