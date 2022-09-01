@@ -1,10 +1,21 @@
 open CommonComponents
+open Paper
+module PrivacyPolicy = {
+  @react.component
+  let make = () => {
+    let url = "https://umamiwallet.com/tos.html"
+    <CustomListItem
+      onPress={_ => ReactNative.Linking.openURL(url)->ignore}
+      center={<Text> {React.string("Privacy policy")} </Text>}
+      right={<CommonComponents.Icon name="open-in-new" />}
+    />
+  }
+}
 
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let navigate = NavUtils.useNavigate()
 
-  open Paper
   let makeListItem = (route, label) =>
     <CustomListItem
       onPress={_ => navigate(route)->ignore}
@@ -20,6 +31,7 @@ let make = (~navigation as _, ~route as _) => {
     {makeListItem("BackupPhrase", "Show backup phrase")}
     {makeListItem("Logs", "Logs")}
     {makeListItem("OffboardWallet", "Offboard Wallet")}
+    <PrivacyPolicy />
     <Version />
   </Container>
 }
