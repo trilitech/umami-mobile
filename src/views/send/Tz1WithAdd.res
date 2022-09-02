@@ -25,6 +25,7 @@ let make = (
             assetBalance: None,
             tz1ForSendRecipient: None,
             injectedAdress: None,
+            signedContent: None,
           },
         )}
     />

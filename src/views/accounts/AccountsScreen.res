@@ -32,6 +32,7 @@ let make = (~navigation, ~route as _) => {
                   assetBalance: None,
                   tz1ForSendRecipient: None,
                   injectedAdress: None,
+                  signedContent: None,
                 },
               )
             }}

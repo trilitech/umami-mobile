@@ -41,6 +41,7 @@ module ScanTezosDomain = {
           assetBalance: None,
           tz1ForSendRecipient: None,
           injectedAdress: a->Some,
+          signedContent: None,
         })
       )
       ->ignore
@@ -58,7 +59,8 @@ module ScanDesktopSeedPhrase = {
 
     makeScanner(~subTitle, ~title, ~onRead=str => {
       switch SecretQRPayload.make(str) {
-      | Ok(qrPayload) => navigateWithParams(
+      | Ok(qrPayload) =>
+        navigateWithParams(
           "RestoreDesktopSeedPhrase",
           {
             desktopSeedPhrase: qrPayload->Some,

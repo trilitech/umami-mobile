@@ -56,6 +56,7 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
             assetBalance: None,
             tz1ForSendRecipient: None,
             injectedAdress: None,
+            signedContent: None,
           },
         )
       })

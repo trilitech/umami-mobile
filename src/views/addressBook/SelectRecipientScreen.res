@@ -25,6 +25,7 @@ module SelectedRecipients = {
           assetBalance: None,
           tz1ForSendRecipient: tz1->Some,
           injectedAdress: None,
+          signedContent: None,
         },
       )
     }
@@ -72,6 +73,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
             assetBalance: None,
             tz1ForSendRecipient: None,
             injectedAdress: None,
+            signedContent: None,
           },
         )}
     />

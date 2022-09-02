@@ -14,6 +14,7 @@ let make = (~account: Account.t) => {
             assetBalance: asset->Some,
             tz1ForSendRecipient: None,
             injectedAdress: None,
+            signedContent: None,
           },
         )}
       balance=account.balance

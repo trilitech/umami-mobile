@@ -11,6 +11,7 @@ module OnboardParams = {
     tz1ForSendRecipient: option<Pkh.t>,
     injectedAdress: option<AddressImporterTypes.payload>,
     assetBalance: option<Asset.t>,
+    signedContent: option<SignedData.t>,
   }
 }
 

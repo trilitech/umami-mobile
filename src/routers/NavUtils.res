@@ -70,6 +70,10 @@ let getInjectedAddress = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.injectedAdress)
 }
 
+let getSignedContent = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.signedContent)
+}
+
 let getAssetBalance = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.assetBalance)
 }
