@@ -111,3 +111,9 @@ let rec waitFor = (~predicate: unit => bool, ~onDone) =>
   } else {
     Js.Global.setTimeout(() => waitFor(~predicate, ~onDone), 1)->ignore
   }
+
+let resultToOption = r =>
+  switch r {
+  | Ok(r) => Some(r)
+  | Error(_) => None
+  }

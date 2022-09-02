@@ -64,6 +64,7 @@ type fa2TokenMetadata = {
 }
 
 type tokenNFT = (tokenBase, nftMetadata)
+
 type tokenFA2 = (tokenBase, fa2TokenMetadata)
 
 // type faTokens = FA2(tokenFA2) | FA1(tokenBase)
@@ -143,4 +144,15 @@ let isNft = (token: t) => {
   | NFT(_) => true
   | _ => false
   }
+}
+
+type nftInfo = {
+  tokenId: string,
+  contract: string,
+  balance: int,
+}
+
+let getNftInfo = (nft: tokenNFT) => {
+  let (b, _) = nft
+  {tokenId: b.tokenId, contract: b.contract, balance: b.balance}
 }

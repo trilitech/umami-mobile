@@ -31,6 +31,8 @@ let make = (~navigation as _, ~route as _) => {
     {makeListItem("BackupPhrase", "Show backup phrase")}
     {makeListItem("Logs", "Logs")}
     {makeListItem("OffboardWallet", "Offboard Wallet")}
+    {makeListItem("ScanSignedContent", "Verify Signature")}
+    {makeListItem("SignContent", "Sign Content")}
     <PrivacyPolicy />
     <Version />
   </Container>

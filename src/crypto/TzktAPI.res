@@ -13,3 +13,13 @@ let getTokens = (~tz1: Pkh.t, ~isTestNet) => {
   ->Promise.thenResolve(arr => arr->Belt.Array.keep(Token.positiveBalance))
   ->Promise.catch(err => Promise.reject(TokensFetchFailure(err->Helpers.getMessage)))
 }
+
+let getNft = (~tz1: Pkh.t, ~isTestNet, ~nftInfo: Token.nftInfo) => {
+  getTokens(~tz1, ~isTestNet)->Promise.thenResolve(tokens =>
+    tokens
+    ->Token.filterNFTs
+    ->Belt.Array.getBy(((b, _)) =>
+      b.contract == nftInfo.contract && b.balance == nftInfo.balance && b.tokenId == nftInfo.tokenId
+    )
+  )
+}

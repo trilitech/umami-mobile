@@ -4,7 +4,7 @@ open Paper
 let vMargin = StyleUtils.makeVMargin()
 module DisplayNFT = {
   @react.component
-  let make = (~token: Token.tokenNFT) => {
+  let make = (~token: Token.tokenNFT, ~onSign) => {
     let navigate = NavUtils.useNavigateWithParams()
 
     let (b, metadata) = token
@@ -20,25 +20,54 @@ module DisplayNFT = {
         />
         <Text style=vMargin> {description->React.string} </Text>
         <Text style=vMargin> {("Editions: " ++ b.balance->Js.Int.toString)->React.string} </Text>
-        <Paper.FAB
-          style=vMargin
-          onPress={_ =>
-            navigate(
-              "Send",
-              {
-                nft: Some(token),
-                derivationIndex: None,
-                tz1ForContact: None,
-                assetBalance: None,
-                tz1ForSendRecipient: None,
-                injectedAdress: None,
-                signedContent: None,
-              },
-            )->ignore}
-          icon={Paper.Icon.name("arrow-top-right-thin")}
-        />
+        <Wrapper>
+          <Paper.FAB
+            style={StyleUtils.makeHMargin()}
+            onPress={_ => onSign()}
+            icon={Paper.Icon.name("certificate")}
+          />
+          <Paper.FAB
+            style={StyleUtils.makeHMargin()}
+            onPress={_ =>
+              navigate(
+                "Send",
+                {
+                  nft: Some(token),
+                  derivationIndex: None,
+                  tz1ForContact: None,
+                  assetBalance: None,
+                  tz1ForSendRecipient: None,
+                  injectedAdress: None,
+                  signedContent: None,
+                },
+              )->ignore}
+            icon={Paper.Icon.name("arrow-top-right-thin")}
+          />
+        </Wrapper>
       </Wrapper>
     </Container>
+  }
+}
+
+let makePayload = (token: Token.tokenNFT): TimestampedData.t<Token.nftInfo> => {
+  date: Js.Date.make()->Js.Date.toISOString,
+  data: token->Token.getNftInfo,
+}
+
+module SignableNFT = {
+  @react.component
+  let make = (~token) => {
+    let sign = SignUtils.useSign()
+    let notify = SnackBar.useNotification()
+
+    sign->Helpers.reactFold(sign =>
+      <ContentSigner
+        sign
+        notify
+        renderForm={onSubmit =>
+          <DisplayNFT token onSign={() => token->makePayload->JSONparse.stringify->onSubmit} />}
+      />
+    )
   }
 }
 
@@ -46,5 +75,5 @@ module DisplayNFT = {
 let make = (~navigation as _, ~route) => {
   let token = NavUtils.getNft(route)
 
-  token->Belt.Option.mapWithDefault(React.null, token => <DisplayNFT token />)
+  token->Belt.Option.mapWithDefault(React.null, token => <SignableNFT token />)
 }

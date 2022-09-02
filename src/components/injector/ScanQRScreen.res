@@ -1,3 +1,4 @@
+open Belt
 open Paper
 open AddressImporterTypes
 module QRCodeScanner = {
@@ -68,6 +69,38 @@ module ScanDesktopSeedPhrase = {
         )
       | Error(_) => ()
       }
+    })
+  }
+}
+
+module ScanSignedContent = {
+  @react.component
+  let make = (~navigation as _, ~route as _) => {
+    let title = "Scan signed content"
+    let subTitle = "Scan signed content"
+
+    let navigateWithParams = NavUtils.useNavigateWithParams()
+
+    makeScanner(~subTitle, ~title, ~onRead=str => {
+      str
+      // TODO catch exception bevause library crashes if base form is unvalid
+      ->SignedData.Decode.decode
+      ->Helpers.resultToOption
+      ->Option.map(signed => {
+        navigateWithParams(
+          "VerifySignedContent",
+          {
+            tz1ForContact: None,
+            derivationIndex: None,
+            nft: None,
+            assetBalance: None,
+            tz1ForSendRecipient: None,
+            injectedAdress: None,
+            signedContent: signed->Some,
+          },
+        )
+      })
+      ->ignore
     })
   }
 }
