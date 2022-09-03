@@ -15,10 +15,10 @@ module Display = {
         loading
         onSubmit={password => {
           setLoading(_ => true)
-          let {recoveryPhrase} = qrPayload
+          let {recoveryPhrase, derivationPath} = qrPayload
           let {data, iv, salt} = recoveryPhrase
           AESGCM.decrypt(~data, ~iv, ~salt, ~password)
-          ->Promise.then(seedPhrase => restoreAndSave(~seedPhrase, ~password))
+          ->Promise.then(seedPhrase => restoreAndSave(~seedPhrase, ~password, ~derivationPath, ()))
           ->Promise.catch(exn => {
             notify("Failed to decrypt desktop QR code. " ++ exn->Helpers.getMessage)
             Promise.resolve()

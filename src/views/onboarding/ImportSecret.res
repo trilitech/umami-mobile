@@ -49,9 +49,15 @@ let make = (~navigation as _, ~route as _) => {
 
   let restoreAndSave = useRestoreAndSave()
 
+  // default derivation path when you import via text
   let onConfirm = password => {
     setLoading(_ => true)
-    restoreAndSave(~password, ~seedPhrase={formatForMnemonic(dangerousText)})
+    restoreAndSave(
+      ~password,
+      ~seedPhrase={formatForMnemonic(dangerousText)},
+      ~derivationPath=DerivationPath.default,
+      (),
+    )
     ->Promise.finally(_ => setLoading(_ => false))
     ->ignore
   }
