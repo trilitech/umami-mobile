@@ -59,7 +59,7 @@ module ScanDesktopSeedPhrase = {
     let navigateWithParams = NavUtils.useOffboardNavigateWithParams()
 
     makeScanner(~subTitle, ~title, ~onRead=str => {
-      switch SecretQRPayload.make(str) {
+      switch SecretQRPayload.fromString(str) {
       | Ok(qrPayload) =>
         navigateWithParams(
           "RestoreDesktopSeedPhrase",
