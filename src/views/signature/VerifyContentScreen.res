@@ -50,31 +50,37 @@ module NotOwned = {
   }
 }
 
-module SignedNFTDisplay = {
+module SignedNFTDisplay2 = {
   @react.component
-  let make = (~signed: SignedData.t, ~age, ~nft: Token.tokenNFT) => {
-    let (_, m) = nft
-    let tz1 = signed.pk->Pkh.buildFromPk
-
-    let source = ReactNative.Image.uriSource(~uri=m.displayUri, ())
+  let make = (~prettySigDate, ~signerAddress: string, ~nftUrl: string, ~name) => {
+    let source = ReactNative.Image.uriSource(~uri=nftUrl, ())
     <Wrapper flexDirection=#column alignItems=#center>
-      <Headline> {React.string("Signed " ++ age->Js.Float.toString ++ " Seconds ago")} </Headline>
-      <Headline> {React.string("By " ++ tz1->Pkh.toString)} </Headline>
+      <Headline> {React.string("Signed by" ++ signerAddress)} </Headline>
+      <Title> {React.string({prettySigDate})} </Title>
+      <CommonComponents.Icon size=100 color=Colors.Light.positive name="certificate" />
+      <Title> {name->React.string} </Title>
       <FastImage source resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} />
-      <Text style={StyleUtils.makeVMargin()}> {signed.content->React.string} </Text>
-      {renderStatus(signed)}
     </Wrapper>
   }
 }
 
+module SignedNFTDisplay = {
+  @react.component
+  let make = (~signed: SignedData.t, ~signatureDate, ~nft: Token.tokenNFT) => {
+    let (_, m) = nft
+    let tz1 = signed.pk->Pkh.buildFromPk->Pkh.toPretty
+
+    let date = signatureDate->Moment.getRelativeDate
+
+    <SignedNFTDisplay2 prettySigDate=date name=m.name nftUrl=m.displayUri signerAddress=tz1 />
+  }
+}
 module SignedNFT = {
   @react.component
   let make = (~timeStampedNft: TimestampedData.t<Token.nftInfo>, ~signed: SignedData.t) => {
     let {data, date} = timeStampedNft
 
     let tz1 = signed.pk->Pkh.buildFromPk
-
-    let age = React.useMemo1(() => getMillisecondsFromSig(date), [date])
 
     let isTestNet = Store.useIsTestNet()
 
@@ -98,7 +104,7 @@ module SignedNFT = {
       //Bad
       data->Belt.Option.mapWithDefault(<NotOwned />, nft => {
         nft->Belt.Option.mapWithDefault(<NotOwned />, nft => {
-          <SignedNFTDisplay signed age nft />
+          <SignedNFTDisplay signed signatureDate=date nft />
         })
       })
     }
