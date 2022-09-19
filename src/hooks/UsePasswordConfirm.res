@@ -11,7 +11,7 @@ let usePasswordConfirm = (~hoc, ~onConfirm, ~loading=false, ~creation=false, ())
             title="Set a password to secure your wallet"
             instructions="Please note that this password is not recorded anywhere and only applies to this machine."
           />
-          <PasswordCreate loading onSubmit=onConfirm />
+          <Container> <PasswordCreate loading onSubmit=onConfirm /> </Container>
         </>
       : <PasswordConfirm loading onSubmit=onConfirm />
   }
