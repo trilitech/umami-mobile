@@ -295,17 +295,24 @@ let make = (~route, ~navigation as _) => {
   let assetBalance = NavUtils.getAssetBalance(route)
   let (indexerLastBlock, setIndexerLastBlock) = React.useState(_ => None)
   let isTestNet = Store.useIsTestNet()
+  let isFocused = ReactNavigation.Native.useIsFocused()
+  let isFocuseRef = React.useRef(false)
+  isFocuseRef.current = isFocused
 
-  React.useEffect1(() => {
+  React.useEffect4(() => {
     MezosAPI.getIndexerLastBlock(~isTestNet)
-    ->Promise.thenResolve(lastBlock => setIndexerLastBlock(_ => Some(lastBlock)))
+    ->Promise.thenResolve(lastBlock =>
+      if isFocuseRef.current {
+        setIndexerLastBlock(_ => Some(lastBlock))
+      }
+    )
     ->Promise.catch(err => {
       notify("Failed fetchting index last block. Reaston: " ++ Helpers.getMessage(err))
       Promise.resolve()
     })
     ->ignore
     None
-  }, [operations])
+  }, (operations, isTestNet, notify, setIndexerLastBlock))
 
   let account = Store.useActiveAccount()
 
