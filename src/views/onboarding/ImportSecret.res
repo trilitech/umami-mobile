@@ -65,7 +65,10 @@ let make = (~navigation as _, ~route as _) => {
       ~derivationPath=DerivationPath.default,
       (),
     )
-    ->Promise.finally(_ => setLoading(_ => false))
+    ->Promise.catch(_ => {
+      setLoading(_ => false)
+      Promise.resolve()
+    })
     ->ignore
   }
 

@@ -2,6 +2,7 @@
 let make = (~navigation as _, ~route as _) => {
   let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
   let (_, setSelectedAccount) = Store.useSelectedAccount()
+  let notify = SnackBar.useNotification()
 
   let (mnemonic, _) = DangerousMnemonicHooks.useMnemonic()
 
@@ -18,17 +19,15 @@ let make = (~navigation as _, ~route as _) => {
         ~derivationPathIndex=0,
         (),
       )->Promise.thenResolve(account => {
+        setLoading(_ => false)
         dispatch(ReplaceAll([account]))
         setSelectedAccount(_ => 0)
       })
     )
-    ->Promise.catch(err => {
-      Js.Console.error(err)
-      Promise.resolve()
-    })
-    ->Promise.finally(() => {
+    ->Promise.catch(exn => {
       setLoading(_ => false)
-      ()
+      notify("Failed to generate account. " ++ exn->Helpers.getMessage)
+      Promise.resolve()
     })
     ->ignore
   }
