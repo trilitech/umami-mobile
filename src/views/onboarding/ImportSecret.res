@@ -1,13 +1,18 @@
 open Paper
 
-let formatForMnemonic = (s: string) => {
+let trimSpacesAndLineBreaks = (s: string) => {
   s
   ->Js.String2.trim
   ->Js.String2.replaceByRe(%re("/\\n+/"), "")
   ->Js.String2.replaceByRe(%re("/\s+/g"), " ")
 }
 
-let inputIsValid = (s: string) => s->formatForMnemonic->AccountUtils.backupPhraseIsValid
+let correctAmountOfWords = s => {
+  let length = s->Js.String2.splitByRe(%re("/\s+/"))->Array.length
+
+  length === 24 || length === 21 || length === 18 || length === 15 || length === 12
+}
+let inputIsValid = (s: string) => s->trimSpacesAndLineBreaks->correctAmountOfWords
 
 module Display = {
   @react.component

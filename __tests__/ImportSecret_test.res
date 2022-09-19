@@ -73,6 +73,6 @@ describe("formatForMnemonic", () => {
        `
 
     let expected = "bread gauge caught visa film false vehicle fold cheese carry rescue mix stomach deer grocery general payment future attack credit quit diesel tackle pitch"
-    expect(ImportSecret.formatForMnemonic(input))->toEqual(expected)
+    expect(ImportSecret.trimSpacesAndLineBreaks(input))->toEqual(expected)
   })
 })

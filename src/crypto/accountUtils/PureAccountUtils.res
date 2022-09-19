@@ -40,8 +40,6 @@ module Make = (M: Deps) => {
       keys->keysToAccount->nameXf
     })
 
-  let backupPhraseIsValid = s => s->Js.String2.splitByRe(%re("/\s+/"))->Array.length == 24
-
   %%private(
     let rec _restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
       let derivationPathIndex = accounts->Array.length
