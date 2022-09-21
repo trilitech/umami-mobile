@@ -42,11 +42,11 @@ let getAssets = (balance: option<int>, tokens: array<Token.t>) => {
 @react.component
 let make = (~balance: option<int>, ~onPress, ~tokens) => {
   let assets = getAssets(balance, tokens)
-  <>
+  <ReactNative.ScrollView>
     {assets
     ->Array.map(asset =>
       <CurrencyItem key={asset->Asset.getPrettyString} asset onPress={_ => onPress(asset)} />
     )
     ->React.array}
-  </>
+  </ReactNative.ScrollView>
 }

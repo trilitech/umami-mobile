@@ -24,16 +24,18 @@ let make = (~navigation as _, ~route as _) => {
     />
 
   <Container>
-    {makeListItem("Theme", "Theme")}
-    {makeListItem("Contacts", "Contacts")}
-    {makeListItem("Network", "Network")}
-    {makeListItem("ChangePassword", "Change Password")}
-    {makeListItem("BackupPhrase", "Show backup phrase")}
-    {makeListItem("Logs", "Logs")}
-    {makeListItem("OffboardWallet", "Offboard Wallet")}
-    {makeListItem("ScanSignedContent", "Verify Signature")}
-    {makeListItem("SignContent", "Sign Content")}
-    <PrivacyPolicy />
-    <Version />
+    <ReactNative.ScrollView>
+      {makeListItem("Theme", "Theme")}
+      {makeListItem("Contacts", "Contacts")}
+      {makeListItem("Network", "Network")}
+      {makeListItem("ChangePassword", "Change Password")}
+      {makeListItem("BackupPhrase", "Show backup phrase")}
+      {makeListItem("Logs", "Logs")}
+      {makeListItem("OffboardWallet", "Offboard Wallet")}
+      {makeListItem("ScanSignedContent", "Verify Signature")}
+      {makeListItem("SignContent", "Sign Content")}
+      <PrivacyPolicy />
+      <Version />
+    </ReactNative.ScrollView>
   </Container>
 }

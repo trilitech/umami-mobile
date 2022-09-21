@@ -44,10 +44,10 @@ module MemoizedRouter = {
     let navTheme = useNavTheme()
     <SnackbarDisplayer>
       <Native.NavigationContainer theme={navTheme}>
-        // Allow scrollin if screen ever overflows (which should not happen on any device)
-        <ReactNative.ScrollView contentContainerStyle={ReactNative.Style.style(~flex=1., ())}>
-          {hasAccount ? <OnboardRouter /> : <OffboardRouter />}
-        </ReactNative.ScrollView>
+        {
+          // Allow scrollin if screen ever overflows (which should not happen on any device)
+          hasAccount ? <OnboardRouter /> : <OffboardRouter />
+        }
       </Native.NavigationContainer>
     </SnackbarDisplayer>
   })

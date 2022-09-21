@@ -10,7 +10,7 @@ let make = (~navigation, ~route as _) => {
       onPressLogo={() => navigation->NavStacks.OnBoard.Navigation.navigate("CreateAccount")}
     />
     <Container>
-      <CommonComponents.Wrapper flexDirection=#column alignItems=#center>
+      <ReactNative.ScrollView>
         {accounts
         ->Belt.Array.map(a => {
           let selected = a.derivationPathIndex == selectedAccount
@@ -39,7 +39,7 @@ let make = (~navigation, ~route as _) => {
           />
         })
         ->React.array}
-      </CommonComponents.Wrapper>
+      </ReactNative.ScrollView>
     </Container>
   </>
 }
