@@ -42,8 +42,10 @@ let make = (~navigation as _, ~route as _) => {
           notify("Offboarding failed" ++ Helpers.getMessage(exn))
           Promise.resolve()
         })
-        ->Promise.thenResolve(_ => reset())
-        ->Promise.finally(_ => setLoading(_ => false))
+        ->Promise.thenResolve(_ => {
+          setLoading(_ => false)
+          reset()
+        })
         ->ignore
       }}
       color=dangerColor>
