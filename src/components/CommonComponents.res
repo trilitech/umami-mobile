@@ -184,7 +184,7 @@ module CustomListItem = {
 
     let wrappedEls = transparent
       ? <ReactNative.View> {els} </ReactNative.View>
-      : <Surface style={style(~borderRadius=4., ~backgroundColor, ())}> {els} </Surface>
+      : <Card style={style(~borderRadius=4., ~backgroundColor, ())}> {els} </Card>
 
     <TouchableRipple
       disabled
