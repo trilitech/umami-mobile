@@ -29,7 +29,7 @@ let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {
       style
       value={formState.name->Belt.Option.getWithDefault("")}
       label="contact name"
-      mode=#flat
+      mode=#outlined
       onChangeText={t => setFormState(prev => {...prev, name: t->Some})}
     />
     <HelperText _type=#error visible={nameError->Option.isSome}>

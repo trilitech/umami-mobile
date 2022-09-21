@@ -15,7 +15,7 @@ let make = (~name, ~onSubmit) => {
       style
       value=name
       label="name"
-      mode=#flat
+      mode=#outlined
       onChangeText={t => setName(_ => t)}
     />
     <HelperText _type=#error visible={error->Option.isSome}>

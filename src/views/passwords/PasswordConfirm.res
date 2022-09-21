@@ -16,7 +16,7 @@ module Plain = {
         placeholder="password"
         value
         label="Enter password"
-        mode=#flat
+        mode=#outlined
         onChangeText={t => setValue(_ => t)}
         style=vMargin
       />

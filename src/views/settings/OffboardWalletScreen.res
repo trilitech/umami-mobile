@@ -27,7 +27,7 @@ let make = (~navigation as _, ~route as _) => {
       placeholder="Enter code word"
       label="confirm"
       value=confirmText
-      mode=#flat
+      mode=#outlined
       onChangeText={t => setConfirmText(_ => t)}
     />
     <Button

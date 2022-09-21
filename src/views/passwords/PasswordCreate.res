@@ -50,7 +50,7 @@ let make = (~onSubmit, ~loading=false) => {
       placeholder="password"
       value=value1
       label="password"
-      mode=#flat
+      mode=#outlined
       onChangeText={s => setValue1(_ => s)}
     />
     <TextInput
@@ -61,7 +61,7 @@ let make = (~onSubmit, ~loading=false) => {
       placeholder="Confirm password"
       value=value2
       label="Confirm password"
-      mode=#flat
+      mode=#outlined
       onChangeText={s => setValue2(_ => s)}
     />
     <HelperText _type=#error visible={error->Option.isSome}>

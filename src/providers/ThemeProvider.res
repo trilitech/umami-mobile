@@ -45,7 +45,7 @@ let customizeTheme = (~theme, ~colors) => {
   // let fonts = makeFonts()
   let fonts = Theme.fonts(theme)
   let animation = Theme.animation(theme)
-  Theme.make(~colors, ~fonts, ~animation, ()) // have to pass fonts and animtion otherwise it explodes
+  Theme.make(~colors, ~fonts, ~animation, ~roundness=4, ()) // have to pass fonts and animtion otherwise it explodes
 }
 
 let makeThemes = () => {

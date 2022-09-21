@@ -30,7 +30,7 @@ module EditionsInput = {
       <TextInput
         testID="nft-editions"
         style={style(~flex=1., ())}
-        mode=#flat
+        mode=#outlined
         placeholder="editions"
         value=prettyAmount
       />
@@ -157,7 +157,7 @@ module MultiCurrencyInput = {
           }
         }}
         label="amount"
-        mode=#flat
+        mode=#outlined
       />
       <CurrencyPicker value=currency onChange=onChangeSymbol />
     </Wrapper>

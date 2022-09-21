@@ -25,7 +25,7 @@ open Lodash
       value={txt}
       onChangeText={t => onChange(t->Js.String2.toLowerCase)}
       label
-      mode=#flat
+      mode=#outlined
       right={rightIcon}
     />
   }
