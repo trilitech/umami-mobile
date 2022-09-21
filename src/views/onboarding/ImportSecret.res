@@ -1,5 +1,20 @@
 open Paper
 
+let usePasswordConfirm = (~hoc, ~onConfirm, ~loading=false, ()) => {
+  let (step, setStep) = React.useState(_ => #fill)
+  let el: React.element = hoc(~onSubmit=_ => setStep(_ => #confirm))
+
+  switch step {
+  | #fill => el
+  | #confirm => <>
+      <InstructionsPanel
+        title="Set a password to secure your wallet"
+        instructions="Please note that this password is not recorded anywhere and only applies to this machine."
+      />
+      <Container> <PasswordCreate loading onSubmit=onConfirm /> </Container>
+    </>
+  }
+}
 let trimSpacesAndLineBreaks = (s: string) => {
   s
   ->Js.String2.trim
@@ -72,12 +87,6 @@ let make = (~navigation as _, ~route as _) => {
     ->ignore
   }
 
-  let element = UsePasswordConfirm.usePasswordConfirm(
-    ~hoc,
-    ~onConfirm,
-    ~creation=true,
-    ~loading,
-    (),
-  )
+  let element = usePasswordConfirm(~hoc, ~onConfirm, ~loading, ())
   {element}
 }

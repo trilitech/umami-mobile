@@ -14,7 +14,7 @@ module SendAndConfirmForm = {
     switch step {
     // | #fill => <SendForm trans setTrans loading=false onSubmit={_ => {setStep(_ => #confirm)}} />
     | #fill => el
-    | #confirm => <PasswordConfirm loading onSubmit />
+    | #confirm => <Container> <PasswordConfirm loading onSubmit /> </Container>
     }
   }
 }
@@ -139,17 +139,15 @@ module PureSendScreen = {
       })
       ->ignore
 
-    <Container>
-      <SendAndConfirmForm
-        fee
-        loading
-        trans
-        setTrans
-        onSubmit=handleSubmit
-        onSimulate=handleSimulate
-        onCancel={_ => setFee(_ => None)}
-      />
-    </Container>
+    <SendAndConfirmForm
+      fee
+      loading
+      trans
+      setTrans
+      onSubmit=handleSubmit
+      onSimulate=handleSimulate
+      onCancel={_ => setFee(_ => None)}
+    />
   }
 }
 

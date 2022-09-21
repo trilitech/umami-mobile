@@ -63,7 +63,7 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~loading, ~onSubmit) => {
   let handleSenderPress = () => navigate("Accounts")
   let handleSelectRecipient = () => navigate("SelectRecipient")
 
-  <>
+  <Container>
     {amountInput}
     <Sender onPress=handleSenderPress disabled={SendTypes.isNft(trans.assetType)} />
     <Recipient
@@ -74,5 +74,5 @@ let make = (~trans: SendTypes.formState, ~setTrans, ~loading, ~onSubmit) => {
     <Button disabled loading onPress=onSubmit style={vMargin} mode=#contained>
       {React.string("review")}
     </Button>
-  </>
+  </Container>
 }
