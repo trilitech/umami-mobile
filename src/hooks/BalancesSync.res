@@ -45,8 +45,6 @@ let useTransactionNotif = () => {
   }, (accounts, notify, prevAccounts))
 }
 
-open Helpers
-
 let _parseError = (e: exn) => {
   open MezosAPI
   open TzktAPI
@@ -60,50 +58,41 @@ let _parseError = (e: exn) => {
   }
 }
 
+let tapError = e => {
+  let message = e->_parseError
+  Logger.error(message)
+  Promise.resolve()
+}
+
+let useQueryWithRefetchInterval = (queryFn, queryKey) => {
+  ReactQuery.useQuery(
+    ReactQuery.queryOptions(
+      ~queryFn,
+      ~queryKey,
+      ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(#bool(false)),
+      ~refetchInterval=ReactQuery.refetchInterval(#number(3000)),
+      (),
+    ),
+  )
+}
+
 let useBalancesSync = () => {
   let isTestNet = Store.useIsTestNet()
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
 
-  let tapError = e => {
-    let message = e->_parseError
-    Logger.error(message)
-    Promise.reject(e)
-  }
-
-  let isTestNetRef = React.useRef(isTestNet)
-  let accountsRef = React.useRef(accounts)
-
-  isTestNetRef.current = isTestNet
-  accountsRef.current = accounts
-
-  let update = () => {
-    let accounts = accountsRef.current
-    let isTestNet = isTestNetRef.current
-
-    let operationsPromise =
+  useQueryWithRefetchInterval(
+    _ =>
       getOperations(~isTestNet, ~accounts)
       ->Promise.thenResolve(o => dispatch(UpdateOperations(o)))
-      ->Promise.catch(tapError)
+      ->Promise.catch(tapError),
+    "operations",
+  )->ignore
 
-    let balancesPromise =
+  useQueryWithRefetchInterval(
+    _ =>
       getBalances(~isTestNet, ~accounts)
       ->Promise.thenResolve(b => dispatch(UpdateBalances(b)))
-      ->Promise.catch(tapError)
-
-    Promise.all2((balancesPromise, operationsPromise))
-  }
-
-  let updateRef = React.useRef(update)
-
-  let (_, stop, refresh) = React.useMemo1(
-    () => makeQueryAutomator(~fn=() => updateRef.current(), ()),
-    [],
-  )
-
-  React.useEffect2(() => {
-    refresh()
-    None
-  }, (isTestNet, refresh))
-
-  React.useEffect1(() => Some(stop), [])
+      ->Promise.catch(tapError),
+    "balances",
+  )->ignore
 }

@@ -59,52 +59,6 @@ let withCancel = (fn: 'b => Promise.t<'a>) => {
   (fn, cancelRef)
 }
 
-let makeQueryAutomator = (
-  ~fn,
-  ~onResult=_ => (),
-  ~onError=_ => (),
-  ~refreshRate=Constants.refreshTime,
-  (),
-) => {
-  let (cancelablFn, cancel) = withCancel(fn)
-  let timeoutId = ref(None)
-
-  let rec recursive = () => {
-    cancelablFn()
-    ->Promise.thenResolve(res => onResult(res))
-    ->Promise.catch(err => {
-      switch err {
-      | PromiseCanceled => ()
-      | err => onError(err)
-      }
-      Promise.resolve()
-    })
-    ->Promise.finally(_ => {
-      timeoutId.contents = Js.Global.setTimeout(recursive, refreshRate)->Some
-    })
-    ->ignore
-  }
-
-  let start = recursive
-
-  let stop = () => {
-    cancel.contents()
-    timeoutId.contents
-    ->Option.map(id => {
-      Js.Global.clearTimeout(id)
-      timeoutId.contents = None
-    })
-    ->ignore
-  }
-
-  let refresh = () => {
-    stop()
-    start()
-  }
-
-  (start, stop, refresh)
-}
-
 let rec waitFor = (~predicate: unit => bool, ~onDone) =>
   if predicate() {
     onDone()
