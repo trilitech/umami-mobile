@@ -47,9 +47,9 @@ let make = (~onSubmit, ~loading=false) => {
       style={StyleUtils.makeVMargin()}
       disabled=loading
       secureTextEntry=true
-      placeholder="password"
+      placeholder="Password"
       value=value1
-      label="password"
+      label="Password"
       mode=#outlined
       onChangeText={s => setValue1(_ => s)}
     />
