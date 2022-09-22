@@ -118,12 +118,14 @@ module CurrencyPicker = {
       style={array([StyleUtils.makeLeftMargin(), StyleUtils.makeTopMargin()])}
       testID="currency-picker">
       <CustomListItem
+        height=56. // same height at RN Paper input outlined
+        style={StyleUtils.makeTopMargin()} // compensate RN Paper input outlined top 8px padding
         center={<StyledPicker
+          icon={_ => <ChevronRight />}
           items
           value={getLabel(value)}
           onChange={symbol => symbol->symbolToCurrencyData(tokens)->Option.map(onChange)->ignore}
         />}
-        right={<ChevronRight />}
       />
     </ReactNative.View>
   }

@@ -168,6 +168,7 @@ module CustomListItem = {
     ~onPress=?,
     ~disabled=false,
     ~transparent=false,
+    ~style as extraStyle=style(),
   ) => {
     let theme = useTheme()
 
@@ -189,7 +190,7 @@ module CustomListItem = {
     <TouchableRipple
       disabled
       rippleColor="red"
-      style={array([style(~alignSelf=#stretch, ()), StyleUtils.makeBottomMargin()])}
+      style={array([style(~alignSelf=#stretch, ()), StyleUtils.makeBottomMargin(), extraStyle])}
       ?onPress>
       {wrappedEls}
     </TouchableRipple>
