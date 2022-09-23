@@ -20,7 +20,7 @@ module DisplayNFT = {
         />
         <Text style=vMargin> {description->React.string} </Text>
         <Text style=vMargin> {("Editions: " ++ b.balance->Js.Int.toString)->React.string} </Text>
-        <Wrapper>
+        <Wrapper style={StyleUtils.makeVMargin(~size=3, ())}>
           <Paper.FAB
             style={StyleUtils.makeHMargin()}
             onPress={_ => onSign()}
@@ -56,19 +56,11 @@ let makePayload = (token: Token.tokenNFT): TimestampedData.t<Token.nftInfo> => {
 
 module SignableNFT = {
   @react.component
-  let make = (~token) => {
-    let sign = SignUtils.useSign()
-    let notify = SnackBar.useNotification()
-
-    sign->Helpers.reactFold(sign =>
-      <ContentSigner
-        sign
-        notify
-        renderForm={onSubmit =>
-          <DisplayNFT token onSign={() => token->makePayload->JSONparse.stringify->onSubmit} />}
-      />
-    )
-  }
+  let make = (~token) =>
+    <ContentSigner
+      renderForm={onSubmit =>
+        <DisplayNFT token onSign={() => token->makePayload->JSONparse.stringify->onSubmit} />}
+    />
 }
 
 @react.component

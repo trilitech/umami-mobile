@@ -52,15 +52,26 @@ module NotOwned = {
 
 module SignedNFTDisplay2 = {
   @react.component
-  let make = (~prettySigDate, ~signerAddress: string, ~nftUrl: string, ~name) => {
+  let make = (~prettySigDate, ~signerAddress: Pkh.t, ~nftUrl: string, ~name) => {
     let source = ReactNative.Image.uriSource(~uri=nftUrl, ())
-    <Wrapper flexDirection=#column alignItems=#center>
-      <Headline> {React.string("Signed by" ++ signerAddress)} </Headline>
-      <Title> {React.string({prettySigDate})} </Title>
-      <CommonComponents.Icon size=100 color=Colors.Light.positive name="certificate" />
-      <Title> {name->React.string} </Title>
-      <FastImage source resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} />
-    </Wrapper>
+    <Container>
+      <CommonComponents.Icon
+        size=100
+        color=Colors.Light.positive
+        name="certificate"
+        style={style(~alignSelf=#center, ())}
+      />
+      <Caption> {"Signer account"->React.string} </Caption>
+      <SigListItem tz1=signerAddress prettySigDate />
+      <Title style={array([style(~alignSelf=#center, ()), StyleUtils.makeVMargin(~size=2, ())])}>
+        {name->React.string}
+      </Title>
+      <FastImage
+        source
+        resizeMode=#contain
+        style={style(~height=300.->dp, ~width=300.->dp, ~alignSelf=#center, ())}
+      />
+    </Container>
   }
 }
 
@@ -68,7 +79,7 @@ module SignedNFTDisplay = {
   @react.component
   let make = (~signed: SignedData.t, ~signatureDate, ~nft: Token.tokenNFT) => {
     let (_, m) = nft
-    let tz1 = signed.pk->Pkh.buildFromPk->Pkh.toPretty
+    let tz1 = signed.pk->Pkh.buildFromPk
 
     let date = signatureDate->Moment.getRelativeDate
 

@@ -1,5 +1,4 @@
 open Paper
-open SignUtils
 
 module GenericForm = {
   @react.component
@@ -34,7 +33,5 @@ let renderForm = onSubmit => <GenericForm onSubmit />
 
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let sign = useSign()
-  let notify = SnackBar.useNotification()
-  sign->Helpers.reactFold(sign => <ContentSigner sign notify renderForm />)
+  <ContentSigner renderForm />
 }
