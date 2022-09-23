@@ -3,7 +3,7 @@ open Paper
 let make = (
   ~account: Account.t,
   ~selected=false,
-  ~onPress,
+  ~onPress=_ => (),
   ~onPressEdit=?,
   ~right=?,
   ~disabled=false,

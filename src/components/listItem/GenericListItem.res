@@ -6,7 +6,7 @@ let make = (
   ~center,
   ~right=?,
   ~selected=false,
-  ~onPress,
+  ~onPress=_ => (),
   ~onPressEdit=?,
   ~disabled=false,
 ) => {
@@ -21,13 +21,5 @@ let make = (
   | None => editElement
   }
 
-  <CustomListItem
-    disabled
-    selected
-    onPress
-    height=90.
-    left
-    center={center}
-    right={disabled ? React.null : rightElement}
-  />
+  <CustomListItem disabled selected onPress height=90. left center={center} right=rightElement />
 }

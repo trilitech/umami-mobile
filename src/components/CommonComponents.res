@@ -155,6 +155,27 @@ module ListItemCustomIcon = {
   }
 }
 
+module ListItemBase = {
+  open Paper
+  @react.component
+  let make = (~height=50., ~left, ~center, ~right, ~transparent=false, ~backgroundColor) => {
+    let el =
+      <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
+        <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>
+        <ReactNative.View style={style(~margin=8.->dp, ())}> {center} </ReactNative.View>
+        <ReactNative.View style={style(~position=#absolute, ~right=0.->dp, ())}>
+          {right}
+        </ReactNative.View>
+      </Wrapper>
+
+    let wrapped = transparent
+      ? <ReactNative.View> {el} </ReactNative.View>
+      : <Card style={style(~borderRadius=4., ~backgroundColor, ())}> {el} </Card>
+
+    wrapped
+  }
+}
+
 module CustomListItem = {
   open Paper
   open Paper.ThemeProvider
@@ -163,7 +184,7 @@ module CustomListItem = {
     ~left=React.null,
     ~center=React.null,
     ~right=React.null,
-    ~height=50.,
+    ~height=?,
     ~selected=false,
     ~onPress=?,
     ~disabled=false,
@@ -173,26 +194,14 @@ module CustomListItem = {
     let theme = useTheme()
 
     let backgroundColor = selected ? Colors.Light.scrim : theme->Theme.colors->Theme.Colors.surface
-
-    let els =
-      <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
-        <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>
-        <ReactNative.View style={style(~margin=8.->dp, ())}> {center} </ReactNative.View>
-        <ReactNative.View style={style(~position=#absolute, ~right=0.->dp, ())}>
-          {disabled ? React.null : right}
-        </ReactNative.View>
-      </Wrapper>
-
-    let wrappedEls = transparent
-      ? <ReactNative.View> {els} </ReactNative.View>
-      : <Card style={style(~borderRadius=4., ~backgroundColor, ())}> {els} </Card>
-
     <TouchableRipple
       disabled
       rippleColor="red"
       style={array([style(~alignSelf=#stretch, ()), StyleUtils.makeBottomMargin(), extraStyle])}
       ?onPress>
-      {wrappedEls}
+      <ListItemBase
+        ?height left center right={disabled ? React.null : right} transparent backgroundColor
+      />
     </TouchableRipple>
   }
 }
