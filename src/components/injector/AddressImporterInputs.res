@@ -80,7 +80,7 @@ module TzDomainRecipient = {
       <Wrapper>
         {makeInput(
           ~txt=addressTxt,
-          ~label="Enter tz address or tezos domain",
+          ~label="Address or Tezos domain",
           ~placeholder="Enter tz address or tezos domain",
           ~onChange={t => setAddressTxt(_ => t)},
           ~tz1,

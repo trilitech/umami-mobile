@@ -25,7 +25,7 @@ let make = (~navigation as _, ~route as _) => {
     <TextInput
       style={makeVMargin()}
       placeholder="Enter code word"
-      label="confirm"
+      label="Code word"
       value=confirmText
       mode=#outlined
       onChangeText={t => setConfirmText(_ => t)}

@@ -31,7 +31,8 @@ module EditionsInput = {
         testID="nft-editions"
         style={style(~flex=1., ())}
         mode=#outlined
-        placeholder="editions"
+        label="Editions"
+        placeholder="Enter editions"
         value=prettyAmount
       />
       <NicerIconBtn iconName="minus" onPress={_ => prettyAmount->update(a => a - 1, onChange)} />

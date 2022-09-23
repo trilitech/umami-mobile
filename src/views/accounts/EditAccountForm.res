@@ -14,7 +14,7 @@ let make = (~name, ~onSubmit) => {
       error={error->Option.isSome}
       style
       value=name
-      label="name"
+      label="Name"
       mode=#outlined
       onChangeText={t => setName(_ => t)}
     />

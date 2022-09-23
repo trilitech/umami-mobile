@@ -13,9 +13,9 @@ module Plain = {
       <TextInput
         disabled=loading
         secureTextEntry=true
-        placeholder="password"
+        placeholder="Enter password"
         value
-        label="Enter password"
+        label="Password"
         mode=#outlined
         onChangeText={t => setValue(_ => t)}
         style=vMargin
