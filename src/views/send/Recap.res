@@ -37,7 +37,7 @@ let make = (~trans, ~fee, ~loading=false, ~onSubmit, ~onCancel) => {
       <Button disabled=loading loading onPress=onSubmit style={vMargin} mode=#contained>
         {React.string("Submit transaction")}
       </Button>
-      <Button disabled=loading onPress=onCancel style={vMargin} mode=#contained>
+      <Button disabled=loading onPress=onCancel style={vMargin} mode=#outlined>
         {React.string("Cancel")}
       </Button>
     </Container>
