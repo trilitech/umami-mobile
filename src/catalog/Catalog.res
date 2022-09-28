@@ -18,13 +18,13 @@ module PureCatalog = {
   let make = () => {
     let navTheme = App.useNavTheme()
     <ReactNavigation.Native.NavigationContainer theme={navTheme}>
-      <ThemeProvider>
+      <UmamiThemeProvider>
         <Navigator initialRouteName="Home">
           <Screen name="Home" component=Home.make />
           <Screen name="ProfileCatalog" component=ProfileCatalog.make />
           <Screen name="RecapCatalog" component=RecapCatalog.make />
         </Navigator>
-      </ThemeProvider>
+      </UmamiThemeProvider>
     </ReactNavigation.Native.NavigationContainer>
   }
 }

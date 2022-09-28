@@ -15,7 +15,7 @@ module ContactBox = {
 module Controls = {
   @react.component
   let make = (~onPressDelete, ~onPressEdit) => {
-    let dangerColor = ThemeProvider.useErrorColor()
+    let dangerColor = UmamiThemeProvider.useErrorColor()
     <>
       <CustomListItem
         left={<Icon size=30 name="pencil-outline" />}

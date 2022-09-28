@@ -1,11 +1,12 @@
 open ReactNative.Style
 open CommonComponents
 
+open UmamiThemeProvider
 @react.component
 let make = (~left=React.null, ~right=React.null, ~center=React.null) => {
   let isTestNet = Store.useIsTestNet()
-  let surfaceColor = ThemeProvider.useSurfaceColor()
-  let errorColor = ThemeProvider.useErrorColor()
+  let surfaceColor = useSurfaceColor()
+  let errorColor = useErrorColor()
 
   open Paper
   <Appbar.Header

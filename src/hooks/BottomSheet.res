@@ -2,7 +2,7 @@ open ReactNative.Style
 open Belt
 
 let useBottomSheet = (~element, ~snapPoint="45%", ()) => {
-  let backgroundColor = ThemeProvider.useSurfaceColor()
+  let backgroundColor = UmamiThemeProvider.useSurfaceColor()
   let ref = React.useRef(None)
   let (isOpen, setIsOpen) = React.useState(_ => false)
 

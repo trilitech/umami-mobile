@@ -4,7 +4,7 @@ open ReactNative.Style
 module Tz1Badge = {
   @react.component
   let make = (~tz1) => {
-    let color = ThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.disabled
+    let color = UmamiThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.disabled
 
     let formatted = tz1->Pkh.toPretty
     let copy = ClipboardCopy.useCopy()

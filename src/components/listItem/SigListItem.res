@@ -2,7 +2,7 @@ open CommonComponents
 
 @react.component
 let make = (~tz1, ~prettySigDate: string) => {
-  let backgroundColor = ThemeProvider.useSurfaceColor()
+  let backgroundColor = UmamiThemeProvider.useSurfaceColor()
   open Paper
   <ListItemBase
     backgroundColor

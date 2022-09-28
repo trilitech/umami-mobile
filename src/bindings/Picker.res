@@ -1,6 +1,6 @@
 @react.component
 let make = (~items, ~value, ~onChange, ~icon) => {
-  let color = ThemeProvider.useTextColor()
+  let color = UmamiThemeProvider.useTextColor()
   <RNPicker
     \"Icon"=icon
     value

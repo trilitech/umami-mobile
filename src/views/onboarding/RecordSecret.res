@@ -45,7 +45,7 @@ module VerifySecret = {
     let caption =
       wordIndex->Belt.Option.mapWithDefault("", i => "Word " ++ Belt.Int.toString(i + 1))
 
-    let errorColor = ThemeProvider.useErrorColor()
+    let errorColor = UmamiThemeProvider.useErrorColor()
     let allAnswsers = React.useMemo2(() => {
       badAnswers->Belt.Array.concat([goodAnwser])->Belt.Array.shuffle
     }, (goodAnwser, badAnswers))

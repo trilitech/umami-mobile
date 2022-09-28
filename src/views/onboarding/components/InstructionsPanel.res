@@ -3,7 +3,7 @@ open Helpers
 open ReactNative.Style
 @react.component
 let make = (~instructions, ~title=?, ~step=?, ~danger=false) => {
-  let dangerColor = ThemeProvider.useErrorColor()
+  let dangerColor = UmamiThemeProvider.useErrorColor()
   open Paper
   let dangerStyle = style(~color=dangerColor, ())
   let textStyle = danger ? dangerStyle : style()

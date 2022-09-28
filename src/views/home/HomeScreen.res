@@ -24,7 +24,7 @@ module HomeCoreView = {
 
   @react.component
   let make = () => {
-    let backgroundColor = ThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.surface
+    let backgroundColor = UmamiThemeProvider.useColors()->Paper.ThemeProvider.Theme.Colors.surface
 
     open Paper
     let (routeIndex, setRouteIndex) = React.useState(() => 0)

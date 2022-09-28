@@ -2,8 +2,9 @@ open StyleUtils
 open ReactNative.Style
 @react.component
 let make = (~route as _, ~navigation as _) => {
-  let dangerColor = ThemeProvider.useErrorColor()
-  let backgroundColor = ThemeProvider.useBgColor()
+  open UmamiThemeProvider
+  let dangerColor = useErrorColor()
+  let backgroundColor = useBgColor()
   open Paper
 
   let (theme, _) = Store.useTheme()

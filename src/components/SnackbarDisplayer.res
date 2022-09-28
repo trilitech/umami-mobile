@@ -10,7 +10,7 @@ let make = (~children) => {
   }
 
   open ReactNative.Style
-  let backgroundColor = ThemeProvider.useBgColor()
+  let backgroundColor = UmamiThemeProvider.useBgColor()
 
   open Paper
   <>

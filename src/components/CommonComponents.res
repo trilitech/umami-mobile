@@ -209,7 +209,7 @@ module CustomListItem = {
 module NicerIconBtn = {
   @react.component
   let make = (~onPress, ~small=true, ~iconName, ~style as extraStyle=style()) => {
-    let textColor = ThemeProvider.useTextColor()
+    let textColor = UmamiThemeProvider.useTextColor()
     <Paper.FAB
       style={array([extraStyle, style(~backgroundColor="transparent", ())])}
       color={textColor}
@@ -249,7 +249,7 @@ module CheckBoxAndText = {
 module Badge = {
   @react.component
   let make = (~children, ~style as extraStyle=style()) => {
-    let borderColor = ThemeProvider.useDisabledColor()
+    let borderColor = UmamiThemeProvider.useDisabledColor()
     <ReactNative.View
       style={array([style(~borderWidth=2., ~borderRadius=4., ~borderColor, ()), extraStyle])}>
       {children}

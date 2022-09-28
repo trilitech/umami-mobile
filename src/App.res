@@ -67,7 +67,7 @@ module MemoizedApp = {
   @react.component
   let make = React.memo((~allReady) => {
     <ReactQuery.Provider client>
-      <ThemeProvider> {allReady ? <Router /> : React.null} </ThemeProvider>
+      <UmamiThemeProvider> {allReady ? <Router /> : React.null} </UmamiThemeProvider>
     </ReactQuery.Provider>
   })
 }

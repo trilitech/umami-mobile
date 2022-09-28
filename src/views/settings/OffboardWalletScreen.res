@@ -11,7 +11,7 @@ let formIsValid = (providedCode, checked) =>
 
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let dangerColor = ThemeProvider.useErrorColor()
+  let dangerColor = UmamiThemeProvider.useErrorColor()
   let (confirmText, setConfirmText) = React.useState(_ => "")
   let (status, setStatus) = React.useState(_ => #unchecked)
   let (loading, setLoading) = React.useState(_ => false)
