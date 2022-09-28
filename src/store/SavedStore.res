@@ -1,16 +1,3 @@
-open Atoms
-
-module Serializers = {
-  let serializeAccounts = Js.Json.stringifyAny
-  let serializeSelectedAccount = s => s->Js.Int.toString->Some
-  let serializeTheme = s => s->Some
-  let serializeContacts = Js.Json.stringifyAny
-  let serializeAddressMetadatas = (a: Belt.Map.String.t<AddressMetadata.t>) => {
-    a->Belt.Map.String.toArray->Js.Json.stringifyAny
-  }
-  let serializeNetwork = (n: Network.t) => n->Network.toString->Some
-}
-
 let _withSave = (stateHook, serializer, key: string, ()) => {
   let (value, setValue) = stateHook()
 
@@ -34,22 +21,15 @@ let _withSave = (stateHook, serializer, key: string, ()) => {
   (value, stableSetValue)
 }
 
-let withSave = atom => _withSave(() => Jotai.Atom.use(atom))
+let _withSave = atom => _withSave(() => Jotai.Atom.use(atom))
 
-let useTheme = withSave(themeAtom, Serializers.serializeTheme, "theme")
-let useAccounts = withSave(accountsAtom, Serializers.serializeAccounts, "accounts")
-let useSelectedAccount = withSave(
-  selectedAccountAtom,
-  Serializers.serializeSelectedAccount,
-  "selectedAccount",
-)
+let withSave = (c: StoreConfig.t<'a>) => _withSave(c.atom, c.serializer, c.key)
 
-let useContacts = withSave(contactsAtom, Serializers.serializeContacts, "contacts")
-
-let useNetwork = withSave(networkAtom, Serializers.serializeNetwork, "network")
-
-let useAddressMetadatas = withSave(
-  addressMetatdadaAtom,
-  Serializers.serializeAddressMetadatas,
-  "addressMetadatas",
-)
+open StoreConfig
+// Create state hooks with config infos
+let useTheme = withSave(theme)
+let useAccounts = withSave(accounts)
+let useSelectedAccount = withSave(selectedAccount)
+let useContacts = withSave(contacts)
+let useNetwork = withSave(network)
+let useAddressMetadatas = withSave(addressMetadatas)

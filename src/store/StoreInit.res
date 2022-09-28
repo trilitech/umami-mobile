@@ -1,27 +1,4 @@
-open Atoms
-
 open Belt
-
-open JSONparse
-module Deserializers = {
-  // Totally unsafe
-  let deserializeAccounts: string => array<Account.t> = unsafeJSONParse
-  let deserializeSelectedAccount = s => Belt.Int.fromString(s)->Belt.Option.getWithDefault(0)
-  let deserializeTheme = (s: string) => s
-  let deserializeContacts: string => array<Contact.t> = unsafeJSONParse
-
-  let deserializeAddressMetadatas: string => Map.String.t<AddressMetadata.t> = s =>
-    s->unsafeJSONParse->Belt.Map.String.fromArray
-
-  let deserializeNetwork = s => {
-    open Network
-    switch s {
-    | "ghostnet" => Ghostnet
-    | "mainnet" => Mainnet
-    | _ => Mainnet
-    }
-  }
-}
 
 let _useIniter = (hook, key: string, deserializer) => {
   let (_, set) = hook()
@@ -31,21 +8,24 @@ let _useIniter = (hook, key: string, deserializer) => {
     )
 }
 
-let useIniter = atom => _useIniter(() => Jotai.Atom.use(atom))
+let _useIniter = atom => _useIniter(() => Jotai.Atom.use(atom))
+
+let useIniter = (c: StoreConfig.t<'a>) => _useIniter(c.atom, c.key, c.deserializer)
 
 // Triggers store initialization.
-// Returns true when store is updated against RNStorage.
+// Returns true when store is successfully updated against RNStorage.
+
 let useInit = () => {
-  open Deserializers
   let (done, setDone) = React.useState(_ => false)
 
+  open StoreConfig
   let initers = [
-    useIniter(themeAtom, "theme", deserializeTheme),
-    useIniter(accountsAtom, "accounts", deserializeAccounts),
-    useIniter(selectedAccountAtom, "selectedAccount", deserializeSelectedAccount),
-    useIniter(contactsAtom, "contacts", deserializeContacts),
-    useIniter(networkAtom, "network", deserializeNetwork),
-    useIniter(addressMetatdadaAtom, "addressMetadatas", deserializeAddressMetadatas),
+    useIniter(theme),
+    useIniter(accounts),
+    useIniter(selectedAccount),
+    useIniter(contacts),
+    useIniter(network),
+    useIniter(addressMetadatas),
   ]
 
   let memoIniters = React.useMemo1(() => initers, [])
