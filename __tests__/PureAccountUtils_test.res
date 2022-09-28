@@ -22,7 +22,7 @@ describe("PureAccountUtils", () => {
     let mockGenerateKeys = (~mnemonic as _, ~password as _, ~derivationPathIndex=0, ()) =>
       Promise.resolve({
         derivationPathIndex: derivationPathIndex,
-        pk: "mockPk",
+        pk: "mockPk"->Pk.unsafeBuild,
         sk: "mockSk",
         tz1: "mockTz1"->Pkh.unsafeBuild,
       })
@@ -35,19 +35,19 @@ describe("PureAccountUtils", () => {
     let expected = [
       {
         derivationPathIndex: 0,
-        pk: "mockPk",
+        pk: "mockPk"->Pk.unsafeBuild,
         sk: "mockSk",
         tz1: "mockTz1"->Pkh.unsafeBuild,
       },
       {
         derivationPathIndex: 1,
-        pk: "mockPk",
+        pk: "mockPk"->Pk.unsafeBuild,
         sk: "mockSk",
         tz1: "mockTz1"->Pkh.unsafeBuild,
       },
       {
         derivationPathIndex: 2,
-        pk: "mockPk",
+        pk: "mockPk"->Pk.unsafeBuild,
         sk: "mockSk",
         tz1: "mockTz1"->Pkh.unsafeBuild,
       },

@@ -22,7 +22,7 @@ let signContent = (~content: string, ~password: string, ~account: Account.t) => 
     signer
     ->Taquito.sign(formatedContent)
     ->Promise.thenResolve(signed => {
-      pk: account.pk,
+      pk: account.pk->Pk.toString,
       content: content,
       sig: signed.sig,
     })

@@ -5,7 +5,7 @@ type simulate = (
   ~prettyAmount: float,
   ~assetType: SendTypes.assetType,
   ~senderTz1: Pkh.t,
-  ~senderPk: string,
+  ~senderPk: Pk.t,
   ~isTestNet: bool,
 ) => Promise.t<Taquito.Toolkit.estimation>
 

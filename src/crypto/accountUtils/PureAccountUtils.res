@@ -1,6 +1,6 @@
 type keys = {
   derivationPathIndex: int,
-  pk: string,
+  pk: Pk.t,
   sk: string,
   tz1: Pkh.t,
 }

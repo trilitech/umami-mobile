@@ -3,13 +3,13 @@ open SignedData
 
 let useAccountByPk = () => {
   let (accounts, _) = Store.useAccounts()
-  (pk: string) => accounts->Belt.Array.getBy(a => a.pk === pk)
+  pk => accounts->Belt.Array.getBy(a => a.pk === pk)
 }
 
 @react.component
 let make = (~signed) => {
   let accountByPk = useAccountByPk()
-  let account = accountByPk(signed.pk)
+  let account = accountByPk(signed.pk->Pk.unsafeBuild)
 
   account->Helpers.reactFold(account => {
     <>

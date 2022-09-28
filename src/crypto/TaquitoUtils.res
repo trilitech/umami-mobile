@@ -85,29 +85,35 @@ let sendTez = (~recipient, ~amount, ~password, ~sk, ~isTestNet) => {
   })
 }
 
-let estimateSendTez = (~recipient: Pkh.t, ~amount, ~senderTz1: Pkh.t, ~senderPk, ~isTestNet) => {
+let estimateSendTez = (
+  ~amount,
+  ~recipient: Pkh.t,
+  ~senderTz1: Pkh.t,
+  ~senderPk: Pk.t,
+  ~isTestNet,
+) => {
   let tezos = _makeToolkit(~isTestNet)
   tezos->Taquito.Toolkit.setProvider({
-    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1->Pkh.toString),
+    "signer": Taquito.createDummySigner(~pk=senderPk->Pk.toString, ~pkh=senderTz1->Pkh.toString),
   })
 
   tezos.estimate->Taquito.Toolkit.estimateTransfer({"to": recipient, "amount": amount})
 }
 
 let estimateSendToken = (
+  ~amount,
   ~contractAddress,
   ~tokenId,
-  ~amount,
   ~senderTz1: Pkh.t,
-  ~senderPk,
-  ~recipientTz1,
+  ~senderPk: Pk.t,
+  ~recipientTz1: Pkh.t,
   ~isFa1=false,
   ~isTestNet,
   (),
 ) => {
   let tezos = _makeToolkit(~isTestNet)
   tezos->Taquito.Toolkit.setProvider({
-    "signer": Taquito.createDummySigner(~pk=senderPk, ~pkh=senderTz1->Pkh.toString),
+    "signer": Taquito.createDummySigner(~pk=senderPk->Pk.toString, ~pkh=senderTz1->Pkh.toString),
   })
 
   let transfer = makeContractTransfer(
@@ -159,6 +165,8 @@ let getTz1 = (~sk, ~password) =>
   )
 
 let getPk = (~sk, ~password) =>
-  Taquito.fromSecretKey(sk, password)->Promise.then(signer => signer->Taquito.publicKey())
+  Taquito.fromSecretKey(sk, password)
+  ->Promise.then(signer => signer->Taquito.publicKey())
+  ->Promise.thenResolve(Pk.unsafeBuild)
 
 let tz1IsValid = address => Taquito.validateAddress(address) == 3

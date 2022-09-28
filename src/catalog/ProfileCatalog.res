@@ -6,7 +6,7 @@ let mockAccount: Account.t = {
   sk: "",
   derivationPathIndex: 9,
   transactions: [],
-  pk: "",
+  pk: ""->Pk.unsafeBuild,
 }
 
 @react.component

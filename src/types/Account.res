@@ -2,7 +2,7 @@ type t = {
   name: string,
   balance: option<int>,
   tz1: Pkh.t,
-  pk: string,
+  pk: Pk.t,
   sk: string,
   derivationPathIndex: int,
   tokens: array<Token.t>,
