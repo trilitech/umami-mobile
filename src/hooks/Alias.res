@@ -1,5 +1,5 @@
 let useGetContact = () => {
-  let (contacts, _) = SavedStore.useContacts()
+  let (contacts, _) = Store.useContacts()
   (tz1: Pkh.t) => contacts->Belt.Array.getBy(c => c.tz1 == tz1)
 }
 

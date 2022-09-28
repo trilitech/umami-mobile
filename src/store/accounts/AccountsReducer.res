@@ -65,6 +65,6 @@ let useAccountsDispatcher = () => {
 
   let fn = action => setAccounts(accounts => reducer(accounts, action))
 
-  let dispatch = React.useMemo1(() => fn, [])
+  let dispatch = React.useCallback1(fn, [])
   (accounts, dispatch)
 }

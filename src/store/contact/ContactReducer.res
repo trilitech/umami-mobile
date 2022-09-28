@@ -12,3 +12,12 @@ let reducer = (contacts: array<Contact.t>, action: actions) =>
     }
   | Delete(tz1) => contacts->Array.keep(c => c.tz1 != tz1)
   }
+
+let useContactsDispatcher = () => {
+  let (_, setContacts) = SavedStore.useContacts()
+
+  let fn = action => setContacts(prev => reducer(prev, action))
+
+  let dispatch = React.useCallback1(fn, [])
+  dispatch
+}

@@ -56,7 +56,7 @@ module FilteredContacts = {
 let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
   let (search, setSearch) = React.useState(_ => "")
 
-  let contacts = Store.useContacts()
+  let (contacts, _) = Store.useContacts()
 
   let navigateWithParams = NavUtils.useNavigateWithParams()
   let gotToAddContact = () =>

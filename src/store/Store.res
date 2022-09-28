@@ -41,19 +41,9 @@ let useReset = () => {
   }
 }
 
-let useContactsDispatcher = () => {
-  let (_, setContacts) = SavedStore.useContacts()
-
-  action => setContacts(prev => ContactReducer.reducer(prev, action))
-}
-let useContacts = () => {
-  let (contacts, _) = SavedStore.useContacts()
-  contacts
-}
-
 let useAccountsAndContacts = () => {
   open AccountOrContact
-  let contacts = useContacts()
+  let (contacts, _) = useContacts()
   let (accounts, _) = useAccounts()
   let allContacts = Array.concat(
     accounts->Array.map(a => AccountCard(a)),
@@ -70,15 +60,15 @@ let useAddressExists = () => {
 }
 
 let useIsTestNet = () => {
-  let (network, _) = SavedStore.useNetwork()
+  let (network, _) = useNetwork()
   network != Mainnet
 }
 
 let useGetTezosDomain = () => {
-  let (metadatas, _) = SavedStore.useAddressMetadatas()
+  let (metadatas, _) = useAddressMetadatas()
   tz1 => metadatas->Map.String.get(tz1)->Option.flatMap(d => d.tzDomain)
 }
 let useGetTezosProfile = () => {
-  let (metadatas, _) = SavedStore.useAddressMetadatas()
+  let (metadatas, _) = useAddressMetadatas()
   tz1 => metadatas->Map.String.get(tz1)->Option.flatMap(d => d.tzProfile)
 }

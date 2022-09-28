@@ -13,7 +13,7 @@ let makeRadio = (target, network, setNetwork) =>
 
 @react.component
 let make = (~navigation as _, ~route as _) => {
-  let (network, setNetwork) = SavedStore.useNetwork()
+  let (network, setNetwork) = Store.useNetwork()
 
   <Container>
     <List.Section title="Selected Network">
