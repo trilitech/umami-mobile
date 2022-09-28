@@ -12,10 +12,6 @@ let query = (tz1: string) =>
 
 let graphqlEndpoint = "https://tzprofiles.dipdup.net/v1/graphql"
 
-// type TzProfile = {
-//   tzprofiles_by_pk: Js.Nullable.t
-// }
-
 type tzProfile = {
   alias: Js.Nullable.t<string>,
   logo: Js.Nullable.t<string>,
@@ -26,8 +22,6 @@ type tzProfile = {
 external parseTzProfile: Js_dict.t<Js.Json.t> => {
   "data": {"tzprofiles_by_pk": Js.Nullable.t<tzProfile>},
 } = "%identity"
-
-// let unsafeParse =
 
 let getProfile = (tz1: string) => {
   let payload = Js.Dict.empty()

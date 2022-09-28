@@ -121,7 +121,7 @@ module CurrencyPicker = {
       <CustomListItem
         height=56. // same height at RN Paper input outlined
         style={StyleUtils.makeTopMargin()} // compensate RN Paper input outlined top 8px padding
-        center={<StyledPicker
+        center={<Picker
           icon={_ => <ChevronRight />}
           items
           value={getLabel(value)}

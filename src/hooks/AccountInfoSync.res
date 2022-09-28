@@ -1,5 +1,3 @@
-open UsePrevious
-
 let getAccountBalance = (~tz1: Pkh.t, ~isTestNet) => {
   open AccountsReducer
   Promise.all2((
@@ -25,25 +23,27 @@ let getBalances = (~accounts, ~isTestNet) =>
 let getOperations = (~accounts, ~isTestNet) =>
   accounts->Belt.Array.map(a => getAccountOperations(a.tz1, ~isTestNet))->Js.Promise.all
 
-let useTransactionNotif = () => {
-  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
+// TODO reimplement transaction notifications
 
-  let prevAccounts = usePrevious(accounts)
-  let notify = SnackBar.useNotification()
+// let useTransactionNotif = () => {
+//   let (accounts, _) = AccountsReducer.useAccountsDispatcher()
 
-  React.useEffect3(() => {
-    prevAccounts
-    ->Belt.Option.map(prevAccounts => {
-      TransNotif.getUpdates(prevAccounts, accounts)->Belt.Array.forEach(notification => {
-        open TezHelpers
-        notify(`${notification.name} received ${notification.amount->formatBalance}`)
-      })
-    })
-    ->ignore
+//   let prevAccounts = usePrevious(accounts)
+//   let notify = SnackBar.useNotification()
 
-    None
-  }, (accounts, notify, prevAccounts))
-}
+//   React.useEffect3(() => {
+//     prevAccounts
+//     ->Belt.Option.map(prevAccounts => {
+//       TransNotif.getUpdates(prevAccounts, accounts)->Belt.Array.forEach(notification => {
+//         open TezHelpers
+//         notify(`${notification.name} received ${notification.amount->formatBalance}`)
+//       })
+//     })
+//     ->ignore
+
+//     None
+//   }, (accounts, notify, prevAccounts))
+// }
 
 let _parseError = (e: exn) => {
   open MezosAPI
@@ -76,7 +76,7 @@ let useQueryWithRefetchInterval = (queryFn, queryKey) => {
   )
 }
 
-let useBalancesSync = () => {
+let useBalancesAndOpsSync = () => {
   let isTestNet = Store.useIsTestNet()
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
 

@@ -4,7 +4,7 @@ let noHeader = _ => options(~headerShown=false, ())
 let make = () => {
   let headerStyles = HeaderStyle.useHeaderStyle()
   InitAddressMetadata.useRefresh()
-  BalancesSync.useBalancesSync()
+  AccountInfoSync.useBalancesAndOpsSync()
 
   <Navigator initialRouteName="Home">
     <Group>

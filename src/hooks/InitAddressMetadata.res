@@ -2,8 +2,8 @@ open Belt
 open AddressMetadata
 
 let getMetadatas = (tz1: string) => {
-  let domain = TezosDomains.getDomain(tz1)
-  let profile = TzProfiles.getProfile(tz1)
+  let domain = TezosDomainsAPI.getDomain(tz1)
+  let profile = TezosProfilesAPI.getProfile(tz1)
   Promise.all2((domain, profile))->Promise.thenResolve(((d, p)) => {
     {tz1: tz1, tzProfile: p, tzDomain: d}
   })

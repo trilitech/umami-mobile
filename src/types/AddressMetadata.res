@@ -1,5 +1,5 @@
 type t = {
   tz1: string,
-  tzProfile: option<TzProfiles.tzProfile>,
+  tzProfile: option<TezosProfilesAPI.tzProfile>,
   tzDomain: option<string>,
 }

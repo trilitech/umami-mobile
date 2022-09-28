@@ -46,7 +46,7 @@ module TzDomainRecipient = {
       {
         let handleDomainText = t => {
           setLoading(_ => true)
-          TezosDomains.getAddress(t)
+          TezosDomainsAPI.getAddress(t)
           ->Promise.thenResolve(tz1 => setTz1(_ => tz1))
           ->Promise.catch(exn => {
             notify("Failed to fetch tezos domain. " ++ exn->Helpers.getMessage)
@@ -67,7 +67,7 @@ module TzDomainRecipient = {
     }, (tz1, onChange))
 
     React.useEffect3(() => {
-      if TezosDomains.isTezosDomain(addressTxt) {
+      if TezosDomainsAPI.isTezosDomain(addressTxt) {
         fetchTz1(addressTxt)
       } else {
         setTz1(_ => Pkh.buildOption(addressTxt))

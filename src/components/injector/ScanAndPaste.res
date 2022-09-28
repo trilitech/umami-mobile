@@ -34,7 +34,7 @@ let useOnScannedAddress = onChange => {
 let getValidator = mode => {
   switch mode {
   | Tz1Mode => TaquitoUtils.tz1IsValid
-  | TezosDomainMode => TezosDomains.isTezosDomain
+  | TezosDomainMode => TezosDomainsAPI.isTezosDomain
   }
 }
 
