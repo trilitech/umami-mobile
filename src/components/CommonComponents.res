@@ -161,9 +161,9 @@ module ListItemBase = {
   let make = (~height=50., ~left, ~center, ~right, ~transparent=false, ~backgroundColor) => {
     let el =
       <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
-        <ReactNative.View style={style(~margin=8.->dp, ())}> {left} </ReactNative.View>
-        <ReactNative.View style={style(~margin=8.->dp, ())}> {center} </ReactNative.View>
-        <ReactNative.View style={style(~position=#absolute, ~right=0.->dp, ())}>
+        <ReactNative.View style={StyleUtils.makeHMargin()}> {left} </ReactNative.View>
+        <ReactNative.View style={StyleUtils.makeHMargin()}> {center} </ReactNative.View>
+        <ReactNative.View style={style(~position=#absolute, ~right=StyleUtils.u->dp, ())}>
           {right}
         </ReactNative.View>
       </Wrapper>
