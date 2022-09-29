@@ -2,47 +2,6 @@ open Paper
 open Belt
 open ReactNative.Style
 
-open CommonComponents
-
-let valid = (~tz1: Pkh.t) => {
-  <>
-    <Text> {("Signed by " ++ tz1->Pkh.toString)->React.string} </Text>
-    <CommonComponents.Icon color=Colors.Light.positive name="check" />
-  </>
-}
-
-let invalid =
-  <>
-    <Text> {"Invalid"->React.string} </Text>
-    <CommonComponents.Icon color=Colors.Light.negative name="alert-circle" />
-  </>
-
-let renderStatus = (signed: SignedData.t) =>
-  <Wrapper>
-    {signed->SignUtils.checkIsValid ? valid(~tz1=signed.pk->Pkh.buildFromPk) : invalid}
-  </Wrapper>
-
-module Generic = {
-  @react.component
-  let make = (~signed: SignedData.t) => {
-    <Wrapper flexDirection=#column alignItems=#center>
-      <Headline> {React.string("Signed data")} </Headline>
-      <Title> {React.string("Content:")} </Title>
-      <Text style={StyleUtils.makeVMargin()}> {signed.content->React.string} </Text>
-      {renderStatus(signed)}
-    </Wrapper>
-  }
-}
-
-let getMillisecondsFromSig = (dateStr: string) => {
-  let dateObj = Js.Date.fromString(dateStr)
-
-  let then = dateObj->Js.Date.getTime
-  let now = Js.Date.now()
-  let diff = (now -. then) /. 1000.
-  diff
-}
-
 module NotOwned = {
   @react.component
   let make = () => {
@@ -50,28 +9,69 @@ module NotOwned = {
   }
 }
 
-module SignedNFTDisplay2 = {
+module SingedContentBase = {
   @react.component
-  let make = (~prettySigDate, ~signerAddress: Pkh.t, ~nftUrl: string, ~name) => {
-    let source = ReactNative.Image.uriSource(~uri=nftUrl, ())
+  let make = (~signerAddress, ~prettySigDate, ~content, ~isValid) => {
     <Container>
-      <CommonComponents.Icon
-        size=100
-        color=Colors.Light.positive
-        name="certificate"
-        style={style(~alignSelf=#center, ())}
-      />
+      {isValid
+        ? <CommonComponents.Icon
+            size=100
+            color=Colors.Light.positive
+            name="certificate"
+            style={style(~alignSelf=#center, ())}
+          />
+        : <CommonComponents.Icon
+            size=100
+            color=Colors.Light.negative
+            name="alert-circle"
+            style={style(~alignSelf=#center, ())}
+          />}
       <Caption> {"Signer account"->React.string} </Caption>
       <SigListItem tz1=signerAddress prettySigDate />
-      <Title style={array([style(~alignSelf=#center, ()), StyleUtils.makeVMargin(~size=2, ())])}>
-        {name->React.string}
-      </Title>
-      <FastImage
-        source
-        resizeMode=#contain
-        style={style(~height=300.->dp, ~width=300.->dp, ~alignSelf=#center, ())}
-      />
+      {content}
     </Container>
+  }
+}
+
+module Generic = {
+  @react.component
+  let make = (~signed: SignedData.t) => {
+    let signerAddress = signed.pk->Pkh.buildFromPk
+
+    let backgroundColor = UmamiThemeProvider.useSurfaceColor()
+    <SingedContentBase
+      isValid={signed->SignUtils.checkIsValid}
+      signerAddress
+      prettySigDate=""
+      content={<>
+        <Caption> {"Content"->React.string} </Caption>
+        <Card style={style(~borderRadius=4., ~backgroundColor, ~padding=8.->dp, ())}>
+          <Text> {signed.content->React.string} </Text>
+        </Card>
+      </>}
+    />
+  }
+}
+
+module SignedNFTDisplay2 = {
+  @react.component
+  let make = (~prettySigDate, ~signerAddress: Pkh.t, ~nftUrl: string, ~name, ~isValid) => {
+    let source = ReactNative.Image.uriSource(~uri=nftUrl, ())
+    <SingedContentBase
+      isValid
+      signerAddress
+      prettySigDate
+      content={<>
+        <Title style={array([style(~alignSelf=#center, ()), StyleUtils.makeVMargin(~size=2, ())])}>
+          {name->React.string}
+        </Title>
+        <FastImage
+          source
+          resizeMode=#contain
+          style={style(~height=300.->dp, ~width=300.->dp, ~alignSelf=#center, ())}
+        />
+      </>}
+    />
   }
 }
 
@@ -82,8 +82,13 @@ module SignedNFTDisplay = {
     let tz1 = signed.pk->Pkh.buildFromPk
 
     let date = signatureDate->Moment.getRelativeDate
-
-    <SignedNFTDisplay2 prettySigDate=date name=m.name nftUrl=m.displayUri signerAddress=tz1 />
+    <SignedNFTDisplay2
+      isValid={signed->SignUtils.checkIsValid}
+      prettySigDate=date
+      name=m.name
+      nftUrl=m.displayUri
+      signerAddress=tz1
+    />
   }
 }
 module SignedNFT = {
@@ -123,22 +128,16 @@ module SignedNFT = {
     <Container> {el} </Container>
   }
 }
-module Display = {
-  @react.component
-  let make = (~signed: SignedData.t) => {
-    let timeStampedNft = signed.content->TimestampedNft.Decode.decode->Helpers.resultToOption
-
-    timeStampedNft->Option.mapWithDefault(<Generic signed />, timeStampedNft =>
-      <SignedNFT timeStampedNft signed />
-    )
-  }
-}
 
 @react.component
 let make = (~navigation as _, ~route) => {
   let signed = NavUtils.getSignedContent(route)
-
-  signed->Helpers.reactFold(signed => {
-    <Display signed />
-  })
+  signed->Helpers.reactFold(signed =>
+    signed.content
+    ->TimestampedNft.Decode.decode
+    ->Helpers.resultToOption
+    ->Option.mapWithDefault(<Generic signed />, timeStampedNft =>
+      <SignedNFT timeStampedNft signed />
+    )
+  )
 }
