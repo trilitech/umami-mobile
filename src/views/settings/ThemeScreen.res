@@ -2,6 +2,7 @@ open CommonComponents
 
 open Paper
 
+open Theme
 @react.component
 let make = (~navigation as _, ~route as _) => {
   let (theme, setTheme) = Store.useTheme()
@@ -9,13 +10,13 @@ let make = (~navigation as _, ~route as _) => {
   let makeRadio = value =>
     <LabeledRadio
       onPress={_ => setTheme(_ => value)}
-      label=value
+      label={Theme.toString(value)}
       status={theme == value ? #checked : #unchecked}
-      value
+      value={Theme.toString(value)}
     />
   <Container>
     <List.Section title="Theme">
-      {makeRadio("dark")} {makeRadio("light")} {makeRadio("system")}
+      {makeRadio(Dark)} {makeRadio(Light)} {makeRadio(System)}
     </List.Section>
   </Container>
 }

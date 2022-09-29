@@ -15,7 +15,7 @@ type t<'a> = {
 module Serializers = {
   let serializeAccounts = Js.Json.stringifyAny
   let serializeSelectedAccount = s => s->Js.Int.toString->Some
-  let serializeTheme = s => s->Some
+  let serializeTheme = s => s->Theme.toString->Some
   let serializeContacts = Js.Json.stringifyAny
   let serializeAddressMetadatas = (a: Belt.Map.String.t<AddressMetadata.t>) => {
     a->Belt.Map.String.toArray->Js.Json.stringifyAny
@@ -51,7 +51,7 @@ module Deserializers = {
   // Totally unsafe
   let deserializeAccounts: string => array<Account.t> = unsafeJSONParse
   let deserializeSelectedAccount = s => Belt.Int.fromString(s)->Belt.Option.getWithDefault(0)
-  let deserializeTheme = (s: string) => s
+  let deserializeTheme = Theme.fromString
   let deserializeContacts: string => array<Contact.t> = unsafeJSONParse
 
   let deserializeAddressMetadatas: string => Map.String.t<AddressMetadata.t> = s =>

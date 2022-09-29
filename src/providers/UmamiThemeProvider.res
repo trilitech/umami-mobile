@@ -100,14 +100,28 @@ let useErrorColor = () => {
   open Paper.ThemeProvider
   useTheme()->Theme.colors->Theme.Colors.error
 }
+
+let (dark, default) = makeThemes()
+
+let getSystemTheme = () =>
+  ReactNative.Appearance.getColorScheme()->Js.nullToOption->Belt.Option.getWithDefault(#dark)
+
+let useEffectiveTheme = () => {
+  let (theme, _) = Store.useTheme()
+  switch theme {
+  | Dark => #dark
+  | Light => #light
+  | System => getSystemTheme()
+  }
+}
+
 @react.component
 let make = (~children) => {
-  let (newDark, newDefault) = makeThemes()
-  let (theme, _) = Store.useTheme()
-
-  let theme = theme == "dark" ? newDark : newDefault
+  let effectiveTheme = useEffectiveTheme()
 
   <Paper.PaperProvider>
-    <Paper.ThemeProvider theme> {children} </Paper.ThemeProvider>
+    <Paper.ThemeProvider theme={effectiveTheme == #dark ? dark : default}>
+      {children}
+    </Paper.ThemeProvider>
   </Paper.PaperProvider>
 }
