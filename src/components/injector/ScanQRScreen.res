@@ -53,8 +53,8 @@ module ScanTezosDomain = {
 module ScanDesktopSeedPhrase = {
   @react.component
   let make = (~navigation as _, ~route as _) => {
-    let title = "Umami Desktop seed phrase"
-    let subTitle = "Scan Umami Desktop seed phrase"
+    let title = "Umami Desktop secret QR code"
+    let subTitle = "Scan Umami Desktop secret QR code"
 
     let navigateWithParams = NavUtils.useOffboardNavigateWithParams()
 

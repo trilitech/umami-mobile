@@ -21,7 +21,7 @@ let make = (~navigation, ~route as _) => {
       iconName="format-list-bulleted"
     />
     <ListItem
-      onPress={_ => navigation->Navigation.navigate("ScanDesktopSeedPhrase")}
+      onPress={_ => navigation->Navigation.navigate("QRImportInstructions")}
       title="Import secret with Umami Desktop QR code"
       iconName="qrcode-scan"
     />
