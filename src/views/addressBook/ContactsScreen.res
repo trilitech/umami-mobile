@@ -57,6 +57,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
   let (search, setSearch) = React.useState(_ => "")
 
   let (contacts, _) = Store.useContacts()
+  let contacts = contacts->Contact.toArray
 
   let navigateWithParams = NavUtils.useNavigateWithParams()
   let gotToAddContact = () =>

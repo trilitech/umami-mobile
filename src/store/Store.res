@@ -47,7 +47,7 @@ let useAccountsAndContacts = () => {
   let (accounts, _) = useAccounts()
   let allContacts = Array.concat(
     accounts->Array.map(a => AccountCard(a)),
-    contacts->Array.map(c => ContactCard(c)),
+    contacts->Contact.toArray->Array.map(c => ContactCard(c)),
   )
   allContacts
 }

@@ -16,7 +16,10 @@ module Serializers = {
   let serializeAccounts = Js.Json.stringifyAny
   let serializeSelectedAccount = s => s->Js.Int.toString->Some
   let serializeTheme = s => s->Theme.toString->Some
-  let serializeContacts = Js.Json.stringifyAny
+  let serializeContacts = (c: Contact.contactsMap) => {
+    c->Belt.Map.String.toArray->Js.Json.stringifyAny
+  }
+
   let serializeAddressMetadatas = (a: Belt.Map.String.t<AddressMetadata.t>) => {
     a->Belt.Map.String.toArray->Js.Json.stringifyAny
   }
@@ -52,7 +55,8 @@ module Deserializers = {
   let deserializeAccounts: string => array<Account.t> = unsafeJSONParse
   let deserializeSelectedAccount = s => Belt.Int.fromString(s)->Belt.Option.getWithDefault(0)
   let deserializeTheme = Theme.fromString
-  let deserializeContacts: string => array<Contact.t> = unsafeJSONParse
+  let deserializeContacts: string => Map.String.t<Contact.t> = s =>
+    s->unsafeJSONParse->Belt.Map.String.fromArray
 
   let deserializeAddressMetadatas: string => Map.String.t<AddressMetadata.t> = s =>
     s->unsafeJSONParse->Belt.Map.String.fromArray
