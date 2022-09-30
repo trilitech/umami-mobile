@@ -6,13 +6,13 @@ describe("inputIsValid", () => {
   test("nominal case", () => {
     let input = `bread gauge caught visa film false vehicle fold cheese carry rescue mix stomach deer grocery general payment future attack credit quit diesel tackle pitch`
 
-    expect(ImportSecret.inputIsValid(input))->toEqual(true)
+    expect(ImportSecretScreen.inputIsValid(input))->toEqual(true)
   })
 
   test("spaces around", () => {
     let input = `   bread gauge caught visa film false vehicle fold cheese carry rescue mix stomach deer grocery general payment future attack credit quit diesel tackle pitch  `
 
-    expect(ImportSecret.inputIsValid(input))->toEqual(true)
+    expect(ImportSecretScreen.inputIsValid(input))->toEqual(true)
   })
 
   test("multiple spaces and line breaks between and around", () => {
@@ -25,7 +25,7 @@ describe("inputIsValid", () => {
        payment future attack credit quit
        diesel tackle pitch `
 
-    expect(ImportSecret.inputIsValid(input))->toEqual(true)
+    expect(ImportSecretScreen.inputIsValid(input))->toEqual(true)
   })
 
   test("no enough words", () => {
@@ -38,7 +38,7 @@ describe("inputIsValid", () => {
       grocery general  future attack credit quit
        diesel tackle pitch`
 
-    expect(ImportSecret.inputIsValid(input))->toEqual(false)
+    expect(ImportSecretScreen.inputIsValid(input))->toEqual(false)
   })
 
   test("too many words", () => {
@@ -51,7 +51,7 @@ describe("inputIsValid", () => {
       grocery general payment future attack credit quit
        diesel tackle pitch bar`
 
-    expect(ImportSecret.inputIsValid(input))->toEqual(false)
+    expect(ImportSecretScreen.inputIsValid(input))->toEqual(false)
   })
 })
 
@@ -73,6 +73,6 @@ describe("formatForMnemonic", () => {
        `
 
     let expected = "bread gauge caught visa film false vehicle fold cheese carry rescue mix stomach deer grocery general payment future attack credit quit diesel tackle pitch"
-    expect(ImportSecret.trimSpacesAndLineBreaks(input))->toEqual(expected)
+    expect(ImportSecretScreen.trimSpacesAndLineBreaks(input))->toEqual(expected)
   })
 })

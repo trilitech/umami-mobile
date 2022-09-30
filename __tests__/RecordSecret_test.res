@@ -41,7 +41,7 @@ describe("<RecordSecret />", () => {
   ]
 
   let fixture =
-    <RecordSecret.PureRecordSecret
+    <RecordSecretScreen.PureRecordSecret
       mnemonic
       onFinished={() => {
         mockFn->MockJs.fn()
