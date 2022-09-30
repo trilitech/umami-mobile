@@ -99,6 +99,11 @@ module ChevronRight = {
   let make = () => <Icon name="chevron-right" />
 }
 
+module ChevronDown = {
+  @react.component
+  let make = () => <Icon name="chevron-down" />
+}
+
 module PressableIcon = {
   @react.component
   let make = (~name, ~color=?, ~size=30, ~style=ReactNative.Style.style(), ~onPress=() => ()) =>

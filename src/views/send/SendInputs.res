@@ -122,7 +122,7 @@ module CurrencyPicker = {
         height=56. // same height at RN Paper input outlined
         style={StyleUtils.makeTopMargin()} // compensate RN Paper input outlined top 8px padding
         center={<Picker
-          icon={_ => <ChevronRight />}
+          icon={_ => <ChevronDown />}
           items
           value={getLabel(value)}
           onChange={symbol => symbol->symbolToCurrencyData(tokens)->Option.map(onChange)->ignore}
