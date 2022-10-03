@@ -29,3 +29,11 @@ Run tests in watch mode:
 ```sh
 yarn test:watch
 ```
+
+## iOS build errors
+
+When archiving the app after a fresh `pod install`, you probably will get the following error:
+
+> Multiple commands produce 'path/AccessibilityResources.bundle
+
+To fix this error, just delete `React-Core.common-AccessibilityResources` in the Pods project as described [here](https://stackoverflow.com/a/65083990/6797267).
