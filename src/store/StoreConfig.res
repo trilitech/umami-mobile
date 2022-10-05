@@ -49,14 +49,32 @@ let _withSave = (stateHook, serializer, key: string, ()) => {
   (value, stableSetValue)
 }
 
+external arrToTuple: array<Js.Json.t> => (Belt.Map.String.key, 'a) = "%identity"
 module Deserializers = {
   open JSONparse
   // Totally unsafe
   let deserializeAccounts: string => array<Account.t> = unsafeJSONParse
   let deserializeSelectedAccount = s => Belt.Int.fromString(s)->Belt.Option.getWithDefault(0)
   let deserializeTheme = Theme.fromString
+
+  // We need to handle contacts on disk pre version 1.0.8 that are not saved in tuples
   let deserializeContacts: string => Map.String.t<Contact.t> = s =>
-    s->unsafeJSONParse->Belt.Map.String.fromArray
+    switch Js.Json.classify(s->Js.Json.parseExn) {
+    | JSONArray(a) =>
+      a->Array.map(c =>
+        switch Js.Json.classify(c) {
+        // if it's already an array assume it's the good format and do nothing
+        | JSONArray(keyValue) => keyValue->Some
+        // if its an object (pre 1.0.8) format as tuple
+        | JSONObject(obj) => obj->Js.Dict.get("tz1")->Option.map(tz1 => [tz1, c])
+        | _ => None
+        }
+      )
+    | _ => []
+    }
+    ->Helpers.filterNone
+    ->Array.map(arrToTuple) // TODO remove this unsafe part and implement more precise typechecks with JsonCombinators
+    ->Belt.Map.String.fromArray
 
   let deserializeAddressMetadatas: string => Map.String.t<AddressMetadata.t> = s =>
     s->unsafeJSONParse->Belt.Map.String.fromArray
