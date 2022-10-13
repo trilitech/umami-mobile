@@ -2,23 +2,20 @@
 require('./ignoreWarnings')
 `)
 
-// TODO refactor all this init boilerplate code
-let useLogInit = () => {
-  let (ready, setReady) = React.useState(_ => false)
-  let notify = SnackBar.useNotification()
+let useLogInit = () =>
+  AsyncInit.useAsyncInit(
+    ~init=() => Logger.init(),
+    ~errMsgPrefix="Failed to initialize logger.",
+    (),
+  )
 
-  React.useEffect2(() => {
-    Logger.init()
-    ->Promise.thenResolve(_ => setReady(_ => true))
-    ->Promise.catch(exn => {
-      notify("Failed to initialize logger." ++ exn->Helpers.getMessage)
-      Promise.resolve()
-    })
-    ->ignore
-    None
-  }, (notify, setReady))
-  ready
-}
+let useDeviceIdInit = () =>
+  AsyncInit.useAsyncInit(
+    ~init=() =>
+      DeviceInfo.getUniqueId()->Promise.thenResolve(id => DeviceId.id.contents = id->Some),
+    ~errMsgPrefix="Failed to initialize unique device ID.",
+    (),
+  )
 
 let useHasAccount = () => {
   let (accounts, _) = AccountsReducer.useAccountsDispatcher()
@@ -74,9 +71,8 @@ module MemoizedApp = {
 
 @react.component
 let app = () => {
-  let storeIsUpToDate = StoreInit.useInit()
-  let loggerIsReady = useLogInit()
-  let allReady = storeIsUpToDate && loggerIsReady
+  let initalizations = [StoreInit.useInit(), useLogInit(), useDeviceIdInit()]
+  let allReady = initalizations->Belt.Array.every(i => i)
 
   // Prevent rerenders sinces useInit is hooked to all the states
   <MemoizedApp allReady />
