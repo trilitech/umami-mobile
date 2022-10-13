@@ -6,8 +6,19 @@ let getUmamiWalletHost = isTestNet =>
 exception MezosTransactionFetchFailure(string)
 exception MezosLastBlockFetchFailure(string)
 
+let makeHeaders = () =>
+  DeviceId.id.contents->Belt.Option.mapWithDefault(Fetch.RequestInit.make(~method_=Get, ()), id => {
+    let headers = Fetch.HeadersInit.make({
+      "UmamiInstallationHash": ShortHash.unique(id),
+    })
+    Fetch.RequestInit.make(~method_=Get, ~headers, ())
+  })
+
 let getTransactions = (~tz1: Pkh.t, ~isTestNet) => {
-  Fetch.fetch(`https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1->Pkh.toString}/operations`)
+  Fetch.fetchWithInit(
+    `https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1->Pkh.toString}/operations`,
+    makeHeaders(),
+  )
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
   ->Promise.thenResolve(Belt.Option.getExn)
@@ -19,7 +30,7 @@ let getTransactions = (~tz1: Pkh.t, ~isTestNet) => {
 external unsafeToBlockJSON: Js_dict.t<Js.Json.t> => {"indexer_last_block": int} = "%identity"
 
 let getIndexerLastBlock = (~isTestNet) =>
-  Fetch.fetch(`https://${getUmamiWalletHost(isTestNet)}/monitor/blocks`)
+  Fetch.fetchWithInit(`https://${getUmamiWalletHost(isTestNet)}/monitor/blocks`, makeHeaders())
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeObject)
   ->Promise.thenResolve(Belt.Option.getExn)
@@ -30,7 +41,7 @@ let getIndexerLastBlock = (~isTestNet) =>
   let checkExists = (~tz1, ~isTestNet) => {
     let existsUrl = `https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1->Pkh.toString}/exists`
 
-    Fetch.fetch(existsUrl)
+    Fetch.fetchWithInit(existsUrl, makeHeaders())
     ->Promise.then(Fetch.Response.json)
     ->Promise.thenResolve(Js.Json.decodeBoolean)
     ->Promise.thenResolve(Belt.Option.getExn)
