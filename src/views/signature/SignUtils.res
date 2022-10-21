@@ -16,18 +16,21 @@ let verifyAndThrowExn = signed =>
     Js.Exn.raiseError("Invalid signature")
   }
 
+let signContentGeneric = (~encodedContent: string, ~password: string, ~account: Account.t) => {
+  Taquito.fromSecretKey(account.sk, password)->Promise.then(signer =>
+    signer->Taquito.sign(encodedContent)
+  )
+}
+
 let signContent = (~content: string, ~password: string, ~account: Account.t) => {
-  Taquito.fromSecretKey(account.sk, password)->Promise.then(signer => {
-    let formatedContent = UnitArrayUtils.toUnitArrayStringRep(content)
-    signer
-    ->Taquito.sign(formatedContent)
-    ->Promise.thenResolve(signed => {
-      pk: account.pk->Pk.toString,
-      content: content,
-      sig: signed.sig,
-    })
-    ->Promise.thenResolve(verifyAndThrowExn)
+  let encodedContent = UnitArrayUtils.toUnitArrayStringRep(content)
+  signContentGeneric(~encodedContent, ~password, ~account)
+  ->Promise.thenResolve(signed => {
+    pk: account.pk->Pk.toString,
+    content: content,
+    sig: signed.sig,
   })
+  ->Promise.thenResolve(verifyAndThrowExn)
 }
 
 let useSign = () => {
