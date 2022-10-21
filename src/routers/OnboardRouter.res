@@ -5,6 +5,7 @@ let make = () => {
   let headerStyles = HeaderStyle.useHeaderStyle()
   InitAddressMetadata.useRefresh()
   AccountInfoSync.useBalancesAndOpsSync()
+  Beacon.useInit()
 
   <Navigator initialRouteName="Home">
     <Group>
@@ -45,19 +46,20 @@ let make = () => {
       <Screen
         name="VerifySignedContent" options={headerStyles} component=VerifyContentScreen.make
       />
+      <Screen name="Dapps" options={headerStyles} component=DappsScreen.make />
     </Group>
     // theses views open in modal
-    // <Group screenOptions={_optionsProps => options(~presentation=#modal, ())}>
-    //   <ScreenWithCallback
-    //     name="Receive"
-    //     options={props =>
-    //       options(
-    //         ~headerShown=false,
-    //         ~cardStyle=style(~backgroundColor="transparent", ~opacity=0.99, ()),
-    //         (),
-    //       )}>
-    //     {({navigation, route}) => <ReceiveModal navigation route />}
-    //   </ScreenWithCallback>
-    // </Group>
+    <Group screenOptions={_optionsProps => options(~presentation=#modal, ())}>
+      <ScreenWithCallback
+        name="BeaconRequest"
+        options={props =>
+          options(
+            ~headerShown=false,
+            // ~cardStyle=style(~backgroundColor="transparent", ~opacity=1., ()),
+            (),
+          )}>
+        {({navigation, route}) => <BeaconRequestScreen navigation route />}
+      </ScreenWithCallback>
+    </Group>
   </Navigator>
 }

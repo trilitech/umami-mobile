@@ -17,6 +17,13 @@ let useDeviceIdInit = () =>
     (),
   )
 
+let useLocalStorageShimForBeaconInit = () =>
+  AsyncInit.useAsyncInit(
+    ~init=Beacon.hydrateBeaconStorage,
+    ~errMsgPrefix="Failed to initialize beacon local storage shim.",
+    (),
+  )
+
 let useHasAccount = () => {
   let (accounts, _) = AccountsReducer.useAccountsDispatcher()
   accounts->Belt.Array.get(0)->Belt.Option.isSome
@@ -71,7 +78,12 @@ module MemoizedApp = {
 
 @react.component
 let app = () => {
-  let initalizations = [StoreInit.useInit(), useLogInit(), useDeviceIdInit()]
+  let initalizations = [
+    StoreInit.useInit(),
+    useLogInit(),
+    useDeviceIdInit(),
+    useLocalStorageShimForBeaconInit(),
+  ]
   let allReady = initalizations->Belt.Array.every(i => i)
 
   // Prevent rerenders sinces useInit is hooked to all the states

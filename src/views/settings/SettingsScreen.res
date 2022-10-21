@@ -27,6 +27,7 @@ let make = (~navigation as _, ~route as _) => {
     <ReactNative.ScrollView>
       {makeListItem("Theme", "Theme")}
       {makeListItem("Contacts", "Contacts")}
+      {makeListItem("Dapps", "Dapps")}
       {makeListItem("Network", "Network")}
       {makeListItem("ChangePassword", "Change Password")}
       {makeListItem("BackupPhrase", "Show backup phrase")}
