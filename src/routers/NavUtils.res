@@ -2,40 +2,47 @@ open Belt
 let useNavigateWithParams = () => {
   let nav = ReactNavigation.Native.useNavigation()
 
-  (route, params) => {
-    nav
-    ->Js.Nullable.toOption
-    ->Belt.Option.map(nav => {
-      nav->NavStacks.OnBoard.Navigation.navigateWithParams(route, params)
-    })
-    ->ignore
-  }
+  let stabilizedFn = React.useMemo1(() => {
+    (route, params) => {
+      nav
+      ->Js.Nullable.toOption
+      ->Belt.Option.map(nav => {
+        nav->NavStacks.OnBoard.Navigation.navigateWithParams(route, params)
+      })
+      ->ignore
+    }
+  }, [nav])
+  stabilizedFn
 }
 
 let useOffboardNavigateWithParams = () => {
   let nav = ReactNavigation.Native.useNavigation()
 
-  (route, params) => {
-    nav
-    ->Js.Nullable.toOption
-    ->Belt.Option.map(nav => {
-      nav->NavStacks.OffBoard.Navigation.navigateWithParams(route, params)
-    })
-    ->ignore
-  }
+  let stabilizedFn = React.useMemo1(() => {
+    (route, params) => {
+      nav
+      ->Js.Nullable.toOption
+      ->Belt.Option.map(nav => {
+        nav->NavStacks.OffBoard.Navigation.navigateWithParams(route, params)
+      })
+      ->ignore
+    }
+  }, [nav])
+  stabilizedFn
 }
 
 let useNavigate = () => {
   let nav = ReactNavigation.Native.useNavigation()
 
-  route => {
-    nav
-    ->Js.Nullable.toOption
-    ->Belt.Option.map(nav => {
-      nav->NavStacks.OnBoard.Navigation.navigate(route)
-    })
-    ->ignore
-  }
+  let cb = React.useMemo1(
+    ((), route) =>
+      nav
+      ->Js.Nullable.toOption
+      ->Belt.Option.map(nav => nav->NavStacks.OnBoard.Navigation.navigate(route)->ignore)
+      ->ignore,
+    [nav],
+  )
+  cb
 }
 
 let useRouteName = () => {
@@ -76,6 +83,10 @@ let getSignedContent = (route: NavStacks.OnBoard.route) => {
 
 let getAssetBalance = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.assetBalance)
+}
+
+let getBeaconRequest = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.beaconRequest)
 }
 
 let getDesktopSeedPhrase = (route: NavStacks.OffBoard.route) => {
