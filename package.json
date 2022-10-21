@@ -12,6 +12,7 @@
     "res:watch": "rescript clean && rescript build -w"
   },
   "dependencies": {
+    "@airgap/beacon-sdk": "^3.2.0",
     "@glennsl/rescript-json-combinators": "^1.0.0",
     "@gorhom/bottom-sheet": "^4",
     "@hawkingnetwork/ed25519-hd-key-rn": "^1.0.1",
@@ -20,6 +21,7 @@
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.1",
     "@react-navigation/stack": "^6.1.1",
+    "@taquito/michel-codec": "^14.0.0",
     "@taquito/signer": "^12.0.1",
     "@taquito/taquito": "^12.0.1",
     "@taquito/utils": "^13.0.0",
@@ -35,6 +37,7 @@
     "custom-signer": "link:./src/vendors/custom-signer",
     "events": "^3.3.0",
     "jotai": "^1.6.1",
+    "localstorage-polyfill": "^1.0.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "react": "17.0.2",
@@ -46,6 +49,7 @@
     "react-native-file-logger": "^0.3.0",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "2.1.1",
+    "react-native-get-random-values": "^1.8.0",
     "react-native-paper": "^4.12.4",
     "react-native-permissions": "^3.3.1",
     "react-native-picker-select": "^8.0.4",
@@ -63,6 +67,7 @@
     "react-query": "^3.34.19",
     "readable-stream": "^3.6.0",
     "shorthash": "^0.0.2",
+    "text-encoding-polyfill": "^0.6.7",
     "use-interval": "^1.4.0",
     "yarn": "^1.22.19"
   },
