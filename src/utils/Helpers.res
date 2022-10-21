@@ -28,7 +28,7 @@ let filterNone = (arr: array<option<'a>>) =>
 let getMessage = (e: exn) => {
   let message = switch e {
   | Promise.JsError(jsExn) => jsExn->Js.Exn.message
-  | _ => None
+  | e => e->Js.Exn.asJsExn->Belt.Option.flatMap(Js.Exn.message)
   }
   message->Belt.Option.getWithDefault("Unknown error")
 }
