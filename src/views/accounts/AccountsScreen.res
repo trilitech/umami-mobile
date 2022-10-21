@@ -33,6 +33,7 @@ let make = (~navigation, ~route as _) => {
                   tz1ForSendRecipient: None,
                   injectedAdress: None,
                   signedContent: None,
+                  beaconRequest: None,
                 },
               )
             }}

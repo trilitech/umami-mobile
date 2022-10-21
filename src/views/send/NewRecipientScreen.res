@@ -19,6 +19,7 @@ let make = (~navigation as _, ~route as _) => {
         tz1ForSendRecipient: tz1,
         injectedAdress: None,
         signedContent: None,
+        beaconRequest: None,
       },
     )
   }
@@ -34,6 +35,7 @@ let make = (~navigation as _, ~route as _) => {
         tz1ForSendRecipient: None,
         injectedAdress: None,
         signedContent: None,
+        beaconRequest: None,
       },
     )
 

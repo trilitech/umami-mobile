@@ -44,6 +44,7 @@ let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
           tz1ForSendRecipient: None,
           injectedAdress: None,
           signedContent: None,
+          beaconRequest: None,
         },
       )->ignore
     }}

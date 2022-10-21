@@ -26,6 +26,7 @@ let make = (
             tz1ForSendRecipient: None,
             injectedAdress: None,
             signedContent: None,
+            beaconRequest: None,
           },
         )}
     />

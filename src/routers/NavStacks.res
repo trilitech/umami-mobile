@@ -12,6 +12,7 @@ module OnboardParams = {
     injectedAdress: option<AddressImporterTypes.payload>,
     assetBalance: option<Asset.t>,
     signedContent: option<SignedData.t>,
+    beaconRequest: option<ReBeacon.Message.Request.t>,
   }
 }
 

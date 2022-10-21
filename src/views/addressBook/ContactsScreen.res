@@ -29,6 +29,7 @@ module ContactTile = {
             tz1ForSendRecipient: None,
             injectedAdress: None,
             signedContent: None,
+            beaconRequest: None,
           },
         )}
     />
@@ -71,6 +72,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
         tz1ForSendRecipient: None,
         injectedAdress: None,
         signedContent: None,
+        beaconRequest: None,
       },
     )
 

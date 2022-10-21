@@ -15,6 +15,7 @@ let make = (~account: Account.t) => {
             tz1ForSendRecipient: None,
             injectedAdress: None,
             signedContent: None,
+            beaconRequest: None,
           },
         )}
       balance=account.balance

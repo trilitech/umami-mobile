@@ -39,6 +39,7 @@ module DisplayNFT = {
                   tz1ForSendRecipient: None,
                   injectedAdress: None,
                   signedContent: None,
+                  beaconRequest: None,
                 },
               )->ignore}
             icon={Paper.Icon.name("arrow-top-right-thin")}

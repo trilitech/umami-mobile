@@ -57,6 +57,7 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
             tz1ForSendRecipient: None,
             injectedAdress: None,
             signedContent: None,
+            beaconRequest: None,
           },
         )
       })

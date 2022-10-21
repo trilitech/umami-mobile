@@ -43,6 +43,7 @@ module ScanTezosDomain = {
           tz1ForSendRecipient: None,
           injectedAdress: a->Some,
           signedContent: None,
+          beaconRequest: None,
         })
       )
       ->ignore
@@ -97,6 +98,7 @@ module ScanSignedContent = {
             tz1ForSendRecipient: None,
             injectedAdress: None,
             signedContent: signed->Some,
+            beaconRequest: None,
           },
         )
       })

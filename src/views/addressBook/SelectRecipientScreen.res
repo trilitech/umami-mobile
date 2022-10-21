@@ -26,6 +26,7 @@ module SelectedRecipients = {
           tz1ForSendRecipient: tz1->Some,
           injectedAdress: None,
           signedContent: None,
+          beaconRequest: None,
         },
       )
     }
@@ -74,6 +75,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
             tz1ForSendRecipient: None,
             injectedAdress: None,
             signedContent: None,
+            beaconRequest: None,
           },
         )}
     />
