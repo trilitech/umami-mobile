@@ -18,8 +18,11 @@ module DisplayRequest = {
   @react.component
   let make = (~appMetadata, ~unpackedPayload: string, ~onSign, ~onDecline, ~loading as _) => {
     <>
-      <MetadataDisplay appMetadata />
-      <Text> {unpackedPayload->React.string} </Text>
+      <MetadataDisplay.Header title="Sign payload request" appMetadata />
+      <CommonComponents.CustomListItem
+        style={StyleUtils.makeVMargin()}
+        center={<Text style={StyleUtils.makeVPadding()}> {unpackedPayload->React.string} </Text>}
+      />
       <PasswordConfirm.Plain onSubmit={onSign} />
       <Button style={StyleUtils.makeVMargin()} onPress={_ => onDecline()} mode=#outlined>
         {"decline"->React.string}

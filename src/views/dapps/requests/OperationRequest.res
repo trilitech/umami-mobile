@@ -17,20 +17,53 @@ module SingleOpDisplay = {
     ~goBack,
     ~onAccept,
     ~loading,
+    ~sender: Account.t,
   ) => {
-    <>
-      <Text> {("amount " ++ transaction.amount)->React.string} </Text>
-      <Text> {("destination" ++ transaction.destination)->React.string} </Text>
+    open SendTypes
+    open Asset
+    transaction.amount
+    ->Belt.Int.fromString
+    ->Helpers.reactFold(amount => <>
+      <Recap.TransactionAmounts
+        sender
+        trans={{
+          recipient: transaction.destination->Pkh.unsafeBuild->Some,
+          prettyAmount: Tez(amount)->toPrettyAmount->Belt.Float.toString,
+          assetType: CurrencyAsset(CurrencyTez),
+        }}
+      />
       <PasswordConfirm.Plain loading onSubmit={onAccept} />
       <Button style={StyleUtils.makeVMargin()} onPress={_ => goBack()} mode=#outlined>
-        {"decline"->React.string}
+        {"Decline"->React.string}
       </Button>
-    </>
+    </>)
   }
 }
 
+module Display = {
+  @react.component
+  let make = (
+    ~request: Message.Request.operationRequest,
+    ~goBack,
+    ~handleAccept,
+    ~loading,
+    ~sender,
+  ) => {
+    let el = switch matchSingleTransaction(request.operationDetails) {
+    | #single(op) =>
+      switch Message.Request.PartialOperation.classify(op) {
+      | Transfer(t) =>
+        <SingleOpDisplay sender onAccept={p => handleAccept(p, t)} transaction=t goBack loading />
+      | _ => <Text> {"unsupported"->React.string} </Text>
+      }
+    | #empty => <Text> {"empty"->React.string} </Text>
+    | #batch => <Text> {"batch"->React.string} </Text>
+    }
+    <> {el} </>
+  }
+}
 @react.component
-let make = (~request: Message.Request.operationRequest, ~sk: string, ~goBack, ~respond) => {
+let make = (~request: Message.Request.operationRequest, ~goBack, ~respond, ~sender: Account.t) => {
   let notify = SnackBar.useNotification()
   let (loading, setLoading) = React.useState(_ => false)
 
@@ -41,7 +74,7 @@ let make = (~request: Message.Request.operationRequest, ~sk: string, ~goBack, ~r
       ~amount=t.amount,
       ~recipient=t.destination,
       ~isTestNet=true,
-      ~sk,
+      ~sk=sender.sk,
     )
     ->Promise.then(r => {
       notify("Tez sent!")
@@ -65,30 +98,10 @@ let make = (~request: Message.Request.operationRequest, ~sk: string, ~goBack, ~r
     })
     ->ignore
   }
-  let el = switch matchSingleTransaction(request.operationDetails) {
-  | #single(op) =>
-    switch Message.Request.PartialOperation.classify(op) {
-    | Transfer(t) =>
-      <SingleOpDisplay
-        onAccept={p => {
-          handleAccept(p, t)
-        }}
-        transaction=t
-        goBack
-        loading
-      />
-    | _ => <Text> {"unsupported"->React.string} </Text>
-    }
-  | #empty => <Text> {"empty"->React.string} </Text>
-  | #batch => <Text> {"batch"->React.string} </Text>
-  }
 
   let {appMetadata} = request
   <Container>
-    <Headline> {"Operation request"->React.string} </Headline>
-    <MetadataDisplay appMetadata />
-    <Title> {request.network.type_->React.string} </Title>
-    <Text> {("source address " ++ request.sourceAddress)->React.string} </Text>
-    {el}
+    <MetadataDisplay.Header title="Operation request" appMetadata network=request.network.type_ />
+    <Display sender request goBack handleAccept loading />
   </Container>
 }

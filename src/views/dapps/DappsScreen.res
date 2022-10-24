@@ -6,12 +6,12 @@ module PeerInfos = {
   let make = (~peerInfos: array<ReBeacon.peerInfo>, ~onRemove) => {
     let els =
       peerInfos->Belt.Array.map(p =>
-        <Wrapper key=p.id justifyContent=#spaceBetween>
-          <Text> {p.name->React.string} </Text>
-          <Text> {p.senderId->React.string} </Text>
-          <Text> {p.version->React.string} </Text>
-          <Button onPress={_ => onRemove(p)}> {"Remove peer"->React.string} </Button>
-        </Wrapper>
+        <CustomListItem
+          left={<CommonComponents.Icon size=32 name="application-brackets" />}
+          key=p.id
+          center={<Text> {p.name->React.string} </Text>}
+          right={<CrossRight onPress={_ => onRemove(p)} />}
+        />
       )
     <> <Title> {"Peers"->React.string} </Title> {els->React.array} </>
   }

@@ -25,12 +25,14 @@ let make = (~request: Message.Request.permissionRequest, ~pk: Pk.t, ~goBack, ~re
 
   <Container>
     <Wrapper flexDirection=#column justifyContent=#center>
-      <Headline> {"Permission request"->React.string} </Headline>
-      <MetadataDisplay appMetadata />
-      <Title> {request.network.type_->React.string} </Title>
-      {request.scopes
-      ->Belt.Array.map(s => <Paper.Badge key={s}> {s->React.string} </Paper.Badge>)
-      ->React.array}
+      <MetadataDisplay.Header
+        title="Permission request" appMetadata network=request.network.type_
+      />
+      <Wrapper justifyContent=#center>
+        {request.scopes
+        ->Belt.Array.map(s => <Paper.Badge key={s}> {s->React.string} </Paper.Badge>)
+        ->React.array}
+      </Wrapper>
     </Wrapper>
     <Button
       loading
@@ -43,7 +45,7 @@ let make = (~request: Message.Request.permissionRequest, ~pk: Pk.t, ~goBack, ~re
       {"Accept"->React.string}
     </Button>
     <Button style={StyleUtils.makeVMargin()} onPress={_ => goBack()} mode=#outlined>
-      {"decline"->React.string}
+      {"Decline"->React.string}
     </Button>
   </Container>
 }
