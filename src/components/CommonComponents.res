@@ -132,34 +132,6 @@ module ListItem = {
   }
 }
 
-module ListItemCustomIcon = {
-  @react.component
-  let make = (
-    ~onPress=_ => (),
-    ~title,
-    ~left,
-    ~right=?,
-    ~selected=false,
-    ~height=50.,
-    ~description=?,
-    ~testID=?,
-  ) => {
-    let theme = Paper.ThemeProvider.useTheme()
-    makeListItem(
-      ~theme,
-      ~onPress,
-      ~title,
-      ~left,
-      ~right?,
-      ~selected,
-      ~height,
-      ~description?,
-      ~testID?,
-      (),
-    )
-  }
-}
-
 module ListItemBase = {
   open Paper
   @react.component
