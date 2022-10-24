@@ -21,13 +21,18 @@ module Display = {
   @react.component
   let make = (~client: ReBeacon.WalletClient.t) => {
     let (peerInfos, remove, addPeer) = Beacon.usePeers(client)
+    let navigate = NavUtils.useNavigate()
     <Container>
       <InstructionsPanel
         title="Dapps"
         instructions="Manage your dApp connections here.\nScan or paste a beacon code to add a dApp."
       />
       <Wrapper justifyContent=#center>
-        <NicerIconBtn onPress={_ => {()}} iconName="qrcode-scan" style={StyleUtils.makeVMargin()} />
+        <NicerIconBtn
+          onPress={_ => navigate("ScanBeacon")}
+          iconName="qrcode-scan"
+          style={StyleUtils.makeVMargin()}
+        />
         <NicerIconBtn
           onPress={_ => {
             Clipboard.getString()->Promise.then(addPeer)->ignore
