@@ -10,6 +10,9 @@ let hydrateBeaconStorage: unit => Promise.t<
 let beaconAtom: Jotai.Atom.t<option<ReBeacon.WalletClient.t>, _, _> = Jotai.Atom.make(None)
 let peerInfosAtom: Jotai.Atom.t<array<ReBeacon.peerInfo>, _, _> = Jotai.Atom.make([])
 
+let makePeerInfo = (encodedPeerInfo: string) => {
+  ReBeacon.Serializer.make()->ReBeacon.Serializer.deserializeRaw(encodedPeerInfo)
+}
 let useClient = () => {
   let (client, setClient) = Jotai.Atom.use(beaconAtom)
 
@@ -72,8 +75,7 @@ let usePeers = client => {
 
   let addPeer = React.useMemo2(() => {
     (encodedPeerInfo: string) => {
-      ReBeacon.Serializer.make()
-      ->ReBeacon.Serializer.deserializeRaw(encodedPeerInfo)
+      makePeerInfo(encodedPeerInfo)
       ->Promise.then(p => client->ReBeacon.WalletClient.addPeerRaw(p))
       ->Promise.then(refresh)
     }
