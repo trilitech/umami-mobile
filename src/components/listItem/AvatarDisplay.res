@@ -1,22 +1,7 @@
 open Belt
 open ReactNative.Style
 
-module RoundImage = {
-  @react.component
-  let make = (~url, ~size) => {
-    let source = ReactNative.Image.uriSource(~uri=url, ())
-    <FastImage
-      source
-      resizeMode=#cover
-      style={style(
-        ~borderRadius=75.,
-        ~height=size->Js.Int.toFloat->dp,
-        ~width=size->Js.Int.toFloat->dp,
-        (),
-      )}
-    />
-  }
-}
+open CommonComponents
 
 @react.component
 let make = (~tz1: Pkh.t, ~size=80, ~isAccount=false) => {

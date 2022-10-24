@@ -261,3 +261,20 @@ module Badge = {
     </ReactNative.View>
   }
 }
+
+module RoundImage = {
+  @react.component
+  let make = (~url, ~size) => {
+    let source = ReactNative.Image.uriSource(~uri=url, ())
+    <FastImage
+      source
+      resizeMode=#cover
+      style={style(
+        ~borderRadius=75.,
+        ~height=size->Js.Int.toFloat->dp,
+        ~width=size->Js.Int.toFloat->dp,
+        (),
+      )}
+    />
+  }
+}
