@@ -9,6 +9,7 @@ let make = (
   ~disabled=false,
 ) => {
   let {tz1, name, balance} = account
+  open Asset
   <GenericListItem
     disabled
     selected
@@ -16,9 +17,9 @@ let make = (
     left={<AvatarDisplay tz1 isAccount=true />}
     center={<>
       <Title> {React.string(name)} </Title>
-      <Text>
-        {balance->Belt.Option.mapWithDefault("", TezHelpers.formatBalance)->React.string}
-      </Text>
+      {balance->Helpers.reactFold(balance => {
+        <Text> {Tez(balance)->Asset.getPrettyString->React.string} </Text>
+      })}
       <Caption> {tz1->Pkh.toPretty->React.string} </Caption>
     </>}
     ?right
