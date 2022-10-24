@@ -10,30 +10,39 @@ let makeRow = (title, content) =>
     <Caption> {title->React.string} </Caption> <Text> {content->React.string} </Text>
   </Wrapper>
 
-@react.component
-let make = (~trans, ~fee, ~loading=false, ~onSubmit, ~onCancel) => {
-  let prettyAmount = trans.prettyAmount
-
-  let amountDisplay = switch trans.assetType {
-  | CurrencyAsset(currency) =>
-    switch currency {
-    | CurrencyTez => makeRow("Subtotal", prettyAmount ++ " " ++ SendInputs.tezSymbol)
-    | CurrencyToken(b, _) => makeRow("Subtotal", prettyAmount ++ " " ++ b.symbol)
+module TransactionAmounts = {
+  @react.component
+  let make = (~trans, ~fee=?, ~sender: Account.t) => {
+    let prettyAmount = trans.prettyAmount
+    let amountDisplay = switch trans.assetType {
+    | CurrencyAsset(currency) =>
+      switch currency {
+      | CurrencyTez => makeRow("Subtotal", prettyAmount ++ " " ++ SendInputs.tezSymbol)
+      | CurrencyToken(b, _) => makeRow("Subtotal", prettyAmount ++ " " ++ b.symbol)
+      }
+    | NftAsset(_, m) =>
+      <SendInputs.NFTInput imageUrl={m.displayUri} name=m.name editions=prettyAmount />
     }
-  | NftAsset(_, m) =>
-    <SendInputs.NFTInput imageUrl={m.displayUri} name=m.name editions=prettyAmount />
+    open Asset
+    <>
+      {amountDisplay}
+      {fee->Helpers.reactFold(fee => makeRow("Fee", Tez(fee)->Asset.getPrettyString))}
+      <SenderDisplay account=sender disabled=true />
+      {trans.recipient->Helpers.reactFold(recipient => <>
+        {recipientLabel} <RecipientDisplayOnly disabled=true tz1=recipient />
+      </>)}
+    </>
   }
+}
+
+@react.component
+let make = (~trans, ~fee, ~loading=false, ~onSubmit, ~onCancel, ~account) => {
   <>
     <InstructionsPanel
       instructions="Please validate the details of the transaction and submit to confirm."
     />
     <Container>
-      {amountDisplay}
-      {makeRow("Fee", TezHelpers.formatBalance(fee))}
-      <Sender disabled=true />
-      {trans.recipient->Helpers.reactFold(recipient => <>
-        {recipientLabel} <RecipientDisplayOnly disabled=true tz1=recipient />
-      </>)}
+      <TransactionAmounts trans fee sender=account />
       <Button disabled=loading loading onPress=onSubmit style={vMargin} mode=#contained>
         {React.string("Submit transaction")}
       </Button>

@@ -3,11 +3,12 @@ open SendTypes
 
 module SendAndConfirmForm = {
   @react.component
-  let make = (~trans, ~setTrans, ~loading, ~onSimulate, ~onSubmit, ~fee, ~onCancel) => {
+  let make = (~trans, ~setTrans, ~loading, ~onSimulate, ~onSubmit, ~fee, ~onCancel, ~sender) => {
     let (step, setStep) = React.useState(_ => #fill)
 
     let el = switch fee {
-    | Some(fee) => <Recap fee trans onSubmit={_ => {setStep(_ => #confirm)}} onCancel />
+    | Some(fee) =>
+      <Recap account=sender fee trans onSubmit={_ => {setStep(_ => #confirm)}} onCancel />
     | None => <SendForm trans setTrans loading onSubmit={_ => onSimulate()} />
     }
 
@@ -140,6 +141,7 @@ module PureSendScreen = {
       ->ignore
 
     <SendAndConfirmForm
+      sender
       fee
       loading
       trans

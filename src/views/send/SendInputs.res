@@ -4,13 +4,21 @@ open CommonComponents
 open ReactNative.Style
 open Belt
 open SendTypes
+
+module SenderDisplay = {
+  @react.component
+  let make = (~account, ~onPress=_ => (), ~disabled) => {
+    <>
+      <Caption> {React.string("Sending account")} </Caption>
+      <AccountListItem account onPress={_ => onPress()} right={<ChevronRight />} disabled />
+    </>
+  }
+}
+
 module Sender = {
   @react.component
   let make = (~onPress=() => (), ~disabled) => {
-    useWithAccount(account => <>
-      <Caption> {React.string("Sending account")} </Caption>
-      <AccountListItem account onPress={_ => onPress()} right={<ChevronRight />} disabled />
-    </>)
+    useWithAccount(account => <SenderDisplay account disabled onPress />)
   }
 }
 
