@@ -14,3 +14,4 @@ let makeTopMargin = (~size=1, ()) => viewStyle(~marginTop=(size->Js.Int.toFloat 
 let makePadding = (~size=1, ()) => viewStyle(~padding=(size->Js.Int.toFloat *. u)->dp, ())
 let makeHPadding = (~size=1, ()) =>
   viewStyle(~paddingHorizontal=(size->Js.Int.toFloat *. u)->dp, ())
+let makeVPadding = (~size=1, ()) => viewStyle(~paddingVertical=(size->Js.Int.toFloat *. u)->dp, ())
