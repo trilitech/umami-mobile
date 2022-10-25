@@ -12,7 +12,7 @@ let makeRow = (title, content) =>
 
 module TransactionAmounts = {
   @react.component
-  let make = (~trans, ~fee=?, ~sender: Account.t) => {
+  let make = (~trans, ~fee, ~sender: Account.t) => {
     let prettyAmount = trans.prettyAmount
     let amountDisplay = switch trans.assetType {
     | CurrencyAsset(currency) =>
@@ -26,7 +26,7 @@ module TransactionAmounts = {
     open Asset
     <>
       {amountDisplay}
-      {fee->Helpers.reactFold(fee => makeRow("Fee", Tez(fee)->Asset.getPrettyString))}
+      {makeRow("Fee", Tez(fee)->Asset.getPrettyString)}
       <SenderDisplay account=sender disabled=true />
       {trans.recipient->Helpers.reactFold(recipient => <>
         {recipientLabel} <RecipientDisplayOnly disabled=true tz1=recipient />
