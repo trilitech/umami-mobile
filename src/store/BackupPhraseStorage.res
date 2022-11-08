@@ -18,7 +18,7 @@ let save = (backupPhrase: string, password: string) => {
 
 let getFriendlyMsg = (msg: string) => {
   if msg |> Js.Re.test_(%re("/^decrypt failed/i")) {
-    "Wrong password!"
+    ErrorMsgs.wrongPassword
   } else {
     msg
   }
