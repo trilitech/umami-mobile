@@ -4,6 +4,7 @@ open ReactNative.Style
 let u = 8.
 
 // Use these functions to make the spacing in the app scale sanely
+let makeMargin = (~size=1, ()) => viewStyle(~margin=(size->Js.Int.toFloat *. u)->dp, ())
 let makeVMargin = (~size=1, ()) => viewStyle(~marginVertical=(size->Js.Int.toFloat *. u)->dp, ())
 let makeHMargin = (~size=1, ()) => viewStyle(~marginHorizontal=(size->Js.Int.toFloat *. u)->dp, ())
 let makeLeftMargin = (~size=1, ()) => viewStyle(~marginLeft=(size->Js.Int.toFloat *. u)->dp, ())
