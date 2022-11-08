@@ -130,3 +130,18 @@ let addressMetadatas = {
   deserializer: Deserializers.deserializeAddressMetadatas,
   serializer: Serializers.serializeAddressMetadatas,
 }
+
+let biometricsEnabled = {
+  key: "biometricsEnabled",
+  atom: Atoms.biometricsEnabledAtom,
+  deserializer: str =>
+    switch str {
+    | "true" => true
+    | _ => false
+    },
+  serializer: val =>
+    switch val {
+    | true => "true"->Some
+    | false => "false"->Some
+    },
+}

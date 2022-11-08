@@ -26,6 +26,7 @@ let useInit = () => {
     useIniter(contacts),
     useIniter(network),
     useIniter(addressMetadatas),
+    useIniter(biometricsEnabled),
   ]
 
   let memoIniters = React.useMemo1(() => initers, [])
