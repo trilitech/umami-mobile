@@ -59,7 +59,7 @@ module SignableNFT = {
   @react.component
   let make = (~token) =>
     <ContentSigner
-      renderForm={onSubmit =>
+      renderForm={(~onSubmit) =>
         <DisplayNFT token onSign={() => token->makePayload->JSONparse.stringify->onSubmit} />}
     />
 }

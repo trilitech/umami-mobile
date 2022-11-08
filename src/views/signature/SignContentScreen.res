@@ -29,7 +29,7 @@ module GenericForm = {
   }
 }
 
-let renderForm = onSubmit => <GenericForm onSubmit />
+let renderForm = (~onSubmit) => <GenericForm onSubmit />
 
 @react.component
 let make = (~navigation as _, ~route as _) => {
