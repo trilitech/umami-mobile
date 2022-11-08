@@ -31,3 +31,6 @@ external debug: (renderResult, unit) => unit = "debug"
 
 @send
 external press: (eventFirer, testInstance) => unit = "press"
+
+@send
+external changeText: (eventFirer, testInstance, ~input: string) => unit = "changeText"
