@@ -49,6 +49,7 @@ let make = () => {
         name="VerifySignedContent" options={headerStyles} component=VerifyContentScreen.make
       />
       <Screen name="Dapps" options={headerStyles} component=DappsScreen.make />
+      <Screen name="Biometrics" options={headerStyles} component=BiometricsScreen.make />
     </Group>
     // theses views open in modal
     <Group screenOptions={_optionsProps => options(~presentation=#modal, ())}>
