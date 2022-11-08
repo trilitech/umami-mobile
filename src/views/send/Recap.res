@@ -36,16 +36,14 @@ module TransactionAmounts = {
 }
 
 @react.component
-let make = (~trans, ~fee, ~loading=false, ~onSubmit, ~onCancel, ~account) => {
+let make = (~trans, ~fee, ~loading, ~onSubmit, ~onCancel, ~account) => {
   <>
     <InstructionsPanel
       instructions="Please validate the details of the transaction and submit to confirm."
     />
     <Container>
       <TransactionAmounts trans fee sender=account />
-      <Button disabled=loading loading onPress=onSubmit style={vMargin} mode=#contained>
-        {React.string("Submit transaction")}
-      </Button>
+      <PasswordSubmit onSubmit loading />
       <Button disabled=loading onPress=onCancel style={vMargin} mode=#outlined>
         {React.string("Cancel")}
       </Button>

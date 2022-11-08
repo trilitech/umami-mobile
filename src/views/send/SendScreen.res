@@ -4,18 +4,9 @@ open SendTypes
 module SendAndConfirmForm = {
   @react.component
   let make = (~trans, ~setTrans, ~loading, ~onSimulate, ~onSubmit, ~fee, ~onCancel, ~sender) => {
-    let (step, setStep) = React.useState(_ => #fill)
-
-    let el = switch fee {
-    | Some(fee) =>
-      <Recap account=sender fee trans onSubmit={_ => {setStep(_ => #confirm)}} onCancel />
+    switch fee {
+    | Some(fee) => <Recap loading account=sender fee trans onSubmit onCancel />
     | None => <SendForm trans setTrans loading onSubmit={_ => onSimulate()} />
-    }
-
-    switch step {
-    // | #fill => <SendForm trans setTrans loading=false onSubmit={_ => {setStep(_ => #confirm)}} />
-    | #fill => el
-    | #confirm => <Container> <PasswordConfirm loading onSubmit /> </Container>
     }
   }
 }
@@ -33,7 +24,7 @@ let makeNotif = _hash => {
 
 let getFriendlyMsg = (msg: string) => {
   if msg |> Js.Re.test_(%re("/^undefined is not an object \(evaluating/i")) {
-    "Wrong password!"
+    ErrorMsgs.wrongPassword
   } else {
     msg
   }
