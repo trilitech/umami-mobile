@@ -25,3 +25,6 @@ let useRestoreAndSave = () => {
   let notify = SnackBar.useNotification()
   restoreAndSave(~onAccountsReady=accounts => ReplaceAll(accounts)->dispatch, ~notify)
 }
+
+let passwordIsValid = (password: string) =>
+  BackupPhraseStorage.load(password)->Promise.thenResolve(_ => true)
