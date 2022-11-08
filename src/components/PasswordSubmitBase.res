@@ -14,9 +14,11 @@ module Make = (M: Deps) => {
       ~onError=_ => (),
       ~loading=false,
       ~label="Submit",
+      ~disabled=?,
     ) => {
       if biometricsEnabled {
         <Button
+          ?disabled
           mode=#contained
           loading
           onPress={_ => {
@@ -31,14 +33,14 @@ module Make = (M: Deps) => {
           {label->React.string}
         </Button>
       } else {
-        <PasswordConfirm.Plain onSubmit loading label />
+        <PasswordConfirm.Plain onSubmit loading label ?disabled />
       }
     }
   }
 
   @react.component
-  let make = (~onSubmit, ~loading, ~label=?) => {
+  let make = (~onSubmit, ~loading, ~label=?, ~disabled=?) => {
     let (biometricsEnabled, _) = Store.useBiometricsEnabled()
-    <Display ?label biometricsEnabled onSubmit loading />
+    <Display ?label biometricsEnabled onSubmit loading ?disabled />
   }
 }

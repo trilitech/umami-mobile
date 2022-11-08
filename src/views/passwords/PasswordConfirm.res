@@ -7,7 +7,7 @@ let defaultHeader = <Title> {React.string("Enter password to continue")} </Title
 
 module Plain = {
   @react.component
-  let make = (~onSubmit, ~loading=false, ~label="submit") => {
+  let make = (~onSubmit, ~loading=false, ~label="submit", ~disabled=false) => {
     let (value, setValue) = EphemeralState.useEphemeralState("")
     <>
       <TextInput
@@ -22,7 +22,7 @@ module Plain = {
         style=vMargin
       />
       <Button
-        disabled={!isMinLength(value) || loading}
+        disabled={!isMinLength(value) || loading || disabled}
         loading
         style={vMargin}
         mode=#contained
@@ -34,6 +34,6 @@ module Plain = {
 }
 
 @react.component
-let make = (~onSubmit, ~loading=false) => {
-  <> {defaultHeader} <Plain onSubmit loading /> </>
+let make = (~onSubmit, ~loading=false, ~disabled=?) => {
+  <> {defaultHeader} <Plain onSubmit loading ?disabled /> </>
 }
