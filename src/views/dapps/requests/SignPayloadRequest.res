@@ -16,14 +16,14 @@ let safeParse = (payload: string) =>
   }
 module DisplayRequest = {
   @react.component
-  let make = (~appMetadata, ~unpackedPayload: string, ~onSign, ~onDecline, ~loading as _) => {
+  let make = (~appMetadata, ~unpackedPayload: string, ~onSign, ~onDecline, ~loading) => {
     <>
       <MetadataDisplay.Header title="Sign payload request" appMetadata />
       <CommonComponents.CustomListItem
         style={StyleUtils.makeVMargin()}
         center={<Text style={StyleUtils.makeVPadding()}> {unpackedPayload->React.string} </Text>}
       />
-      <PasswordConfirm.Plain onSubmit={onSign} />
+      <PasswordSubmit onSubmit={onSign} loading />
       <Button style={StyleUtils.makeVMargin()} onPress={_ => onDecline()} mode=#outlined>
         {"decline"->React.string}
       </Button>
