@@ -18,7 +18,7 @@ let make = (~navigation, ~route: NavStacks.OnBoard.route) => {
       <Headline> {React.string("Edit account")} </Headline>
       <EditAccountForm
         name=a.name
-        onSubmit={name => {
+        onSubmit={(name, _) => {
           dispatch(RenameAccount({"name": name, "tz1": a.tz1}))
           navigation->NavStacks.OnBoard.Navigation.goBack()
         }}
