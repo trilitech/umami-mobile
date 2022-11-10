@@ -15,6 +15,7 @@ let make = (~navigation as _, ~route as _) => {
   let (confirmText, setConfirmText) = React.useState(_ => "")
   let (status, setStatus) = React.useState(_ => #unchecked)
   let (loading, setLoading) = React.useState(_ => false)
+  let setPassword = Biometrics.useKeychainStorage()
   let reset = Store.useReset()
   let notify = SnackBar.useNotification()
 
@@ -37,14 +38,17 @@ let make = (~navigation as _, ~route as _) => {
       mode=#contained
       onPress={_ => {
         setLoading(_ => true)
-        BackupPhraseStorage.erase()
-        ->Promise.catch(exn => {
-          notify("Offboarding failed" ++ Helpers.getMessage(exn))
-          Promise.resolve()
-        })
-        ->Promise.thenResolve(_ => {
-          setLoading(_ => false)
-          reset()
+        setPassword(None)
+        ->Promise.then(_ => {
+          BackupPhraseStorage.erase()
+          ->Promise.catch(exn => {
+            notify("Offboarding failed" ++ Helpers.getMessage(exn))
+            Promise.resolve()
+          })
+          ->Promise.thenResolve(_ => {
+            setLoading(_ => false)
+            reset()
+          })
         })
         ->ignore
       }}
