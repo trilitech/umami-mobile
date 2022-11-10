@@ -31,26 +31,30 @@ describe("PasswordSubmit", () => {
       />
     let screen = ref(render(fixture))
 
-    let btn = screen.contents->getByText(~matcher=#Str("submit"))
+    let btn = screen.contents->getByText(~matcher=#RegExp(%re("/submit/i")))
 
     fireEvent->press(btn)
     ()
   })
 
-  // testAsync("Manual submition", finish => {
-  //   let fixture =
-  //     <PasswordSubmit.Display
-  //       bioMetricsEnabled=false
-  //       onSubmit={p => {
-  //         if p === mockPassword {
-  //           finish(pass)
-  //         }
-  //       }}
-  //     />
-  //   let screen = ref(render(fixture))
+  testAsync("Manual submition", finish => {
+    let manuapPassword = "manual"
+    let fixture =
+      <PasswordSubmit.Display
+        label="submit"
+        biometricsEnabled=false
+        onSubmit={p => {
+          if p === manuapPassword {
+            finish(pass)
+          }
+        }}
+      />
+    let screen = ref(render(fixture))
 
-  //   let input = screen.contents->getByTestId(~matcher=#Str("password"))
+    let input = screen.contents->getByTestId(~matcher=#RegExp(%re("/password/i")))
+    fireEvent->changeText(input, ~input=manuapPassword)
+    let submitBtn = screen.contents->getByText(~matcher=#RegExp(%re("/submit/i")))
 
-  //   fireEvent->changeText(input, ~input="manualPassword")
-  // })
+    fireEvent->press(submitBtn)
+  })
 })
