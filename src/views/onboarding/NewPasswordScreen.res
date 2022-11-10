@@ -7,10 +7,15 @@ let make = (~navigation as _, ~route as _) => {
   let (mnemonic, _) = DangerousMnemonicHooks.useMnemonic()
 
   let (loading, setLoading) = React.useState(_ => false)
+  let savePassword = Biometrics.useKeychainStorage()
 
-  let handlePasswordSubmit = password => {
+  let handlePasswordSubmit = data => {
+    let password = data["password"]
+    let saveInKeyChain = data["saveInKeyChain"]
     setLoading(_ => true)
     let mnemonic = mnemonic->Js.Array2.joinWith(" ")
+
+    // TODO refactor this with same logic as ImportSecretScreen
     BackupPhraseStorage.save(mnemonic, password)
     ->Promise.then(() =>
       AccountUtils.generateAccount(
@@ -24,6 +29,7 @@ let make = (~navigation as _, ~route as _) => {
         setSelectedAccount(_ => 0)
       })
     )
+    ->Promise.then(_ => saveInKeyChain ? savePassword(password->Some) : Promise.resolve())
     ->Promise.catch(exn => {
       setLoading(_ => false)
       notify("Failed to generate account. " ++ exn->Helpers.getMessage)

@@ -9,13 +9,6 @@ open Belt
 
   let pwdIsValid = str => passwordRegex->Js.Re.test_(str)
 
-  let useformIsPristine = (v1, v2) => {
-    open FormValidators
-    let p1 = useIsPristine(v1)
-    let p2 = useIsPristine(v2)
-    p1 && p2
-  }
-
   let getError = (str1, str2) =>
     if !pwdIsValid(str1) {
       #passwordTooShort->Some
@@ -33,13 +26,16 @@ open Belt
 )
 
 @react.component
-let make = (~onSubmit, ~loading=false) => {
+let make = (~onSubmit, ~loading=false, ~hideBiometrics=false) => {
   let (value1, setValue1) = EphemeralState.useEphemeralState("")
   let (value2, setValue2) = EphemeralState.useEphemeralState("")
   let (status, setStatus) = React.useState(_ => #unchecked)
-  let pristine = useformIsPristine(value1, value2)
+  let empty = value1 === "" && value2 === ""
 
-  let error = pristine ? None : getError(value1, value2)
+  let (bio, setBio) = React.useState(_ => true)
+
+  let error = empty ? None : getError(value1, value2)
+  Js.Console.log(error)
   <>
     <Title> {React.string("Enter and confirm password")} </Title>
     <TextInput
@@ -67,15 +63,18 @@ let make = (~onSubmit, ~loading=false) => {
     <HelperText _type=#error visible={error->Option.isSome}>
       {error->Option.mapWithDefault("", getErrorName)->React.string}
     </HelperText>
+    {hideBiometrics
+      ? React.null
+      : <Biometrics.BiometricsSwitch onChange={_ => setBio(val => !val)} biometricsEnabled=bio />}
     <CheckBoxAndText
       status setStatus text="I understand that Umami cannot recover this password for me."
     />
     <Button
-      disabled={error->Option.isSome || loading || pristine || status == #unchecked}
+      disabled={error->Option.isSome || loading || empty || status == #unchecked}
       loading
       style={StyleUtils.makeVMargin()}
       mode=#contained
-      onPress={_ => onSubmit(value1)}>
+      onPress={_ => onSubmit({"password": value1, "saveInKeyChain": hideBiometrics ? false : bio})}>
       {React.string("Submit")}
     </Button>
   </>

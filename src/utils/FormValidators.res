@@ -1,5 +1,3 @@
-open UsePrevious
-open Belt
 module NameValidator = {
   let getError = str =>
     if str->Js.String2.length < 3 {
@@ -16,9 +14,4 @@ module NameValidator = {
     | #tooLong => "Name is too long"
     }
   }
-}
-
-let useIsPristine = value => {
-  let previous = usePrevious(value)
-  previous->Option.isNone
 }

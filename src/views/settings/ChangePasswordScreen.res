@@ -16,7 +16,7 @@ let useChangePassword = () => {
 
 let useUpdateKeychainIfBioEnabled = () => {
   let (bio, _) = Store.useBiometricsEnabled()
-  let setPassword = BiometricsScreen.useKeychainStorage()
+  let setPassword = Biometrics.useKeychainStorage()
 
   password => {
     if bio {
@@ -68,7 +68,7 @@ let make = (~navigation as _, ~route as _) => {
     {switch oldPassword {
     | None => <PasswordConfirm onSubmit=handleSubmitOld />
     | Some(oldPassword) =>
-      <PasswordCreate loading onSubmit={newPassword => handleSubmitNew(oldPassword, newPassword)} />
+      <PasswordCreate loading onSubmit={data => handleSubmitNew(oldPassword, data["password"])} />
     }}
   </Container>
 }
