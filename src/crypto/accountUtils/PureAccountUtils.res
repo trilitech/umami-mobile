@@ -41,34 +41,32 @@ module Make = (M: Deps) => {
     })
 
   %%private(
-    let rec _restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
+    let rec _restoreKeysRec = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) => {
       let derivationPathIndex = accounts->Array.length
 
       generateKeys(~mnemonic, ~password, ~derivationPathIndex, ())
       ->Promise.then(account => {
         checkExists(~tz1=account.tz1)->Promise.thenResolve(exists => {
           if exists {
-            _restoreKeys(
+            _restoreKeysRec(
               ~mnemonic,
               ~password,
               ~accounts=Belt.Array.concat(accounts, [account]),
               ~onDone,
               (),
             )
-            ()
           } else {
-            onDone(Ok(accounts))
-            ()
+            // Restore first account even if it has not been revealed
+            onDone(derivationPathIndex === 0 ? Ok([account]) : Ok(accounts))
           }
         })
       })
-      ->Promise.catch(error => {
-        onDone(Error(error))->Promise.resolve
-      })
+      ->Promise.catch(error => onDone(Error(error))->Promise.resolve)
       ->ignore
     }
+
     let restoreKeys = (~mnemonic, ~password, ~accounts=[], ~onDone, ()) =>
-      _restoreKeys(~mnemonic, ~password, ~accounts, ~onDone, ())
+      _restoreKeysRec(~mnemonic, ~password, ~accounts, ~onDone, ())
   )
 
   let restoreKeysPromise = (~mnemonic, ~password) =>
@@ -84,6 +82,5 @@ module Make = (M: Deps) => {
         },
         (),
       )
-      ()
     })
 }

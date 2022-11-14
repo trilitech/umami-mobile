@@ -6,11 +6,7 @@ let restoreAndSave = (~seedPhrase, ~password, ~notify, ~onAccountsReady, ~deriva
     ->Promise.then(_ => AccountUtils.restoreKeysPromise(~mnemonic=seedPhrase, ~password))
     ->Promise.thenResolve(keys => {
       let accounts: array<Account.t> = keys->Array.map(AccountUtils.keysToAccount)
-      if accounts == [] {
-        Js.Exn.raiseError("No accounts revealed for this secret...")
-      } else {
-        AESCrypto.encrypt(seedPhrase, password)->Promise.thenResolve(_ => onAccountsReady(accounts))
-      }
+      AESCrypto.encrypt(seedPhrase, password)->Promise.thenResolve(_ => onAccountsReady(accounts))
     })
     ->Promise.thenResolve(_ => notify("Successfully restored accounts!"))
     ->Promise.catch(exn => {
