@@ -35,7 +35,6 @@ let make = (~onSubmit, ~loading=false, ~hideBiometrics=false) => {
   let (bio, setBio) = React.useState(_ => true)
 
   let error = empty ? None : getError(value1, value2)
-  Js.Console.log(error)
   <>
     <Title> {React.string("Enter and confirm password")} </Title>
     <TextInput
