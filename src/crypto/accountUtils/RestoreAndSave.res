@@ -1,12 +1,24 @@
 open Belt
 
-let restoreAndSave = (~seedPhrase, ~password, ~notify, ~onAccountsReady, ~derivationPath, ()) => {
+let restoreAndSave = (
+  ~notify,
+  ~updateKeychain,
+  ~seedPhrase,
+  ~password,
+  ~onAccountsReady,
+  ~derivationPath,
+  ~saveInKeychain=false,
+  (),
+) => {
   DerivationPath.save(derivationPath)->Promise.then(() =>
     BackupPhraseStorage.save(seedPhrase, password)
     ->Promise.then(_ => AccountUtils.restoreKeysPromise(~mnemonic=seedPhrase, ~password))
     ->Promise.thenResolve(keys => {
       let accounts: array<Account.t> = keys->Array.map(AccountUtils.keysToAccount)
       AESCrypto.encrypt(seedPhrase, password)->Promise.thenResolve(_ => onAccountsReady(accounts))
+    })
+    ->Promise.then(_ => {
+      saveInKeychain ? updateKeychain(Some(password)) : Promise.resolve()
     })
     ->Promise.thenResolve(_ => notify("Successfully restored accounts!"))
     ->Promise.catch(exn => {
@@ -19,8 +31,10 @@ let restoreAndSave = (~seedPhrase, ~password, ~notify, ~onAccountsReady, ~deriva
 let useRestoreAndSave = () => {
   let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
   let notify = SnackBar.useNotification()
-  restoreAndSave(~onAccountsReady=accounts => ReplaceAll(accounts)->dispatch, ~notify)
+  let updateKeychain = Biometrics.useKeychainStorage()
+  restoreAndSave(
+    ~onAccountsReady=accounts => ReplaceAll(accounts)->dispatch,
+    ~notify,
+    ~updateKeychain,
+  )
 }
-
-let passwordIsValid = (password: string) =>
-  BackupPhraseStorage.load(password)->Promise.thenResolve(_ => true)

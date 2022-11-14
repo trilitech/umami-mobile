@@ -71,20 +71,18 @@ let make = (~navigation as _, ~route as _) => {
 
   let restoreAndSave = useRestoreAndSave()
 
-  let savePassword = Biometrics.useKeychainStorage()
-
   // default derivation path when you import seedphrase via text
   let onConfirm = data => {
     let password = data["password"]
-    let saveInKeyChain = data["saveInKeyChain"]
+    let saveInKeychain = data["saveInKeyChain"]
     setLoading(_ => true)
     restoreAndSave(
       ~password,
       ~seedPhrase={trimSpacesAndLineBreaks(dangerousText)},
       ~derivationPath=DerivationPath.default,
+      ~saveInKeychain,
       (),
     )
-    ->Promise.then(_ => saveInKeyChain ? savePassword(password->Some) : Promise.resolve())
     ->Promise.catch(_ => {
       setLoading(_ => false)
       Promise.resolve()

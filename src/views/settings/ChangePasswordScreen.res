@@ -1,16 +1,9 @@
 let useChangePassword = () => {
   let restoreAndSave = RestoreAndSave.useRestoreAndSave()
   (oldPassword, newPassword) => {
-    BackupPhraseStorage.load(oldPassword)->Promise.then(seedPhrase => {
-      restoreAndSave(
-        ~password=newPassword,
-        ~derivationPath=DerivationPath.default,
-        ~seedPhrase,
-        (),
-      )->Promise.then(() => {
-        BackupPhraseStorage.save(seedPhrase, newPassword)
-      })
-    })
+    BackupPhraseStorage.load(oldPassword)->Promise.then(seedPhrase =>
+      restoreAndSave(~password=newPassword, ~derivationPath=DerivationPath.default, ~seedPhrase, ())
+    )
   }
 }
 
@@ -36,7 +29,7 @@ let make = (~navigation as _, ~route as _) => {
   let updateKeychain = useUpdateKeychainIfBioEnabled()
 
   let handleSubmitOld = password =>
-    RestoreAndSave.passwordIsValid(password)
+    BackupPhraseStorage.validatePassword(password)
     ->Promise.thenResolve(_ => {
       setOldPassword(_ => Some(password))
     })
@@ -47,6 +40,7 @@ let make = (~navigation as _, ~route as _) => {
     ->ignore
 
   let changePassword = useChangePassword()
+
   let handleSubmitNew = (oldPassword, newPassword) => {
     setLoading(_ => true)
     changePassword(oldPassword, newPassword)

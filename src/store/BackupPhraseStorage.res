@@ -38,3 +38,5 @@ let load = password => {
 }
 
 let erase = () => Storage.remove("backupPhrase")
+
+let validatePassword = (password: string) => load(password)->Promise.thenResolve(_ => true)

@@ -8,7 +8,7 @@ let useKeychainStorage = () => {
         setBio(_ => false)
       })
     | Some(password) =>
-      RestoreAndSave.passwordIsValid(password)->Promise.then(_ =>
+      BackupPhraseStorage.validatePassword(password)->Promise.then(_ =>
         KeychainUtils.setPassword(password)->Promise.thenResolve(_ => setBio(_ => true))
       )
     }
