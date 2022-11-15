@@ -51,7 +51,7 @@ let _sendToken = (
   )->Promise.then(t => t->Taquito.Contract.send())
 }
 
-let _makeToolkit = (~network) => Taquito.create("https://" ++ Endpoints.getTezosNode(network))
+let _makeToolkit = (~network) => Taquito.create("https://" ++ Endpoints.getNodeUrl(network))
 
 let _getBalance = (~tz1: Pkh.t, ~network) => {
   let tezos = _makeToolkit(~network)

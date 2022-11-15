@@ -125,7 +125,7 @@ let isCredit = (a: tradeAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
 
 let useLinkToTzkt = () => {
   let (network, _) = Store.useNetwork()
-  let host = Endpoints.getTzktEndpoint(network)
+  let host = Endpoints.getTzktUrl(network)
   hash => ReactNative.Linking.openURL(`https://${host}/${hash}`)->ignore
 }
 

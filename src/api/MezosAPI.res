@@ -12,7 +12,7 @@ let makeHeaders = () =>
   })
 
 let getTransactions = (~tz1: Pkh.t, ~network) => {
-  let url = Endpoints.getUmamiWalletHost(network)
+  let url = Endpoints.getMezosUrl(network)
   Fetch.fetchWithInit(`https://${url}/accounts/${tz1->Pkh.toString}/operations`, makeHeaders())
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
@@ -25,7 +25,7 @@ let getTransactions = (~tz1: Pkh.t, ~network) => {
 external unsafeToBlockJSON: Js_dict.t<Js.Json.t> => {"indexer_last_block": int} = "%identity"
 
 let getIndexerLastBlock = (~network) => {
-  let host = Endpoints.getUmamiWalletHost(network)
+  let host = Endpoints.getMezosUrl(network)
   Fetch.fetchWithInit(`https://${host}/monitor/blocks`, makeHeaders())
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeObject)
@@ -36,7 +36,7 @@ let getIndexerLastBlock = (~network) => {
 
 %%private(
   let checkExists = (~tz1, ~network) => {
-    let url = Endpoints.getUmamiWalletHost(network)
+    let url = Endpoints.getMezosUrl(network)
     let existsUrl = `https://${url}/accounts/${tz1->Pkh.toString}/exists`
 
     Fetch.fetchWithInit(existsUrl, makeHeaders())

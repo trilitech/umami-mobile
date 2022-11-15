@@ -3,7 +3,7 @@ external unsafeParse: Js.Json.t => Token.JSON.t = "%identity"
 exception TokensFetchFailure(string)
 
 let getTokens = (~tz1: Pkh.t, ~network: Network.t) => {
-  let tzktHost = Endpoints.getTzktEndpoint(network)
+  let tzktHost = Endpoints.getTzktUrl(network)
   Fetch.fetch(`https://${tzktHost}/v1/tokens/balances/?account=${tz1->Pkh.toString}`)
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
