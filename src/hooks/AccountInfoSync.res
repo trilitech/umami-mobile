@@ -1,7 +1,7 @@
-let getAccountBalance = (~tz1: Pkh.t, ~network) => {
+let getAccountBalance = (~tz1: Pkh.t, ~network, ~nodeIndex) => {
   open AccountsReducer
   Promise.all2((
-    TaquitoUtils.getBalance(~tz1, ~network),
+    TaquitoUtils.getBalance(~tz1, ~network, ~nodeIndex),
     TzktAPI.getTokens(~tz1, ~network),
   ))->Promise.thenResolve(((b, t)) => {
     {tz1: tz1, balance: Some(b), tokens: t}
@@ -17,8 +17,8 @@ let getAccountOperations = (tz1: Pkh.t, ~network) => {
 
 open Account
 
-let getBalances = (~accounts, ~network) =>
-  accounts->Belt.Array.map(a => getAccountBalance(~tz1=a.tz1, ~network))->Js.Promise.all
+let getBalances = (~accounts, ~network, ~nodeIndex) =>
+  accounts->Belt.Array.map(a => getAccountBalance(~tz1=a.tz1, ~network, ~nodeIndex))->Js.Promise.all
 
 let getOperations = (~accounts, ~network) =>
   accounts->Belt.Array.map(a => getAccountOperations(a.tz1, ~network))->Js.Promise.all
@@ -79,6 +79,7 @@ let useQueryWithRefetchInterval = (queryFn, queryKey) => {
 let useBalancesAndOpsSync = () => {
   let (network, _) = Store.useNetwork()
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
+  let (nodeIndex, _) = Store.useNodeIndex()
 
   useQueryWithRefetchInterval(
     _ =>
@@ -90,7 +91,7 @@ let useBalancesAndOpsSync = () => {
 
   useQueryWithRefetchInterval(
     _ =>
-      getBalances(~network, ~accounts)
+      getBalances(~network, ~accounts, ~nodeIndex)
       ->Promise.thenResolve(b => dispatch(UpdateBalances(b)))
       ->Promise.catch(tapError),
     "balances",

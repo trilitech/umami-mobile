@@ -67,6 +67,7 @@ let executeBeaconTrans = (
   network,
   sender: Account.t,
   respond,
+  nodeIndex: int,
 ) => {
   TaquitoUtils.sendTez(
     ~password,
@@ -74,6 +75,7 @@ let executeBeaconTrans = (
     ~recipient=t.destination,
     ~network,
     ~sk=sender.sk,
+    ~nodeIndex,
   )->Promise.then(r => {
     let response: Message.ResponseInput.operationResponse = {
       type_: #operation_response,
@@ -99,8 +101,9 @@ module SingleOp = {
     let (loading, setLoading) = React.useState(_ => false)
     let (estimationRes, setFee) = React.useState(_ => None)
 
+    let (nodeIndex, _) = Store.useNodeIndex()
     React.useEffect4(() => {
-      simulateBeaconTrans(transaction, sender, network)
+      simulateBeaconTrans(transaction, sender, network, ~nodeIndex)
       ->Promise.thenResolve(fee => setFee(_ => Some(fee->Ok)))
       ->Promise.catch(exn => {
         setFee(_ => exn->Helpers.getMessage->Error->Some)
@@ -110,9 +113,16 @@ module SingleOp = {
       None
     }, (setFee, transaction, network, sender))
 
-    let handleAccept = (password, t, network: Network.t, sender: Account.t, requestId) => {
+    let handleAccept = (
+      password,
+      t,
+      network: Network.t,
+      sender: Account.t,
+      requestId,
+      nodeIndex,
+    ) => {
       setLoading(_ => true)
-      executeBeaconTrans(password, t, requestId, network, (sender: Account.t), respond)
+      executeBeaconTrans(password, t, requestId, network, (sender: Account.t), respond, nodeIndex)
       ->Promise.thenResolve(() => {
         setLoading(_ => false)
         notify("Tez sent!")
@@ -131,7 +141,8 @@ module SingleOp = {
         <SingleOpDisplay
           fee=fee.suggestedFeeMutez
           transaction
-          onAccept={p => handleAccept(p, transaction, network, sender, requestId)->ignore}
+          onAccept={p =>
+            handleAccept(p, transaction, network, sender, requestId, nodeIndex)->ignore}
           loading
           goBack
           sender

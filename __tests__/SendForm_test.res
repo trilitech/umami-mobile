@@ -31,6 +31,7 @@ describe("<SendScreen />", () => {
     ~sk as _,
     ~password as _,
     ~network as _,
+    ~nodeIndex as _,
   ) => {
     let mockReponse: Taquito.Toolkit.operation = Obj.magic({"hash": "mockHash"})
     Promise.resolve(mockReponse)
@@ -43,6 +44,7 @@ describe("<SendScreen />", () => {
     ~senderTz1 as _,
     ~senderPk as _,
     ~network as _,
+    ~nodeIndex as _,
   ) => {
     let mockResponse: Taquito.Toolkit.estimation = Obj.magic({
       "suggestedFeeMutez": 33,
@@ -62,6 +64,7 @@ describe("<SendScreen />", () => {
         notifyAdvanced={_ => ()}
         navigate={_ => ()}
         network=Ghostnet
+        nodeIndex=0
         send=mockSend
         simulate=mockSimulate
       />
@@ -97,6 +100,7 @@ describe("<SendScreen />", () => {
         notifyAdvanced={_ => ()}
         navigate={_ => ()}
         network=Ghostnet
+        nodeIndex=0
         send=mockSend
         simulate=mockSimulate
       />

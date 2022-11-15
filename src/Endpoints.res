@@ -1,4 +1,4 @@
-let getNodeUrl = (n: Network.t) => {
+let getNodeUrl = (n: Network.t, nodeIndex: int) => {
   switch n {
   | Mainnet => "mainnet.smartpy.io"
   | Ghostnet => "ghostnet.ecadinfra.com"

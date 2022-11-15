@@ -7,6 +7,7 @@ type simulate = (
   ~senderTz1: Pkh.t,
   ~senderPk: Pk.t,
   ~network: Network.t,
+  ~nodeIndex: int,
 ) => Promise.t<Taquito.Toolkit.estimation>
 
 let simulate: simulate = (
@@ -16,6 +17,7 @@ let simulate: simulate = (
   ~senderTz1,
   ~senderPk,
   ~network,
+  ~nodeIndex,
 ) => {
   let estimate = TaquitoUtils.estimateSendToken(~recipientTz1, ~senderTz1, ~senderPk)
   switch assetType {
@@ -28,6 +30,7 @@ let simulate: simulate = (
         ~senderTz1,
         ~senderPk,
         ~network,
+        ~nodeIndex,
       )
     | CurrencyToken(b, decimals) =>
       estimate(
@@ -36,6 +39,7 @@ let simulate: simulate = (
         ~amount=Token.toRaw(prettyAmount, decimals),
         ~isFa1=b.symbol == SendInputs.fa1Symbol, // :(
         ~network,
+        ~nodeIndex,
         (),
       )
     }
@@ -45,6 +49,7 @@ let simulate: simulate = (
       ~tokenId=b.tokenId,
       ~amount=Token.toRaw(prettyAmount, 0),
       ~network,
+      ~nodeIndex,
       (),
     )
   }
@@ -58,6 +63,7 @@ type send = (
   ~sk: string,
   ~password: string,
   ~network: Network.t,
+  ~nodeIndex: int,
 ) => Promise.t<Taquito.Toolkit.operation>
 
 let send: send = (
@@ -68,6 +74,7 @@ let send: send = (
   ~sk,
   ~password,
   ~network,
+  ~nodeIndex,
 ) => {
   let sendToken = TaquitoUtils.sendToken(~password, ~sk, ~senderTz1, ~recipientTz1)
 
@@ -75,7 +82,14 @@ let send: send = (
   | CurrencyAsset(currency) =>
     switch currency {
     | CurrencyTez =>
-      TaquitoUtils.sendTez(~recipient=recipientTz1, ~amount=prettyAmount, ~password, ~sk, ~network)
+      TaquitoUtils.sendTez(
+        ~recipient=recipientTz1,
+        ~amount=prettyAmount,
+        ~password,
+        ~sk,
+        ~network,
+        ~nodeIndex,
+      )
     | CurrencyToken(b, decimals) =>
       sendToken(
         ~contractAddress=b.contract,
@@ -83,6 +97,7 @@ let send: send = (
         ~amount=Token.toRaw(prettyAmount, decimals),
         ~isFa1=b.symbol == SendInputs.fa1Symbol,
         ~network,
+        ~nodeIndex,
         (),
       )
     }
@@ -92,6 +107,7 @@ let send: send = (
       ~tokenId=b.tokenId,
       ~amount=Token.toRaw(prettyAmount, 0),
       ~network,
+      ~nodeIndex,
       (),
     )
   }
