@@ -21,9 +21,6 @@ let make = (~navigation as _, ~route as _) => {
       ~saveInKeychain,
       (),
     )
-    ->Promise.thenResolve(() => {
-      setLoading(_ => false)
-    })
     ->Promise.catch(exn => {
       setLoading(_ => false)
       notify("Failed to generate account. " ++ exn->Helpers.getMessage)
