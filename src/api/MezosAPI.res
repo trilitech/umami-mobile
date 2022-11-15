@@ -1,8 +1,5 @@
 external unsafeToOperationJSON: Js.Json.t => Operation.JSON.t = "%identity"
 
-let getUmamiWalletHost = isTestNet =>
-  isTestNet ? Endpoints.umamiWallet.testNet : Endpoints.umamiWallet.mainNet
-
 exception MezosTransactionFetchFailure(string)
 exception MezosLastBlockFetchFailure(string)
 
@@ -14,11 +11,9 @@ let makeHeaders = () =>
     Fetch.RequestInit.make(~method_=Get, ~headers, ())
   })
 
-let getTransactions = (~tz1: Pkh.t, ~isTestNet) => {
-  Fetch.fetchWithInit(
-    `https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1->Pkh.toString}/operations`,
-    makeHeaders(),
-  )
+let getTransactions = (~tz1: Pkh.t, ~network) => {
+  let url = Endpoints.getUmamiWalletHost(network)
+  Fetch.fetchWithInit(`https://${url}/accounts/${tz1->Pkh.toString}/operations`, makeHeaders())
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
   ->Promise.thenResolve(Belt.Option.getExn)
@@ -29,17 +24,20 @@ let getTransactions = (~tz1: Pkh.t, ~isTestNet) => {
 
 external unsafeToBlockJSON: Js_dict.t<Js.Json.t> => {"indexer_last_block": int} = "%identity"
 
-let getIndexerLastBlock = (~isTestNet) =>
-  Fetch.fetchWithInit(`https://${getUmamiWalletHost(isTestNet)}/monitor/blocks`, makeHeaders())
+let getIndexerLastBlock = (~network) => {
+  let host = Endpoints.getUmamiWalletHost(network)
+  Fetch.fetchWithInit(`https://${host}/monitor/blocks`, makeHeaders())
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeObject)
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(json => unsafeToBlockJSON(json)["indexer_last_block"])
   ->Promise.catch(err => Promise.reject(MezosLastBlockFetchFailure(err->Helpers.getMessage)))
+}
 
 %%private(
-  let checkExists = (~tz1, ~isTestNet) => {
-    let existsUrl = `https://${getUmamiWalletHost(isTestNet)}/accounts/${tz1->Pkh.toString}/exists`
+  let checkExists = (~tz1, ~network) => {
+    let url = Endpoints.getUmamiWalletHost(network)
+    let existsUrl = `https://${url}/accounts/${tz1->Pkh.toString}/exists`
 
     Fetch.fetchWithInit(existsUrl, makeHeaders())
     ->Promise.then(Fetch.Response.json)
@@ -48,10 +46,11 @@ let getIndexerLastBlock = (~isTestNet) =>
   }
 )
 
+open Network
 let checkExistsAllNetworks = (~tz1) => {
   Promise.all2((
-    checkExists(~tz1, ~isTestNet=false),
-    checkExists(~tz1, ~isTestNet=true),
+    checkExists(~tz1, ~network=Mainnet),
+    checkExists(~tz1, ~network=Ghostnet),
   ))->Promise.thenResolve(((existsInTestNet, existsInMainNet)) =>
     existsInTestNet || existsInMainNet
   )

@@ -1,27 +1,27 @@
-let getAccountBalance = (~tz1: Pkh.t, ~isTestNet) => {
+let getAccountBalance = (~tz1: Pkh.t, ~network) => {
   open AccountsReducer
   Promise.all2((
-    TaquitoUtils.getBalance(~tz1, ~isTestNet),
-    TzktAPI.getTokens(~tz1, ~isTestNet),
+    TaquitoUtils.getBalance(~tz1, ~network),
+    TzktAPI.getTokens(~tz1, ~network),
   ))->Promise.thenResolve(((b, t)) => {
     {tz1: tz1, balance: Some(b), tokens: t}
   })
 }
 
-let getAccountOperations = (tz1: Pkh.t, ~isTestNet) => {
+let getAccountOperations = (tz1: Pkh.t, ~network) => {
   open AccountsReducer
-  MezosAPI.getTransactions(~tz1, ~isTestNet)->Promise.thenResolve(operations => {
+  MezosAPI.getTransactions(~tz1, ~network)->Promise.thenResolve(operations => {
     {tz1: tz1, operations: operations}
   })
 }
 
 open Account
 
-let getBalances = (~accounts, ~isTestNet) =>
-  accounts->Belt.Array.map(a => getAccountBalance(~tz1=a.tz1, ~isTestNet))->Js.Promise.all
+let getBalances = (~accounts, ~network) =>
+  accounts->Belt.Array.map(a => getAccountBalance(~tz1=a.tz1, ~network))->Js.Promise.all
 
-let getOperations = (~accounts, ~isTestNet) =>
-  accounts->Belt.Array.map(a => getAccountOperations(a.tz1, ~isTestNet))->Js.Promise.all
+let getOperations = (~accounts, ~network) =>
+  accounts->Belt.Array.map(a => getAccountOperations(a.tz1, ~network))->Js.Promise.all
 
 // TODO reimplement transaction notifications
 
@@ -77,12 +77,12 @@ let useQueryWithRefetchInterval = (queryFn, queryKey) => {
 }
 
 let useBalancesAndOpsSync = () => {
-  let isTestNet = Store.useIsTestNet()
+  let (network, _) = Store.useNetwork()
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
 
   useQueryWithRefetchInterval(
     _ =>
-      getOperations(~isTestNet, ~accounts)
+      getOperations(~network, ~accounts)
       ->Promise.thenResolve(o => dispatch(UpdateOperations(o)))
       ->Promise.catch(tapError),
     "operations",
@@ -90,7 +90,7 @@ let useBalancesAndOpsSync = () => {
 
   useQueryWithRefetchInterval(
     _ =>
-      getBalances(~isTestNet, ~accounts)
+      getBalances(~network, ~accounts)
       ->Promise.thenResolve(b => dispatch(UpdateBalances(b)))
       ->Promise.catch(tapError),
     "balances",

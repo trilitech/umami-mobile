@@ -2,8 +2,8 @@ external unsafeParse: Js.Json.t => Token.JSON.t = "%identity"
 
 exception TokensFetchFailure(string)
 
-let getTokens = (~tz1: Pkh.t, ~isTestNet) => {
-  let tzktHost = isTestNet ? Endpoints.tzkt.testNet : Endpoints.tzkt.mainNet
+let getTokens = (~tz1: Pkh.t, ~network: Network.t) => {
+  let tzktHost = Endpoints.getTzktEndpoint(network)
   Fetch.fetch(`https://${tzktHost}/v1/tokens/balances/?account=${tz1->Pkh.toString}`)
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
@@ -14,8 +14,8 @@ let getTokens = (~tz1: Pkh.t, ~isTestNet) => {
   ->Promise.catch(err => Promise.reject(TokensFetchFailure(err->Helpers.getMessage)))
 }
 
-let getNft = (~tz1: Pkh.t, ~isTestNet, ~nftInfo: Token.nftInfo) => {
-  getTokens(~tz1, ~isTestNet)->Promise.thenResolve(tokens =>
+let getNft = (~tz1: Pkh.t, ~network: Network.t, ~nftInfo: Token.nftInfo) => {
+  getTokens(~tz1, ~network)->Promise.thenResolve(tokens =>
     tokens
     ->Token.filterNFTs
     ->Belt.Array.getBy(((b, _)) =>

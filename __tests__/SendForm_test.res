@@ -1,4 +1,5 @@
 open Jest
+open Network
 let mockFn = JestJs.fn(() => ())
 open Expect
 open RNTestingLibrary
@@ -29,7 +30,7 @@ describe("<SendScreen />", () => {
     ~senderTz1 as _,
     ~sk as _,
     ~password as _,
-    ~isTestNet as _,
+    ~network as _,
   ) => {
     let mockReponse: Taquito.Toolkit.operation = Obj.magic({"hash": "mockHash"})
     Promise.resolve(mockReponse)
@@ -41,7 +42,7 @@ describe("<SendScreen />", () => {
     ~assetType as _,
     ~senderTz1 as _,
     ~senderPk as _,
-    ~isTestNet as _,
+    ~network as _,
   ) => {
     let mockResponse: Taquito.Toolkit.estimation = Obj.magic({
       "suggestedFeeMutez": 33,
@@ -60,7 +61,7 @@ describe("<SendScreen />", () => {
         notify={_ => ()}
         notifyAdvanced={_ => ()}
         navigate={_ => ()}
-        isTestNet=false
+        network=Ghostnet
         send=mockSend
         simulate=mockSimulate
       />
@@ -95,7 +96,7 @@ describe("<SendScreen />", () => {
         notify={_ => ()}
         notifyAdvanced={_ => ()}
         navigate={_ => ()}
-        isTestNet=false
+        network=Ghostnet
         send=mockSend
         simulate=mockSimulate
       />

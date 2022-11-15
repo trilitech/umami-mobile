@@ -50,12 +50,12 @@ let formatBeaconTezAmount = (a: string) =>
 let simulateBeaconTrans = (
   t: ReBeacon.Message.Request.PartialOperation.transaction,
   sender: Account.t,
-  isTestNet,
+  network,
 ) =>
   TaquitoUtils.estimateSendTez(
     ~amount=t.amount->formatBeaconTezAmount,
     ~recipient=t.destination->Pkh.unsafeBuild,
-    ~isTestNet,
+    ~network,
     ~senderTz1=sender.tz1,
     ~senderPk=sender.pk,
   )
@@ -64,7 +64,7 @@ let executeBeaconTrans = (
   password,
   t: ReBeacon.Message.Request.PartialOperation.transaction,
   requestId,
-  isTestNet,
+  network,
   sender: Account.t,
   respond,
 ) => {
@@ -72,7 +72,7 @@ let executeBeaconTrans = (
     ~password,
     ~amount=t.amount->formatBeaconTezAmount,
     ~recipient=t.destination,
-    ~isTestNet,
+    ~network,
     ~sk=sender.sk,
   )->Promise.then(r => {
     let response: Message.ResponseInput.operationResponse = {
@@ -93,14 +93,14 @@ module SingleOp = {
     ~sender: Account.t,
     ~requestId: string,
     ~respond,
-    ~isTestNet,
+    ~network,
   ) => {
     let notify = SnackBar.useNotification()
     let (loading, setLoading) = React.useState(_ => false)
     let (estimationRes, setFee) = React.useState(_ => None)
 
     React.useEffect4(() => {
-      simulateBeaconTrans(transaction, sender, isTestNet)
+      simulateBeaconTrans(transaction, sender, network)
       ->Promise.thenResolve(fee => setFee(_ => Some(fee->Ok)))
       ->Promise.catch(exn => {
         setFee(_ => exn->Helpers.getMessage->Error->Some)
@@ -108,11 +108,11 @@ module SingleOp = {
       })
       ->ignore
       None
-    }, (setFee, transaction, isTestNet, sender))
+    }, (setFee, transaction, network, sender))
 
-    let handleAccept = (password, t, isTestNet, sender: Account.t, requestId) => {
+    let handleAccept = (password, t, network: Network.t, sender: Account.t, requestId) => {
       setLoading(_ => true)
-      executeBeaconTrans(password, t, requestId, isTestNet, (sender: Account.t), respond)
+      executeBeaconTrans(password, t, requestId, network, (sender: Account.t), respond)
       ->Promise.thenResolve(() => {
         setLoading(_ => false)
         notify("Tez sent!")
@@ -131,7 +131,7 @@ module SingleOp = {
         <SingleOpDisplay
           fee=fee.suggestedFeeMutez
           transaction
-          onAccept={p => handleAccept(p, transaction, isTestNet, sender, requestId)->ignore}
+          onAccept={p => handleAccept(p, transaction, network, sender, requestId)->ignore}
           loading
           goBack
           sender
@@ -148,16 +148,28 @@ module SingleOp = {
   }
 }
 
+// TODO refactor with store deserializer
+let safeNetworkParse = (str: string) => {
+  open Network
+  switch str {
+  | "mainnet" => Mainnet->Some
+  | "ghostnet" => Ghostnet->Some
+  | _ => None
+  }
+}
 module Display = {
   @react.component
   let make = (~request: Message.Request.operationRequest, ~goBack, ~sender, ~respond) => {
-    // TODO improve this flag
-    let _isTestNet = request.network.type_ != "mainnet"
+    let network = safeNetworkParse(request.network.type_)
     let el = switch matchSingleTransaction(request.operationDetails) {
     | #single(op) =>
       switch Message.Request.PartialOperation.classify(op) {
       | Transfer(t) =>
-        <SingleOp isTestNet=true sender transaction=t goBack requestId=request.id respond />
+        network->Belt.Option.mapWithDefault(
+          <BeaconErrorMsg message={"Unknown Network. " ++ request.network.type_} />,
+          network => <SingleOp network sender transaction=t goBack requestId=request.id respond />,
+        )
+
       | _ => <BeaconErrorMsg message="Unsupported operation" />
       }
     | #empty => <BeaconErrorMsg message="No transactions found in request" />

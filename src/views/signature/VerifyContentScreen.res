@@ -98,11 +98,11 @@ module SignedNFT = {
 
     let tz1 = signed.pk->Pkh.buildFromPk
 
-    let isTestNet = Store.useIsTestNet()
+    let (network, _) = Store.useNetwork()
 
     let queryResult = ReactQuery.useQuery(
       ReactQuery.queryOptions(
-        ~queryFn=_ => TzktAPI.getNft(~tz1, ~nftInfo=data, ~isTestNet),
+        ~queryFn=_ => TzktAPI.getNft(~tz1, ~nftInfo=data, ~network),
         ~queryKey="nft",
         ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(#bool(false)),
         (),

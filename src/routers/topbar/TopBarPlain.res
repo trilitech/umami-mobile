@@ -4,9 +4,10 @@ open CommonComponents
 open UmamiThemeProvider
 @react.component
 let make = (~left=React.null, ~right=React.null, ~center=React.null) => {
-  let isTestNet = Store.useIsTestNet()
+  let (network, _) = Store.useNetwork()
   let surfaceColor = useSurfaceColor()
   let errorColor = useErrorColor()
+  let isTestNet = !(network == Mainnet)
 
   open Paper
   <Appbar.Header

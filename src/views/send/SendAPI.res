@@ -6,7 +6,7 @@ type simulate = (
   ~assetType: SendTypes.assetType,
   ~senderTz1: Pkh.t,
   ~senderPk: Pk.t,
-  ~isTestNet: bool,
+  ~network: Network.t,
 ) => Promise.t<Taquito.Toolkit.estimation>
 
 let simulate: simulate = (
@@ -15,7 +15,7 @@ let simulate: simulate = (
   ~assetType,
   ~senderTz1,
   ~senderPk,
-  ~isTestNet,
+  ~network,
 ) => {
   let estimate = TaquitoUtils.estimateSendToken(~recipientTz1, ~senderTz1, ~senderPk)
   switch assetType {
@@ -27,7 +27,7 @@ let simulate: simulate = (
         ~recipient=recipientTz1,
         ~senderTz1,
         ~senderPk,
-        ~isTestNet,
+        ~network,
       )
     | CurrencyToken(b, decimals) =>
       estimate(
@@ -35,7 +35,7 @@ let simulate: simulate = (
         ~tokenId=b.tokenId,
         ~amount=Token.toRaw(prettyAmount, decimals),
         ~isFa1=b.symbol == SendInputs.fa1Symbol, // :(
-        ~isTestNet,
+        ~network,
         (),
       )
     }
@@ -44,7 +44,7 @@ let simulate: simulate = (
       ~contractAddress=b.contract,
       ~tokenId=b.tokenId,
       ~amount=Token.toRaw(prettyAmount, 0),
-      ~isTestNet,
+      ~network,
       (),
     )
   }
@@ -57,7 +57,7 @@ type send = (
   ~senderTz1: Pkh.t,
   ~sk: string,
   ~password: string,
-  ~isTestNet: bool,
+  ~network: Network.t,
 ) => Promise.t<Taquito.Toolkit.operation>
 
 let send: send = (
@@ -67,7 +67,7 @@ let send: send = (
   ~senderTz1,
   ~sk,
   ~password,
-  ~isTestNet,
+  ~network,
 ) => {
   let sendToken = TaquitoUtils.sendToken(~password, ~sk, ~senderTz1, ~recipientTz1)
 
@@ -75,20 +75,14 @@ let send: send = (
   | CurrencyAsset(currency) =>
     switch currency {
     | CurrencyTez =>
-      TaquitoUtils.sendTez(
-        ~recipient=recipientTz1,
-        ~amount=prettyAmount,
-        ~password,
-        ~sk,
-        ~isTestNet,
-      )
+      TaquitoUtils.sendTez(~recipient=recipientTz1, ~amount=prettyAmount, ~password, ~sk, ~network)
     | CurrencyToken(b, decimals) =>
       sendToken(
         ~contractAddress=b.contract,
         ~tokenId=b.tokenId,
         ~amount=Token.toRaw(prettyAmount, decimals),
         ~isFa1=b.symbol == SendInputs.fa1Symbol,
-        ~isTestNet,
+        ~network,
         (),
       )
     }
@@ -97,7 +91,7 @@ let send: send = (
       ~contractAddress=b.contract,
       ~tokenId=b.tokenId,
       ~amount=Token.toRaw(prettyAmount, 0),
-      ~isTestNet,
+      ~network,
       (),
     )
   }

@@ -37,7 +37,7 @@ module PureSendScreen = {
     ~notify,
     ~notifyAdvanced,
     ~navigate,
-    ~isTestNet,
+    ~network,
     ~send: SendAPI.send,
     ~simulate: SendAPI.simulate,
   ) => {
@@ -71,7 +71,7 @@ module PureSendScreen = {
           ~assetType=trans.assetType,
           ~senderTz1=sender.tz1,
           ~sk=sender.sk,
-          ~isTestNet,
+          ~network,
         )
       )
 
@@ -86,7 +86,7 @@ module PureSendScreen = {
           ~assetType=trans.assetType,
           ~senderTz1=sender.tz1,
           ~senderPk=sender.pk,
-          ~isTestNet,
+          ~network,
         )
       )
 
@@ -151,7 +151,7 @@ let make = (~navigation as _, ~route) => {
   let notify = SnackBar.useNotification()
   let notifyAdvanced = SnackBar.useNotificationAdvanced()
   let navigate = NavUtils.useNavigate()
-  let isTestNet = Store.useIsTestNet()
+  let (network, _) = Store.useNetwork()
   Store.useWithAccount(account =>
     <PureSendScreen
       sender=account
@@ -159,7 +159,7 @@ let make = (~navigation as _, ~route) => {
       notify
       notifyAdvanced
       navigate
-      isTestNet
+      network
       send=SendAPI.send
       simulate=SendAPI.simulate
     />

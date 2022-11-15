@@ -51,21 +51,18 @@ let _sendToken = (
   )->Promise.then(t => t->Taquito.Contract.send())
 }
 
-let _makeToolkit = (~isTestNet) =>
-  Taquito.create(
-    "https://" ++ (isTestNet ? Endpoints.tezosNode.testNet : Endpoints.tezosNode.mainNet),
-  )
+let _makeToolkit = (~network) => Taquito.create("https://" ++ Endpoints.getTezosNode(network))
 
-let _getBalance = (~tz1: Pkh.t, ~isTestNet) => {
-  let tezos = _makeToolkit(~isTestNet)
+let _getBalance = (~tz1: Pkh.t, ~network) => {
+  let tezos = _makeToolkit(~network)
   let res = tezos.tz->Taquito.Toolkit.getBalance(Pkh.toString(tz1))
   res->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
 }
 
 exception BalanceFetchFailure(string)
 
-let getBalance = (~tz1, ~isTestNet) =>
-  _getBalance(~tz1, ~isTestNet)
+let getBalance = (~tz1, ~network) =>
+  _getBalance(~tz1, ~network)
   ->Promise.thenResolve(b => Belt.Int.fromString(b))
   ->Promise.then(b => {
     Promise.make((resolve, reject) => {
@@ -77,8 +74,8 @@ let getBalance = (~tz1, ~isTestNet) =>
   })
   ->Promise.catch(err => Promise.reject(BalanceFetchFailure(Helpers.getMessage(err))))
 
-let sendTez = (~recipient, ~amount, ~password, ~sk, ~isTestNet) => {
-  let tezos = _makeToolkit(~isTestNet)
+let sendTez = (~recipient, ~amount, ~password, ~sk, ~network) => {
+  let tezos = _makeToolkit(~network)
   Taquito.fromSecretKey(sk, password)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})
     tezos.contract->Taquito.Toolkit.transfer({"to": recipient, "amount": amount})
@@ -90,9 +87,9 @@ let estimateSendTez = (
   ~recipient: Pkh.t,
   ~senderTz1: Pkh.t,
   ~senderPk: Pk.t,
-  ~isTestNet,
+  ~network: Network.t,
 ) => {
-  let tezos = _makeToolkit(~isTestNet)
+  let tezos = _makeToolkit(~network)
   tezos->Taquito.Toolkit.setProvider({
     "signer": Taquito.createDummySigner(~pk=senderPk->Pk.toString, ~pkh=senderTz1->Pkh.toString),
   })
@@ -108,10 +105,10 @@ let estimateSendToken = (
   ~senderPk: Pk.t,
   ~recipientTz1: Pkh.t,
   ~isFa1=false,
-  ~isTestNet,
+  ~network: Network.t,
   (),
 ) => {
-  let tezos = _makeToolkit(~isTestNet)
+  let tezos = _makeToolkit(~network)
   tezos->Taquito.Toolkit.setProvider({
     "signer": Taquito.createDummySigner(~pk=senderPk->Pk.toString, ~pkh=senderTz1->Pkh.toString),
   })
@@ -143,10 +140,10 @@ let sendToken = (
   ~senderTz1: Pkh.t,
   ~recipientTz1: Pkh.t,
   ~isFa1=false,
-  ~isTestNet,
+  ~network: Network.t,
   (),
 ) => {
-  let tezos = _makeToolkit(~isTestNet)
+  let tezos = _makeToolkit(~network)
 
   Taquito.fromSecretKey(sk, password)->Promise.then(signer => {
     tezos->Taquito.Toolkit.setProvider({"signer": signer})

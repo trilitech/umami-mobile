@@ -124,8 +124,8 @@ let matchAmount = (a: tradeAmount) =>
 let isCredit = (a: tradeAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
 
 let useLinkToTzkt = () => {
-  let isTestNet = Store.useIsTestNet()
-  let host = isTestNet ? Endpoints.tzkt.testNet : Endpoints.tzkt.mainNet
+  let (network, _) = Store.useNetwork()
+  let host = Endpoints.getTzktEndpoint(network)
   hash => ReactNative.Linking.openURL(`https://${host}/${hash}`)->ignore
 }
 
@@ -294,13 +294,13 @@ let make = (~route, ~navigation as _) => {
   let notify = SnackBar.useNotification()
   let assetBalance = NavUtils.getAssetBalance(route)
   let (indexerLastBlock, setIndexerLastBlock) = React.useState(_ => None)
-  let isTestNet = Store.useIsTestNet()
+  let (network, _) = Store.useNetwork()
   let isFocused = ReactNavigation.Native.useIsFocused()
   let isFocuseRef = React.useRef(false)
   isFocuseRef.current = isFocused
 
   React.useEffect4(() => {
-    MezosAPI.getIndexerLastBlock(~isTestNet)
+    MezosAPI.getIndexerLastBlock(~network)
     ->Promise.thenResolve(lastBlock =>
       if isFocuseRef.current {
         setIndexerLastBlock(_ => Some(lastBlock))
@@ -312,7 +312,7 @@ let make = (~route, ~navigation as _) => {
     })
     ->ignore
     None
-  }, (operations, isTestNet, notify, setIndexerLastBlock))
+  }, (operations, network, notify, setIndexerLastBlock))
 
   let account = Store.useActiveAccount()
 

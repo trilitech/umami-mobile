@@ -59,11 +59,6 @@ let useAddressExists = () => {
   tz1 => allAddresses->Array.some(existing => existing == tz1)
 }
 
-let useIsTestNet = () => {
-  let (network, _) = useNetwork()
-  network != Mainnet
-}
-
 let useGetTezosDomain = () => {
   let (metadatas, _) = useAddressMetadatas()
   tz1 => metadatas->Map.String.get(tz1)->Option.flatMap(d => d.tzDomain)
