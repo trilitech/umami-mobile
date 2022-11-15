@@ -17,9 +17,7 @@ let restoreAndSave = (
       let accounts: array<Account.t> = keys->Array.map(AccountUtils.keysToAccount)
       AESCrypto.encrypt(seedPhrase, password)->Promise.thenResolve(_ => onAccountsReady(accounts))
     })
-    ->Promise.then(_ => {
-      saveInKeychain ? updateKeychain(Some(password)) : Promise.resolve()
-    })
+    ->Promise.then(_ => updateKeychain(saveInKeychain ? Some(password) : None))
     ->Promise.thenResolve(_ => notify("Successfully restored accounts!"))
     ->Promise.catch(exn => {
       notify("Failed to restore accounts. " ++ exn->Helpers.getMessage)

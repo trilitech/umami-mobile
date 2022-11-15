@@ -1,23 +1,15 @@
 let useChangePassword = () => {
   let restoreAndSave = RestoreAndSave.useRestoreAndSave()
-  (oldPassword, newPassword) => {
+  (oldPassword, newPassword, saveInKeychain) =>
     BackupPhraseStorage.load(oldPassword)->Promise.then(seedPhrase =>
-      restoreAndSave(~password=newPassword, ~derivationPath=DerivationPath.default, ~seedPhrase, ())
+      restoreAndSave(
+        ~password=newPassword,
+        ~derivationPath=DerivationPath.default,
+        ~seedPhrase,
+        ~saveInKeychain,
+        (),
+      )
     )
-  }
-}
-
-let useUpdateKeychainIfBioEnabled = () => {
-  let (bio, _) = Store.useBiometricsEnabled()
-  let setPassword = Biometrics.useKeychainStorage()
-
-  password => {
-    if bio {
-      setPassword(Some(password))
-    } else {
-      Promise.resolve()
-    }
-  }
 }
 
 @react.component
@@ -26,7 +18,6 @@ let make = (~navigation as _, ~route as _) => {
   let (loading, setLoading) = React.useState(_ => false)
   let notify = SnackBar.useNotification()
   let goBack = NavUtils.useGoBack()
-  let updateKeychain = useUpdateKeychainIfBioEnabled()
 
   let handleSubmitOld = password =>
     BackupPhraseStorage.validatePassword(password)
@@ -41,10 +32,9 @@ let make = (~navigation as _, ~route as _) => {
 
   let changePassword = useChangePassword()
 
-  let handleSubmitNew = (oldPassword, newPassword) => {
+  let handleSubmitNew = (oldPassword, newPassword, saveInKeyChain) => {
     setLoading(_ => true)
-    changePassword(oldPassword, newPassword)
-    ->Promise.then(_ => updateKeychain(newPassword))
+    changePassword(oldPassword, newPassword, saveInKeyChain)
     ->Promise.thenResolve(_ => {
       setLoading(_ => false)
       goBack()
@@ -62,7 +52,10 @@ let make = (~navigation as _, ~route as _) => {
     {switch oldPassword {
     | None => <PasswordConfirm onSubmit=handleSubmitOld />
     | Some(oldPassword) =>
-      <PasswordCreate loading onSubmit={data => handleSubmitNew(oldPassword, data["password"])} />
+      <PasswordCreate
+        loading
+        onSubmit={data => handleSubmitNew(oldPassword, data["password"], data["saveInKeyChain"])}
+      />
     }}
   </Container>
 }

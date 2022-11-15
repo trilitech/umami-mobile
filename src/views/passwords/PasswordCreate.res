@@ -26,7 +26,7 @@ open Belt
 )
 
 @react.component
-let make = (~onSubmit, ~loading=false, ~hideBiometrics=false) => {
+let make = (~onSubmit, ~loading=false) => {
   let (value1, setValue1) = EphemeralState.useEphemeralState("")
   let (value2, setValue2) = EphemeralState.useEphemeralState("")
   let (status, setStatus) = React.useState(_ => #unchecked)
@@ -62,9 +62,7 @@ let make = (~onSubmit, ~loading=false, ~hideBiometrics=false) => {
     <HelperText _type=#error visible={error->Option.isSome}>
       {error->Option.mapWithDefault("", getErrorName)->React.string}
     </HelperText>
-    {hideBiometrics
-      ? React.null
-      : <Biometrics.BiometricsSwitch onChange={_ => setBio(val => !val)} biometricsEnabled=bio />}
+    <Biometrics.BiometricsSwitch onChange={_ => setBio(val => !val)} biometricsEnabled=bio />
     <CheckBoxAndText
       status setStatus text="I understand that Umami cannot recover this password for me."
     />
@@ -73,7 +71,7 @@ let make = (~onSubmit, ~loading=false, ~hideBiometrics=false) => {
       loading
       style={StyleUtils.makeVMargin()}
       mode=#contained
-      onPress={_ => onSubmit({"password": value1, "saveInKeyChain": hideBiometrics ? false : bio})}>
+      onPress={_ => onSubmit({"password": value1, "saveInKeyChain": bio})}>
       {React.string("Submit")}
     </Button>
   </>

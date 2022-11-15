@@ -4,6 +4,8 @@ let make = (~navigation as _, ~route as _) => {
   let (step, setStep) = React.useState(_ => #display)
   let notify = SnackBar.useNotification()
 
+  // This is the only place where useKeychainStorage is used
+  // It is otherwise called in RestoreAndSave to guarantee sync
   let changeKeychainPassword = Biometrics.useKeychainStorage()
   let handleChange = () => {
     if !bio {
