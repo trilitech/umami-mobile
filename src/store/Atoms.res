@@ -15,6 +15,7 @@ let addressMetatdadaAtom: Jotai.Atom.t<addressMetatdataMap, _, _> = Jotai.Atom.m
 
 open Network
 let networkAtom: Jotai.Atom.t<Network.t, _, _> = Jotai.Atom.make(Mainnet)
+let nodeIndexAtom: Jotai.Atom.t<int, _, _> = Jotai.Atom.make(0)
 
 // biometricsEnabledAtom needed since keychain API provides no way of
 // knowing if there is a password set withouth authenticating

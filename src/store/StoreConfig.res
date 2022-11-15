@@ -24,6 +24,8 @@ module Serializers = {
     a->Belt.Map.String.toArray->Js.Json.stringifyAny
   }
   let serializeNetwork = (n: Network.t) => n->Network.toString->Some
+
+  let serializeNodeIndex = s => s->Js.Int.toString->Some
 }
 
 let _withSave = (stateHook, serializer, key: string, ()) => {
@@ -87,6 +89,8 @@ module Deserializers = {
     | _ => Mainnet
     }
   }
+
+  let deserializeNodeIndex = s => Belt.Int.fromString(s)->Belt.Option.getWithDefault(0)
 }
 
 let theme = {
@@ -122,6 +126,13 @@ let network = {
   atom: Atoms.networkAtom,
   deserializer: Deserializers.deserializeNetwork,
   serializer: Serializers.serializeNetwork,
+}
+
+let nodeIndex = {
+  key: "nodeIndex",
+  atom: Atoms.nodeIndexAtom,
+  deserializer: Deserializers.deserializeNodeIndex,
+  serializer: Serializers.serializeNodeIndex,
 }
 
 let addressMetadatas = {
