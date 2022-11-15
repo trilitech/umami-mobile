@@ -19,5 +19,21 @@ let make = (~navigation as _, ~route as _) => {
     <List.Section title="Selected Network">
       {makeRadio(Mainnet, network, setNetwork)} {makeRadio(Ghostnet, network, setNetwork)}
     </List.Section>
+    <List.Section title="Mezos host">
+      <CustomListItem
+        selected={false}
+        center={<Wrapper>
+          <Paper.Caption> {Endpoints.getMezosUrl(network)->React.string} </Paper.Caption>
+        </Wrapper>}
+      />
+    </List.Section>
+    <List.Section title="Tzkt host">
+      <CustomListItem
+        selected={false}
+        center={<Wrapper>
+          <Paper.Caption> {Endpoints.getTzktUrl(network)->React.string} </Paper.Caption>
+        </Wrapper>}
+      />
+    </List.Section>
   </Container>
 }
