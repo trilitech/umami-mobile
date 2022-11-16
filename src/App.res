@@ -78,14 +78,10 @@ module MemoizedApp = {
 
 @react.component
 let app = () => {
-  let initalizations = [
-    StoreInit.useInit(),
-    useLogInit(),
-    useDeviceIdInit(),
-    useLocalStorageShimForBeaconInit(),
-  ]
+  let initalizations = [useLogInit(), useDeviceIdInit(), useLocalStorageShimForBeaconInit()]
   let allReady = initalizations->Belt.Array.every(i => i)
 
   // Prevent rerenders sinces useInit is hooked to all the states
-  <MemoizedApp allReady />
+
+  <React.Suspense fallback=React.null> <MemoizedApp allReady /> </React.Suspense>
 }
