@@ -116,9 +116,10 @@ module ScanBeacon_ = {
     let title = "Scan beacon permission request"
     let subTitle = "Scan beacon permission request"
 
-    makeScanner(~subTitle, ~title, ~onRead=str =>
-      addPeer(str)->Promise.thenResolve(_ => goBack())->ignore
-    )
+    makeScanner(~subTitle, ~title, ~onRead=str => {
+      let peerData = str->Js.String2.replace("tezos://?type=tzip10&data=", "")
+      addPeer(peerData)->Promise.thenResolve(_ => goBack())->ignore
+    })
   }
 }
 module ScanBeacon = {
