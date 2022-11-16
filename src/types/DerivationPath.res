@@ -20,3 +20,5 @@ let save = t => Storage.set("derivationPath", t)
 
 let load = () =>
   Storage.get("derivationPath")->Promise.thenResolve(d => d->Belt.Option.getWithDefault(default))
+
+let erase = () => Storage.remove("derivationPath")

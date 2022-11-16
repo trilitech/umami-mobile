@@ -40,13 +40,14 @@ let make = (~navigation as _, ~route as _) => {
         setLoading(_ => true)
         setPassword(None)
         ->Promise.then(_ => {
-          BackupPhraseStorage.erase()
+          DerivationPath.erase()
+          ->Promise.then(BackupPhraseStorage.erase)
           ->Promise.catch(exn => {
+            setLoading(_ => false)
             notify("Offboarding failed" ++ Helpers.getMessage(exn))
             Promise.resolve()
           })
           ->Promise.thenResolve(_ => {
-            setLoading(_ => false)
             reset()
           })
         })
