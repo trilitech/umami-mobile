@@ -39,13 +39,13 @@ let getValidator = mode => {
 }
 
 @react.component
-let make = (~onChange) => {
+let make = (~onChange, ~style) => {
   let navigate = NavUtils.useNavigate()
 
   // Listen for successfull scans
   useOnScannedAddress(onChange)
 
-  <Wrapper justifyContent=#center>
+  <Wrapper justifyContent=#center style>
     <NicerIconBtn
       onPress={_ => navigate("ScanAddressOrDomain")}
       iconName="qrcode-scan"

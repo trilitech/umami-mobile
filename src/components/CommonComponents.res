@@ -9,6 +9,10 @@ module MakeWrapper = (Style: StyleModule) => {
   }
 }
 
+let useCustomBorder = () => {
+  let borderColor = UmamiThemeProvider.useDisabledColor()
+  style(~borderColor, ~borderWidth=2., ~borderRadius=4., ())
+}
 module Wrapper = {
   open ReactNative
   @react.component
@@ -167,14 +171,22 @@ module CustomListItem = {
     ~disabled=false,
     ~transparent=false,
     ~style as extraStyle=style(),
+    ~showBorder=false,
   ) => {
     let theme = useTheme()
+
+    let borderStyle = useCustomBorder()
 
     let backgroundColor = selected ? Colors.Light.scrim : theme->Theme.colors->Theme.Colors.surface
     <TouchableRipple
       disabled
       rippleColor="red"
-      style={array([style(~alignSelf=#stretch, ()), StyleUtils.makeBottomMargin(), extraStyle])}
+      style={array([
+        style(~alignSelf=#stretch, ()),
+        StyleUtils.makeBottomMargin(),
+        extraStyle,
+        showBorder ? borderStyle : style(),
+      ])}
       ?onPress>
       <ListItemBase
         ?height left center right={disabled ? React.null : right} transparent backgroundColor

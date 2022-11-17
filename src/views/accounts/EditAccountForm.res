@@ -23,13 +23,8 @@ let make = (~name, ~onSubmit, ~submitWithPassword=false, ~loading=false) => {
       </Button>
 
   <>
-    <TextInput
-      error={error->Option.isSome}
-      style
-      value=name
-      label="Name"
-      mode=#outlined
-      onChangeText={t => setName(_ => t)}
+    <UI.Input
+      error={error->Option.isSome} style value=name label="Name" onChangeText={t => setName(_ => t)}
     />
     <HelperText _type=#error visible={error->Option.isSome}>
       {error->Option.mapWithDefault("", getErrorName)->React.string}

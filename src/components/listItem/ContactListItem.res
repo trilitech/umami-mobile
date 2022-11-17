@@ -8,6 +8,7 @@ let make = (
   ~right=?,
   ~onPressEdit=?,
   ~disabled=false,
+  ~showBorder=?,
 ) => {
   let {tz1, name} = contact
 
@@ -19,5 +20,6 @@ let make = (
     center={<> <Title> {React.string(name)} </Title> <AddressDisplay tz1 /> </>}
     ?right
     ?onPressEdit
+    ?showBorder
   />
 }

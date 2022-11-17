@@ -10,14 +10,13 @@ module Plain = {
   let make = (~onSubmit, ~loading=false, ~label="submit", ~disabled=false) => {
     let (value, setValue) = EphemeralState.useEphemeralState("")
     <>
-      <TextInput
+      <UI.Input
         testID="password"
         disabled=loading
         secureTextEntry=true
         placeholder="Enter password"
         value
         label="Password"
-        mode=#outlined
         onChangeText={t => setValue(_ => t)}
         style=vMargin
       />

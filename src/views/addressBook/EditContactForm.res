@@ -23,13 +23,12 @@ let make = (~initialState: ContactFormTypes.contactFormState, ~onSubmit) => {
     (createMode && tz1IsNoneOrAlreadyExists)
 
   <>
-    <TextInput
+    <UI.Input
       error={nameError->Option.isSome}
       placeholder="Add contact name"
       style
       value={formState.name->Belt.Option.getWithDefault("")}
-      label="contact name"
-      mode=#outlined
+      label="Name"
       onChangeText={t => setFormState(prev => {...prev, name: t->Some})}
     />
     <HelperText _type=#error visible={nameError->Option.isSome}>

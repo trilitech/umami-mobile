@@ -5,12 +5,16 @@ open ReactNative.Style
 open Belt
 open SendTypes
 
+let standardInputHeight = 54.
+
 module SenderDisplay = {
   @react.component
   let make = (~account, ~onPress=_ => (), ~disabled) => {
     <>
       <Caption> {React.string("Sending account")} </Caption>
-      <AccountListItem account onPress={_ => onPress()} right={<ChevronRight />} disabled />
+      <AccountListItem
+        showBorder=true account onPress={_ => onPress()} right={<ChevronRight />} disabled
+      />
     </>
   }
 }
@@ -35,16 +39,17 @@ module EditionsInput = {
   @react.component
   let make = (~prettyAmount: string, ~onChange) => {
     <Wrapper>
-      <TextInput
+      <UI.Input
         testID="nft-editions"
         style={style(~flex=1., ())}
-        mode=#outlined
         label="Editions"
         placeholder="Enter editions"
         value=prettyAmount
       />
-      <NicerIconBtn iconName="minus" onPress={_ => prettyAmount->update(a => a - 1, onChange)} />
-      <NicerIconBtn iconName="plus" onPress={_ => prettyAmount->update(a => a + 1, onChange)} />
+      <Wrapper style={array([StyleUtils.makeLeftMargin(), StyleUtils.makeTopMargin(~size=2, ())])}>
+        <NicerIconBtn iconName="minus" onPress={_ => prettyAmount->update(a => a - 1, onChange)} />
+        <NicerIconBtn iconName="plus" onPress={_ => prettyAmount->update(a => a + 1, onChange)} />
+      </Wrapper>
     </Wrapper>
   }
 }
@@ -52,15 +57,23 @@ module NFTInput = {
   @react.component
   let make = (~imageUrl, ~name, ~editions=?) => {
     let source = ReactNative.Image.uriSource(~uri=imageUrl, ())
-    <CustomListItem
-      left={<FastImage
-        source resizeMode=#contain style={style(~height=40.->dp, ~width=40.->dp, ())}
-      />}
-      center={<Text> {React.string(name)} </Text>}
-      right={editions->Helpers.reactFold(editions =>
-        <Paper.Chip mode=#outlined> {React.string("Editions: " ++ editions)} </Paper.Chip>
-      )}
-    />
+
+    {
+      <ReactNative.View>
+        <Caption> {"NFT"->React.string} </Caption>
+        <CustomListItem
+          showBorder=true
+          height=standardInputHeight
+          left={<FastImage
+            source resizeMode=#contain style={style(~height=40.->dp, ~width=40.->dp, ())}
+          />}
+          center={<Text> {React.string(name)} </Text>}
+          right={editions->Helpers.reactFold(editions =>
+            <Paper.Chip mode=#outlined> {React.string("Editions: " ++ editions)} </Paper.Chip>
+          )}
+        />
+      </ReactNative.View>
+    }
   }
 }
 
@@ -127,8 +140,8 @@ module CurrencyPicker = {
     // style={array([StyleUtils.makeLeftMargin(), StyleUtils.makeTopMargin()])}
       testID="currency-picker">
       <CustomListItem
-        height=56. // same height at RN Paper input outlined
-        style={StyleUtils.makeTopMargin()} // compensate RN Paper input outlined top 8px padding
+        showBorder=true
+        height=standardInputHeight // same height at RN Paper input outlined
         center={<Picker
           icon={_ => <ChevronDown />}
           items
@@ -186,12 +199,13 @@ module RecipientDisplayOnly = {
 
     let el = switch getContactOrAccount(tz1) {
     | (Some(contact), None) =>
-      <ContactListItem disabled contact onPress={_ => ()} right={deleteIcon} />
+      <ContactListItem showBorder=true disabled contact onPress={_ => ()} right={deleteIcon} />
     | (Some(_), Some(account))
     | (None, Some(account)) =>
-      <AccountListItem disabled account onPress={_ => ()} right={deleteIcon} />
+      <AccountListItem showBorder=true disabled account onPress={_ => ()} right={deleteIcon} />
     | (None, None) =>
       <CustomListItem
+        showBorder=true
         disabled
         onPress={_ => ()}
         // center={disabled
@@ -208,11 +222,14 @@ module RecipientDisplayOnly = {
 module Recipient = {
   @react.component
   let make = (~recipient: option<Pkh.t>, ~onPressDelete, ~onPressSelectRecipient) => {
+    let style = useCustomBorder()
     <>
       {recipientLabel}
       {switch recipient {
       | None =>
         <CustomListItem
+          style
+          height=standardInputHeight
           onPress={_ => onPressSelectRecipient()}
           center={<Text> {"Select from address book..."->React.string} </Text>}
           right={<ChevronRight />}

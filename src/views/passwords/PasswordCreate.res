@@ -37,7 +37,7 @@ let make = (~onSubmit, ~loading=false) => {
   let error = empty ? None : getError(value1, value2)
   <>
     <Title> {React.string("Enter and confirm password")} </Title>
-    <TextInput
+    <UI.Input
       error={error->Option.isSome}
       style={StyleUtils.makeVMargin()}
       disabled=loading
@@ -45,10 +45,9 @@ let make = (~onSubmit, ~loading=false) => {
       placeholder="Password"
       value=value1
       label="Password"
-      mode=#outlined
       onChangeText={s => setValue1(_ => s)}
     />
-    <TextInput
+    <UI.Input
       error={error->Option.isSome}
       style={StyleUtils.makeVMargin()}
       disabled=loading
@@ -56,7 +55,6 @@ let make = (~onSubmit, ~loading=false) => {
       placeholder="Confirm password"
       value=value2
       label="Confirm password"
-      mode=#outlined
       onChangeText={s => setValue2(_ => s)}
     />
     <HelperText _type=#error visible={error->Option.isSome}>

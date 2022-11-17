@@ -7,10 +7,12 @@ let make = (
   ~onPressEdit=?,
   ~right=?,
   ~disabled=false,
+  ~showBorder=?,
 ) => {
   let {tz1, name, balance} = account
   open Asset
   <GenericListItem
+    ?showBorder
     disabled
     selected
     onPress

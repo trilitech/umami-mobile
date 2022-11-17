@@ -17,7 +17,7 @@ open Lodash
       React.null
     }
 
-    <TextInput
+    <UI.Input
       error=invalidInput
       autoCapitalize=#none
       placeholder
@@ -25,7 +25,6 @@ open Lodash
       value={txt}
       onChangeText={t => onChange(t->Js.String2.toLowerCase)}
       label
-      mode=#outlined
       right={rightIcon}
     />
   }
@@ -85,7 +84,10 @@ module TzDomainRecipient = {
           ~onChange={t => setAddressTxt(_ => t)},
           ~tz1,
         )}
-        <ScanAndPaste onChange={a => setAddressTxt(_ => a)} />
+        <ScanAndPaste
+          onChange={a => setAddressTxt(_ => a)}
+          style={array([StyleUtils.makeTopMargin(~size=2, ()), StyleUtils.makeLeftMargin()])}
+        />
       </Wrapper>
       <Wrapper
         justifyContent=#center

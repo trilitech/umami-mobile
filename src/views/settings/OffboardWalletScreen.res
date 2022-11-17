@@ -23,12 +23,11 @@ let make = (~navigation as _, ~route as _) => {
   <Container>
     <InstructionsPanel instructions=offbardText danger=true />
     <CheckBoxAndText status setStatus text=confirmTextLabel />
-    <TextInput
+    <UI.Input
       style={makeVMargin()}
       placeholder="Enter code word"
       label="Code word"
       value=confirmText
-      mode=#outlined
       onChangeText={t => setConfirmText(_ => t)}
     />
     <Button
