@@ -124,7 +124,7 @@ module CurrencyPicker = {
     let items = tokensToSelectItems(tokens)
 
     <ReactNative.View
-      style={array([StyleUtils.makeLeftMargin(), StyleUtils.makeTopMargin()])}
+    // style={array([StyleUtils.makeLeftMargin(), StyleUtils.makeTopMargin()])}
       testID="currency-picker">
       <CustomListItem
         height=56. // same height at RN Paper input outlined
@@ -154,12 +154,12 @@ let parsePrettyAmountStr = amount => {
 module MultiCurrencyInput = {
   @react.component
   let make = (~amount, ~onChangeAmount, ~currency, ~onChangeSymbol) => {
-    <Wrapper>
-      <TextInput
+    <Wrapper alignItems=#flexStart>
+      <UI.Input
         placeholder="Enter amount"
-        style={style(~flex=1., ())}
         keyboardType="decimal-pad"
         value=amount
+        style={style(~flex=1., ())}
         onChangeText={t => {
           if t == "" {
             onChangeAmount("")
@@ -167,10 +167,12 @@ module MultiCurrencyInput = {
             onChangeAmount(t)
           }
         }}
-        label="amount"
-        mode=#outlined
+        label="Amount"
       />
-      <CurrencyPicker value=currency onChange=onChangeSymbol />
+      {<ReactNative.View style={StyleUtils.makeLeftMargin()}>
+        <Caption> {"Currency"->React.string} </Caption>
+        <CurrencyPicker value=currency onChange=onChangeSymbol />
+      </ReactNative.View>}
     </Wrapper>
   }
 }
