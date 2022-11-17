@@ -42,14 +42,11 @@ module Display = {
 
     let el = switch step {
     | #fillForm => form
-    | #enterPassword => <>
-        <InstructionsPanel
-          title="Signature" instructions="Please enter your wallet password to sign your data"
-        />
-        <Container>
-          <PasswordConfirm.Plain loading onSubmit={p => handleSubmit(p, content)} />
-        </Container>
-      </>
+    | #enterPassword =>
+      <InstructionsContainer
+        title="Signature" instructions="Please enter your wallet password to sign your data">
+        <PasswordConfirm.Plain loading onSubmit={p => handleSubmit(p, content)} />
+      </InstructionsContainer>
     }
     {signed->Option.mapWithDefault(el, renderSignedData)}
   }

@@ -13,14 +13,11 @@ let make = (~navigation, ~route as _) => {
     None
   }, [])
 
-  <>
-    <InstructionsPanel step="Step 1 of 4" title="Record your recovery phrase" instructions />
-    <Container>
-      <Mnemonic mnemonic />
-      <ContinueBtn
-        onPress={_ => navigation->NavStacks.OffBoard.Navigation.navigate("RecordRecoveryPhrase")}
-        text="Ok, I've recorded it"
-      />
-    </Container>
-  </>
+  <InstructionsContainer step="Step 1 of 4" title="Record your recovery phrase" instructions>
+    <Mnemonic mnemonic />
+    <ContinueBtn
+      onPress={_ => navigation->NavStacks.OffBoard.Navigation.navigate("RecordRecoveryPhrase")}
+      text="Ok, I've recorded it"
+    />
+  </InstructionsContainer>
 }

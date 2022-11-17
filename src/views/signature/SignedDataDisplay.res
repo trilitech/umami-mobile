@@ -12,10 +12,8 @@ let make = (~signed) => {
   let account = accountByPk(signed.pk->Pk.unsafeBuild)
 
   account->Helpers.reactFold(account => {
-    <>
-      <InstructionsPanel
-        instructions="Have the QR code scanned with Umami mobile in order to read your signature."
-      />
+    <InstructionsContainer
+      instructions="Have the QR code scanned with Umami mobile in order to read your signature.">
       <Container>
         <Paper.Caption style={ReactNative.Style.style(~alignSelf=#flexStart, ())}>
           {"Signer account"->React.string}
@@ -25,6 +23,6 @@ let make = (~signed) => {
           <Qr value={signed->SignedData.serialise} size=260 />
         </Wrapper>
       </Container>
-    </>
+    </InstructionsContainer>
   })
 }

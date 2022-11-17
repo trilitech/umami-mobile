@@ -6,13 +6,12 @@ let usePasswordConfirm = (~hoc, ~onConfirm, ~loading=false, ()) => {
 
   switch step {
   | #fill => el
-  | #confirm => <>
-      <InstructionsPanel
-        title="Set a password to secure your wallet"
-        instructions="Please note that this password is not recorded anywhere and only applies to this machine."
-      />
-      <Container> <PasswordCreate loading onSubmit=onConfirm /> </Container>
-    </>
+  | #confirm =>
+    <InstructionsContainer
+      title="Set a password to secure your wallet"
+      instructions="Please note that this password is not recorded anywhere and only applies to this machine.">
+      <PasswordCreate loading onSubmit=onConfirm />
+    </InstructionsContainer>
   }
 }
 let trimSpacesAndLineBreaks = (s: string) => {
@@ -32,31 +31,27 @@ let inputIsValid = (s: string) => s->trimSpacesAndLineBreaks->correctAmountOfWor
 module Display = {
   @react.component
   let make = (~onSubmit, ~dangerousText, ~setDangerousText) => {
-    <>
-      <InstructionsPanel
-        title="Enter your recovery phrase"
-        instructions="Please fill in the recovery phrase in sequence.
-Umami supports 12-, 15-, 18-, 21- and 24-word recovery phrases."
+    <InstructionsContainer
+      title="Enter your recovery phrase"
+      instructions="Please fill in the recovery phrase in sequence.
+Umami supports 12-, 15-, 18-, 21- and 24-word recovery phrases.">
+      <TextInput
+        value=dangerousText
+        style={ReactNative.Style.style(~height=130.->ReactNative.Style.dp, ())}
+        multiline=true
+        mode=#outlined
+        onChangeText={t => setDangerousText(_ => t)}
       />
-      <Container>
-        <TextInput
-          value=dangerousText
-          style={ReactNative.Style.style(~height=130.->ReactNative.Style.dp, ())}
-          multiline=true
-          mode=#outlined
-          onChangeText={t => setDangerousText(_ => t)}
-        />
-        <Button
-          disabled={!inputIsValid(dangerousText)}
-          onPress={_ => {
-            onSubmit(dangerousText)
-          }}
-          style={ReactNative.Style.style(~marginVertical=10.->ReactNative.Style.dp, ())}
-          mode=#contained>
-          <Paper.Text> {React.string("Continue")} </Paper.Text>
-        </Button>
-      </Container>
-    </>
+      <Button
+        disabled={!inputIsValid(dangerousText)}
+        onPress={_ => {
+          onSubmit(dangerousText)
+        }}
+        style={ReactNative.Style.style(~marginVertical=10.->ReactNative.Style.dp, ())}
+        mode=#contained>
+        <Paper.Text> {React.string("Continue")} </Paper.Text>
+      </Button>
+    </InstructionsContainer>
   }
 }
 

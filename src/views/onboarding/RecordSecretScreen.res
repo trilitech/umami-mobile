@@ -66,37 +66,33 @@ module VerifySecret = {
       ->ignore
     }
 
-    <>
-      <InstructionsPanel
-        step="Step 2 of 4"
-        title="Record your recovery phrase"
-        instructions=" We will now verify that you’ve properly recorded your recovery phrase. To demonstrate this, please select the word that corresponds to each sequence number."
-      />
-      <Container>
-        <Paper.Caption> {React.string(caption)} </Paper.Caption>
-        {allAnswsers
-        ->Belt.Array.mapWithIndex((i, s) =>
-          <CommonComponents.ListItem
-            testID="mnemonic-word"
-            key=s
-            title=s
-            selected={switch selected {
-            | Some(val) => val === i
-            | None => false
-            }}
-            onPress={_ => setSelected(_ => Some(i))}
-          />
-        )
-        ->React.array}
-        <ContinueBtn
-          onPress={_ => {
-            checkAnswer()
+    <InstructionsContainer
+      step="Step 2 of 4"
+      title="Record your recovery phrase"
+      instructions=" We will now verify that you’ve properly recorded your recovery phrase. To demonstrate this, please select the word that corresponds to each sequence number.">
+      <Paper.Caption> {React.string(caption)} </Paper.Caption>
+      {allAnswsers
+      ->Belt.Array.mapWithIndex((i, s) =>
+        <CommonComponents.ListItem
+          testID="mnemonic-word"
+          key=s
+          title=s
+          selected={switch selected {
+          | Some(val) => val === i
+          | None => false
           }}
-          text="Next"
+          onPress={_ => setSelected(_ => Some(i))}
         />
-        <ContinueBtn color=errorColor onPress={_ => onSkipAll()} text="YOLO (not recommended)" />
-      </Container>
-    </>
+      )
+      ->React.array}
+      <ContinueBtn
+        onPress={_ => {
+          checkAnswer()
+        }}
+        text="Next"
+      />
+      <ContinueBtn color=errorColor onPress={_ => onSkipAll()} text="YOLO (not recommended)" />
+    </InstructionsContainer>
   }
 }
 

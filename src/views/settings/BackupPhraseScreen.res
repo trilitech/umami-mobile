@@ -7,8 +7,7 @@ let make = (~navigation as _, ~route as _) => {
 
   <Container>
     {if dangerouseStorage == [] {
-      <>
-        <InstructionsPanel instructions="Authenticate to unlock backupphrase" />
+      <InstructionsContainer instructions="Authenticate to unlock backupphrase">
         <PasswordSubmit
           label="Authenticate"
           loading
@@ -27,13 +26,12 @@ let make = (~navigation as _, ~route as _) => {
             ->ignore
           }}
         />
-      </>
+      </InstructionsContainer>
     } else {
-      <>
-        <InstructionsPanel title="This is your backup phrase" instructions="Write it down now!" />
+      <InstructionsContainer title="This is your backup phrase" instructions="Write it down now!">
         <Mnemonic mnemonic=dangerouseStorage />
         <ContinueBtn onPress={_ => {goBack()}} text="Close me fast!" />
-      </>
+      </InstructionsContainer>
     }}
   </Container>
 }

@@ -39,31 +39,27 @@ let make = (~navigation as _, ~route as _) => {
       },
     )
 
-  <>
-    <InstructionsPanel
-      instructions="You can transfer assets to a tz adress or tezos domain. Please enter the address or domain you want to make a transfer to. "
+  <InstructionsContainer
+    instructions="You can transfer assets to a tz adress or tezos domain. Please enter the address or domain you want to make a transfer to. ">
+    <AddressImporter
+      onChange={tz1 => {
+        setTz1(_ => tz1)
+        ()
+      }}
     />
-    <Container>
-      <AddressImporter
-        onChange={tz1 => {
-          setTz1(_ => tz1)
-          ()
-        }}
-      />
-      <Button
-        disabled={tz1IsNoneOrAlreadyExists}
-        style={StyleUtils.makeVMargin()}
-        onPress={_ => addContact()}
-        mode={#outlined}>
-        {React.string("Add contact to address book")}
-      </Button>
-      <Button
-        disabled={tz1->Option.isNone}
-        style={StyleUtils.makeVMargin()}
-        onPress={_ => handleTz1()}
-        mode={#contained}>
-        {React.string("Confirm recipient")}
-      </Button>
-    </Container>
-  </>
+    <Button
+      disabled={tz1IsNoneOrAlreadyExists}
+      style={StyleUtils.makeVMargin()}
+      onPress={_ => addContact()}
+      mode={#outlined}>
+      {React.string("Add contact to address book")}
+    </Button>
+    <Button
+      disabled={tz1->Option.isNone}
+      style={StyleUtils.makeVMargin()}
+      onPress={_ => handleTz1()}
+      mode={#contained}>
+      {React.string("Confirm recipient")}
+    </Button>
+  </InstructionsContainer>
 }

@@ -24,16 +24,13 @@ let make = (~navigation as _, ~route as _) => {
   }
 
   let el =
-    <Container>
-      <InstructionsPanel title="Biometrics" instructions="Enable biometrics (requires password)" />
+    <InstructionsContainer title="Biometrics" instructions="Enable biometrics (requires password)">
       <Biometrics.BiometricsSwitch onChange={_ => handleChange()} biometricsEnabled=bio />
-    </Container>
+    </InstructionsContainer>
 
   let password =
-    <Container>
-      <InstructionsPanel
-        title="Enter password" instructions="enter password to enable biometrics"
-      />
+    <InstructionsContainer
+      title="Enter password" instructions="enter password to enable biometrics">
       <PasswordConfirm.Plain
         onSubmit={password => {
           changeKeychainPassword(password->Some)
@@ -48,7 +45,7 @@ let make = (~navigation as _, ~route as _) => {
           ->ignore
         }}
       />
-    </Container>
+    </InstructionsContainer>
 
   switch step {
   | #display => el

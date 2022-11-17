@@ -20,8 +20,7 @@ let make = (~navigation as _, ~route as _) => {
   let notify = SnackBar.useNotification()
 
   open Paper
-  <Container>
-    <InstructionsPanel instructions=offbardText danger=true />
+  <InstructionsContainer title="Offboard wallet!" instructions=offbardText danger=true>
     <CheckBoxAndText status setStatus text=confirmTextLabel />
     <UI.Input
       style={makeVMargin()}
@@ -55,5 +54,5 @@ let make = (~navigation as _, ~route as _) => {
       color=dangerColor>
       <Text> {React.string("Erase secret")} </Text>
     </Button>
-  </Container>
+  </InstructionsContainer>
 }

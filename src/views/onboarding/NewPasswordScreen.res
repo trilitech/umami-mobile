@@ -29,12 +29,10 @@ let make = (~navigation as _, ~route as _) => {
     ->ignore
   }
 
-  <>
-    <InstructionsPanel
-      step="Step 3 of 4"
-      title="Set a password to secure your wallet"
-      instructions="Please note that this password is not recorded anywhere and only applies to this machine."
-    />
-    <Container> <PasswordCreate loading onSubmit={handlePasswordSubmit} /> </Container>
-  </>
+  <InstructionsContainer
+    step="Step 3 of 4"
+    title="Set a password to secure your wallet"
+    instructions="Please note that this password is not recorded anywhere and only applies to this machine.">
+    <PasswordCreate loading onSubmit={handlePasswordSubmit} />
+  </InstructionsContainer>
 }

@@ -8,13 +8,12 @@ let intructions =
 
 @react.component
 let make = (~navigation, ~route as _) => {
-  <>
-    <InstructionsPanel title="Steps to sync with Umami Desktop" instructions=intructions />
+  <InstructionsContainer title="Steps to sync with Umami Desktop" instructions=intructions>
     <Button
       mode={#contained}
       style={StyleUtils.makeVMargin()}
       onPress={_ => navigation->Navigation.navigate("ScanDesktopSeedPhrase")}>
       {"Scan QR"->React.string}
     </Button>
-  </>
+  </InstructionsContainer>
 }

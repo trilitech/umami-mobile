@@ -22,11 +22,9 @@ module Display = {
   let make = (~client: ReBeacon.WalletClient.t) => {
     let (peerInfos, remove, addPeer) = Beacon.usePeers(client)
     let navigate = NavUtils.useNavigate()
-    <Container>
-      <InstructionsPanel
-        title="Dapps"
-        instructions="Manage your dApp connections here.\nScan or paste a beacon code to add a dApp."
-      />
+    <InstructionsContainer
+      title="Dapps"
+      instructions="Manage your dApp connections here.\nScan or paste a beacon code to add a dApp.">
       <Wrapper justifyContent=#center>
         <NicerIconBtn
           onPress={_ => navigate("ScanBeacon")}
@@ -42,7 +40,7 @@ module Display = {
         />
       </Wrapper>
       <PeerInfos peerInfos onRemove={p => p->remove->ignore} />
-    </Container>
+    </InstructionsContainer>
   }
 }
 

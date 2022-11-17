@@ -22,7 +22,7 @@ let make = (~navigation as _, ~route as _) => {
   }
 
   let nodes = Endpoints.getNodes(network)
-  <Container>
+  <InstructionsContainer title="Network" instructions="Select Tezos network and node.">
     <List.Section title="Selected network">
       {makeRadio(Mainnet, network, setNetwork)} {makeRadio(Ghostnet, network, setNetwork)}
     </List.Section>
@@ -55,5 +55,5 @@ let make = (~navigation as _, ~route as _) => {
         </Wrapper>}
       />
     </List.Section>
-  </Container>
+  </InstructionsContainer>
 }
