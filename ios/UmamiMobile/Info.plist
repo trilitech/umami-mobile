@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSFaceIDUsageDescription</key>
-    <string>$(PRODUCT_NAME) Authentication with TouchId or FaceID</string>
+	<string>$(PRODUCT_NAME) Authentication with TouchId or FaceID</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -40,7 +40,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Umami uses your camera to scan QR codes for importing secrets or verifying NFTs</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Your message to user when the photo library is accessed for the first time</string>
 	<key>UIAppFonts</key>

@@ -8,7 +8,7 @@
 let makeFonts = () => {
   open Paper.ThemeProvider.Theme.Fonts
   let regular = font(~fontFamily="SourceSansPro-Regular", ~fontWeight="normal")
-  let medium = font(~fontFamily="SourceSansPro-Black", ~fontWeight="normal")
+  let medium = font(~fontFamily="SourceSansPro-Regular", ~fontWeight="normal")
   let light = font(~fontFamily="SourceSansPro-Light", ~fontWeight="normal")
   let thin = font(~fontFamily="SourceSansPro-ExtraLight", ~fontWeight="normal")
 
@@ -42,8 +42,8 @@ let makeColors = (
 
 let customizeTheme = (~theme, ~colors) => {
   open Paper.ThemeProvider
-  // let fonts = makeFonts()
-  let fonts = Theme.fonts(theme)
+  let fonts = makeFonts()
+  // let fonts = Theme.fonts(theme)
   let animation = Theme.animation(theme)
   Theme.make(~colors, ~fonts, ~animation, ~roundness=4, ()) // have to pass fonts and animtion otherwise it explodes
 }
