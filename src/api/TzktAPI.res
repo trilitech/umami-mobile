@@ -4,7 +4,7 @@ exception TokensFetchFailure(string)
 
 let getTokens = (~tz1: Pkh.t, ~network: Network.t) => {
   let tzktHost = Endpoints.getTzktUrl(network)
-  Fetch.fetch(`https://${tzktHost}/v1/tokens/balances/?account=${tz1->Pkh.toString}`)
+  Fetch.fetch(`https://api.${tzktHost}/v1/tokens/balances/?account=${tz1->Pkh.toString}`)
   ->Promise.then(Fetch.Response.json)
   ->Promise.thenResolve(Js.Json.decodeArray)
   ->Promise.thenResolve(Belt.Option.getExn)

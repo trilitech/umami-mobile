@@ -28,7 +28,7 @@ let getMezosUrl = (n: Network.t) => {
 
 let getTzktUrl = (n: Network.t) => {
   switch n {
-  | Mainnet => "api.mainnet.tzkt.io"
-  | Ghostnet => "api.ghostnet.tzkt.io"
+  | Mainnet => "mainnet.tzkt.io"
+  | Ghostnet => "ghostnet.tzkt.io"
   }
 }
