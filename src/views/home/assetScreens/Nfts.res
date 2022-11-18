@@ -4,11 +4,17 @@ module NftCard = {
   open ReactNative.Style
   @react.component
   let make = (~url, ~name, ~onPress) => {
-    <TouchableRipple style={array([unsafeStyle({"width": "45%"})])} onPress>
-      <Surface style={array([unsafeStyle({"width": "100%"}), style(~height=240.->dp, ())])}>
+    <TouchableRipple style={array([unsafeStyle({"width": "48%"})])} onPress>
+      <Surface
+        style={array([
+          unsafeStyle({"width": "100%"}),
+          style(~height=220.->dp, ~borderRadius=4., ()),
+        ])}>
         {<FastImage
-        // resizeMode=#contain
-          style={style(~flex=1., ())} key=url source={ReactNative.Image.uriSource(~uri=url, ())}
+          resizeMode=#cover
+          style={style(~flex=1., ~borderRadius=4., ())}
+          key=url
+          source={ReactNative.Image.uriSource(~uri=url, ())}
         />}
         <Title> {name->React.string} </Title>
       </Surface>
@@ -60,19 +66,22 @@ module NftGallery = {
     let navigate = NavUtils.useNavigateWithParams()
     let (search, setSearch) = React.useState(_ => "")
 
+    let border = CommonComponents.useCustomBorder()
     let nftEls =
       tokens
       ->FormUtils.filterBySearch(((_, metadata)) => metadata.name, search)
       ->Belt.Array.map(tokenToElement(navigate))
 
     <>
-      <Paper.Searchbar
-        placeholder="Search NFT"
-        onChangeText={t => setSearch(_ => t)}
-        value=search
-        style={StyleUtils.makeBottomMargin()}
-        onIconPress={t => setSearch(_ => "")}
-      />
+      <Paper.Card>
+        <Paper.Searchbar
+          placeholder="Search NFT"
+          onChangeText={t => setSearch(_ => t)}
+          value=search
+          style={array([StyleUtils.makeBottomMargin(), border])}
+          onIconPress={t => setSearch(_ => "")}
+        />
+      </Paper.Card>
       <ScrollView>
         <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
           {if nftEls == [] {

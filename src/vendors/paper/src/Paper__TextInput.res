@@ -65,4 +65,5 @@ external make: (
   ~testID: string=?,
   ~ref: Js.Nullable.t<'a> => unit=?,
   ~right: React.element=?,
+  ~left: React.element=?,
 ) => React.element = "TextInput"
