@@ -5,7 +5,10 @@ module TransactionIcon = {
   @react.component
   let make = (~iconName, ~label, ~onPress=_ => ()) => {
     <Wrapper
-      style={style(~alignSelf=#center, ~marginTop=16.->dp, ~marginRight=16.->dp, ())}
+      style={array([style(~alignSelf=#center, ()), 
+      StyleUtils.makeTopMargin(~size=2,()),
+      StyleUtils.makeRightMargin(~size=4,())
+      ])}
       flexDirection=#column>
       <Paper.FAB onPress small=true icon={Paper.Icon.name(iconName)} />
       <Paper.Caption> {React.string(label)} </Paper.Caption>
