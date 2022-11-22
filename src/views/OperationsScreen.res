@@ -256,7 +256,7 @@ module AssetBalanceDisplay = {
       <Wrapper
         flexDirection=#column
         justifyContent=#spaceBetween
-        style={StyleUtils.makeVMargin(~size=2, ())}>
+        style={array([StyleUtils.makeVMargin(~size=2, ()), StyleUtils.makeTopMargin(~size=4, ())])}>
         {icon} <Title> {prettyAmount->React.string} </Title>
       </Wrapper>
     </Card>
@@ -287,45 +287,60 @@ let filterOperations = (operations: array<Operation.t>, tokens, selectedAsset: A
   })
 }
 
+module Display = {
+  @react.component
+  let make = (~assetBalance, ~account: Account.t) => {
+    let operations = useCurrentAccountOperations()
+    let tokens = Store.useTokens()
+    let (network, _) = Store.useNetwork()
+
+    let query =
+      ReactQuery.queryOptions(
+        ~queryFn=_ => MezosAPI.getIndexerLastBlock(~network),
+        ~queryKey="lastBlock",
+        ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(#bool(false)),
+        ~enabled=false,
+        (),
+      )->ReactQuery.useQuery
+
+    let indexerLastBlock = query.data
+
+    React.useEffect3(() => {
+      query.refetch({
+        throwOnError: false,
+        cancelRefetch: false,
+      })->ignore
+
+      None
+    }, (operations, network, query.refetch))
+
+    let el = switch indexerLastBlock {
+    | Some(indexerLastBlock) => {
+        let operations = filterOperations(operations, tokens, assetBalance)
+        <>
+          <AssetBalanceDisplay assetBalance />
+          <HistoryDisplay tz1=account.tz1 operations indexerLastBlock tokens />
+        </>
+      }
+    | _ => React.null
+    }
+
+    query.isLoading
+      ? <Wrapper style={StyleUtils.makeTopMargin(~size=3, ())} justifyContent=#center>
+          <ActivityIndicator />
+        </Wrapper>
+      : el
+  }
+}
+
 @react.component
 let make = (~route, ~navigation as _) => {
-  let operations = useCurrentAccountOperations()
-  let tokens = Store.useTokens()
-  let notify = SnackBar.useNotification()
   let assetBalance = NavUtils.getAssetBalance(route)
-  let (indexerLastBlock, setIndexerLastBlock) = React.useState(_ => None)
-  let (network, _) = Store.useNetwork()
-  let isFocused = ReactNavigation.Native.useIsFocused()
-  let isFocuseRef = React.useRef(false)
-  isFocuseRef.current = isFocused
-
-  React.useEffect4(() => {
-    MezosAPI.getIndexerLastBlock(~network)
-    ->Promise.thenResolve(lastBlock =>
-      if isFocuseRef.current {
-        setIndexerLastBlock(_ => Some(lastBlock))
-      }
-    )
-    ->Promise.catch(err => {
-      notify("Failed fetchting index last block. Reaston: " ++ Helpers.getMessage(err))
-      Promise.resolve()
-    })
-    ->ignore
-    None
-  }, (operations, network, notify, setIndexerLastBlock))
-
   let account = Store.useActiveAccount()
 
-  switch (account, indexerLastBlock, assetBalance) {
-  | (Some(account), Some(indexerLastBlock), Some(assetBalance)) => {
-      let operations = filterOperations(operations, tokens, assetBalance)
-      <>
-        <AssetBalanceDisplay assetBalance />
-        <HistoryDisplay tz1=account.tz1 operations indexerLastBlock tokens />
-      </>
-    }
-  | _ => React.null
-  }
+  Helpers.both(assetBalance, account)->Helpers.reactFold(((assetBalance, account)) => {
+    <Display account assetBalance />
+  })
 }
 
 // UMAMI DESKTOP SNIPET
