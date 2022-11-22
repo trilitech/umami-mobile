@@ -34,7 +34,7 @@ module SingleOpDisplay = {
           assetType: CurrencyAsset(CurrencyTez),
         }}
       />
-      <PasswordConfirm.Plain loading onSubmit={onAccept} />
+      <PasswordSubmit onSubmit={onAccept} loading disabled=loading />
       <Button style={StyleUtils.makeVMargin()} onPress={_ => goBack()} mode=#outlined>
         {"Decline"->React.string}
       </Button>
