@@ -40,7 +40,7 @@ let make = (~trans, ~fee, ~loading, ~onSubmit, ~onCancel, ~account) => {
   <InstructionsContainer
     instructions="Please validate the details of the transaction and submit to confirm.">
     <TransactionAmounts trans fee sender=account />
-    <PasswordSubmit onSubmit loading />
+    <PasswordSubmit onSubmit loading disabled=loading />
     <Button disabled=loading onPress=onCancel style={vMargin} mode=#outlined>
       {React.string("Cancel")}
     </Button>
