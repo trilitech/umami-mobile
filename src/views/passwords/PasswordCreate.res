@@ -25,6 +25,37 @@ open Belt
     }
 )
 
+module PasswordStrength = {
+  @module("check-password-strength")
+  external passwordStrength: string => {"value": string} = "passwordStrength"
+
+  let getColor = (value: string) => {
+    switch value {
+    | "Too weak" => Colors.Light.error
+    | "Weak" => Colors.Light.error
+    | "Medium" => Colors.Light.primary
+    | "Strong" => Colors.Light.valid
+    | _ => Colors.Light.error
+    }
+  }
+
+  open ReactNative.Style
+  @react.component
+  let make = (~password: string) => {
+    let strength = passwordStrength(password)["value"]
+    <Wrapper style={style(~height=28.->dp, ())}>
+      {password === ""
+        ? React.null
+        : <Wrapper>
+            <Caption> {"Strength: "->React.string} </Caption>
+            <Caption style={style(~color=getColor(strength), ())}>
+              {strength->React.string}
+            </Caption>
+          </Wrapper>}
+    </Wrapper>
+  }
+}
+
 @react.component
 let make = (~onSubmit, ~loading=false) => {
   let (value1, setValue1) = EphemeralState.useEphemeralState("")
@@ -47,6 +78,7 @@ let make = (~onSubmit, ~loading=false) => {
       label="Password"
       onChangeText={s => setValue1(_ => s)}
     />
+    <PasswordStrength password=value1 />
     <UI.Input
       error={error->Option.isSome}
       style={StyleUtils.makeVMargin()}
