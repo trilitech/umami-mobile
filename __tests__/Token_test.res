@@ -96,4 +96,28 @@ describe("Token functions", () => {
       ),
     ])
   })
+
+  test("handleJSONarray returns the right value (fix for bloxxer NFT bug)", () => {
+    let input = parseJSON(TokenJSON.jsonStringBloxxer)
+    let result = decodeJsonArray(input)
+    expect(result)->toEqual([
+      NFT(
+        {
+          balance: 1,
+          contract: "KT1NjMYSVnfrTiuKEKsyXp61hnWP3CL6qPW2",
+          id: %raw("387481387139073"), // TODO fix bigint rescript issue
+          tokenId: "0",
+          tz1: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
+        },
+        {
+          creators: [],
+          description: "This is a special pre-release beta cartridge of the Blockxer game, allowing players to try the game before it is launched.",
+          displayUri: "https://ipfs.io/ipfs/QmVhgnkY9G6yT4BhHKbwQg9gyCzWF7fFeDM4YTyttXWJpt",
+          name: "Blockxer Beta Cartridge",
+          symbol: "FKR",
+          thumbnailUri: "https://ipfs.io/ipfs/QmVhgnkY9G6yT4BhHKbwQg9gyCzWF7fFeDM4YTyttXWJpt",
+        },
+      ),
+    ])
+  })
 })

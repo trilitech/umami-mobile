@@ -1,7 +1,7 @@
 module JSON = {
   type metadata = {
     name: string,
-    symbol: string,
+    symbol: option<string>,
     description: option<string>,
     displayUri: option<string>,
     thumbnailUri: option<string>,
@@ -30,11 +30,11 @@ module JSON = {
     ipfsUrl->Js.String2.replace("ipfs://", "https://ipfs.io/ipfs/")
 
   let matchNftFields = metadata => {
-    let {displayUri, thumbnailUri, description, creators} = metadata
+    let {displayUri, thumbnailUri, description} = metadata
 
-    switch (displayUri, thumbnailUri, description, creators) {
-    | (Some(displayUri), Some(thumbnailUri), Some(description), Some(creators)) =>
-      Some((displayUri, thumbnailUri, description, creators))
+    switch (displayUri, thumbnailUri, description) {
+    | (Some(displayUri), Some(thumbnailUri), Some(description)) =>
+      Some((displayUri, thumbnailUri, description))
     | _ => None
     }
   }
@@ -95,23 +95,27 @@ let decodeJSON = (token: JSON.t) => {
 
     token.token.metadata->Option.mapWithDefault(Some(FA1(base)), metadata =>
       switch JSON.matchNftFields(metadata) {
-      | Some(displayUri, thumbnailUri, description, creators) =>
+      // Nfts MUST have displayUrl, thumbnailUri, description
+      | Some(displayUri, thumbnailUri, description) =>
         NFT((
           base,
           {
             name: metadata.name,
-            symbol: metadata.symbol,
+            symbol: metadata.symbol->Option.getWithDefault("FKR"),
             displayUri: displayUri->JSON.getNftUrl,
             thumbnailUri: thumbnailUri->JSON.getNftUrl,
             description: description,
-            creators: creators,
+            creators: metadata.creators->Belt.Option.getWithDefault([]),
           },
         ))->Some
+
       | None =>
-        metadata.decimals
-        ->Int.fromString
-        ->Option.map(decimals => {
-          FA2((base, {name: metadata.name, symbol: metadata.symbol, decimals: decimals}))
+        // FA2 tokens MUST have a symbol
+        Helpers.both(metadata.decimals->Int.fromString, metadata.symbol)->Option.map(((
+          decimals,
+          symbol,
+        )) => {
+          FA2((base, {name: metadata.name, symbol: symbol, decimals: decimals}))
         })
       }
     )

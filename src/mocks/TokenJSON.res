@@ -313,3 +313,46 @@ let jsonString1 = `
   }
 ]
     `
+
+let jsonStringBloxxer = `
+[
+  {
+    "id": 387481387139073,
+    "account": {
+      "address": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"
+    },
+    "token": {
+      "id": 334869870673921,
+      "contract": {
+        "address": "KT1NjMYSVnfrTiuKEKsyXp61hnWP3CL6qPW2"
+      },
+      "tokenId": "0",
+      "standard": "fa2",
+      "totalSupply": "516",
+      "metadata": {
+        "name": "Blockxer Beta Cartridge",
+        "formats": [
+          {
+            "uri": "ipfs://QmVhgnkY9G6yT4BhHKbwQg9gyCzWF7fFeDM4YTyttXWJpt",
+            "mimeType": "image/jpeg"
+          }
+        ],
+        "decimals": "0",
+        "displayUri": "ipfs://QmVhgnkY9G6yT4BhHKbwQg9gyCzWF7fFeDM4YTyttXWJpt",
+        "artifactUri": "ipfs://QmVhgnkY9G6yT4BhHKbwQg9gyCzWF7fFeDM4YTyttXWJpt",
+        "description": "This is a special pre-release beta cartridge of the Blockxer game, allowing players to try the game before it is launched.",
+        "thumbnailUri": "ipfs://QmVhgnkY9G6yT4BhHKbwQg9gyCzWF7fFeDM4YTyttXWJpt",
+        "isTransferable": true,
+        "isBooleanAmount": false,
+        "shouldPreferSymbol": false
+      }
+    },
+    "balance": "1",
+    "transfersCount": 1,
+    "firstLevel": 2908827,
+    "firstTime": "2022-11-23T11:47:29Z",
+    "lastLevel": 2908827,
+    "lastTime": "2022-11-23T11:47:29Z"
+  }
+]
+`
