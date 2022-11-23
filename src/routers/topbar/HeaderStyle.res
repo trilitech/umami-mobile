@@ -8,9 +8,11 @@ let useHeaderStyle = (~onBoardingMode=false, ()) => {
 
     if onBoardingMode == true {
       if name == "Welcome" {
-        <TopBarAllScreens.Base />
+        <TopBarAllScreens.Base hideNetwork=true showLogo=true />
       } else {
         <TopBarAllScreens.Base
+          hideNetwork=true
+          title=name
           onPressGoBack={_ => {
             navigate("Welcome")
           }}
