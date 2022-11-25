@@ -12,41 +12,43 @@ module DisplayNFT = {
 
     let url = displayUri
     let source = ReactNative.Image.uriSource(~uri=url, ())
-    <Container>
-      <Wrapper flexDirection=#column justifyContent=#flexStart alignItems=#center>
-        <Title style=vMargin> {React.string(name)} </Title>
-        <FastImage
-          source resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} key=url
-        />
-        <Text style=vMargin> {description->React.string} </Text>
-        <Text style=vMargin> {("Editions: " ++ b.balance->Js.Int.toString)->React.string} </Text>
-        <Wrapper style={StyleUtils.makeVMargin(~size=3, ())}>
-          <Paper.FAB
-            style={StyleUtils.makeHMargin()}
-            onPress={_ => onSign()}
-            icon={Paper.Icon.name("certificate")}
+    <ReactNative.ScrollView>
+      <Container>
+        <Wrapper flexDirection=#column justifyContent=#flexStart alignItems=#center>
+          <Title style=vMargin> {React.string(name)} </Title>
+          <FastImage
+            source resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} key=url
           />
-          <Paper.FAB
-            style={StyleUtils.makeHMargin()}
-            onPress={_ =>
-              navigate(
-                "Send",
-                {
-                  nft: Some(token),
-                  derivationIndex: None,
-                  tz1ForContact: None,
-                  assetBalance: None,
-                  tz1ForSendRecipient: None,
-                  injectedAdress: None,
-                  signedContent: None,
-                  beaconRequest: None,
-                },
-              )->ignore}
-            icon={Paper.Icon.name("arrow-top-right-thin")}
-          />
+          <Text style=vMargin> {description->React.string} </Text>
+          <Text style=vMargin> {("Editions: " ++ b.balance->Js.Int.toString)->React.string} </Text>
+          <Wrapper style={StyleUtils.makeVMargin(~size=3, ())}>
+            <Paper.FAB
+              style={StyleUtils.makeHMargin(~size=2, ())}
+              onPress={_ => onSign()}
+              icon={Paper.Icon.name("certificate")}
+            />
+            <Paper.FAB
+              style={StyleUtils.makeHMargin(~size=2, ())}
+              onPress={_ =>
+                navigate(
+                  "Send",
+                  {
+                    nft: Some(token),
+                    derivationIndex: None,
+                    tz1ForContact: None,
+                    assetBalance: None,
+                    tz1ForSendRecipient: None,
+                    injectedAdress: None,
+                    signedContent: None,
+                    beaconRequest: None,
+                  },
+                )->ignore}
+              icon={Paper.Icon.name("arrow-top-right-thin")}
+            />
+          </Wrapper>
         </Wrapper>
-      </Wrapper>
-    </Container>
+      </Container>
+    </ReactNative.ScrollView>
   }
 }
 
