@@ -122,7 +122,6 @@ let decodeJson = (json: JSON.t) => {
 
 let decodeJsonArray = arr => arr->Belt.Array.map(decodeJson)->Helpers.filterNone
 
-let keepRelevant = ops =>
-  ops->Belt.Array.keep(op => op.kind == "transaction" && op.destination->Pkh.notKt)
+let keepRelevant = ops => ops->Belt.Array.keep(op => op.kind == "transaction")
 
 let handleJSONArray = arr => arr->decodeJsonArray->keepRelevant
