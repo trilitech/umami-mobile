@@ -1,0 +1,16 @@
+{
+  "appMetadata": {"senderId": "2bneDkbqpdhLw", "name": "Example DApp"},
+  "id": "ff5512cb-6883-256f-a4ec-d7809c099477",
+  "version": "2",
+  "senderId": "2bneDkbqpdhLw",
+  "type": "operation_request",
+  "network": {"type": "ghostnet"},
+  "operationDetails": [
+    {
+      "kind": "transaction",
+      "destination": "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
+      "amount": "1"
+    }
+  ],
+  "sourceAddress": "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"
+}

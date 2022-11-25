@@ -1,0 +1,22 @@
+{
+  "appMetadata": {
+    "senderId": "JCzYK7vLCyh6",
+    "name": "objkt.com",
+    "icon": "https://assets.objkt.media/file/assets-002/objkt/objkt-logo.png"
+  },
+  "id": "4c4323a0-4fc9-8532-8af1-68a233e4d579",
+  "version": "2",
+  "senderId": "JCzYK7vLCyh6",
+  "type": "operation_request",
+  "network": {"type": "mainnet"},
+  "operationDetails": [
+    {
+      "kind": "transaction",
+      "storage_limit": "350",
+      "amount": "0",
+      "destination": "KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w",
+      "parameters": {"entrypoint": "collect", "value": {"int": "160896"}}
+    }
+  ],
+  "sourceAddress": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"
+}

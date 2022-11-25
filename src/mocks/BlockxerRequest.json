@@ -1,0 +1,17 @@
+{
+  "appMetadata": {"senderId": "C5T6JzHYkAhZ", "name": "Blockxer"},
+  "id": "9d648916-39b5-9a43-a55d-782f9f1c1c3a",
+  "version": "2",
+  "senderId": "C5T6JzHYkAhZ",
+  "type": "operation_request",
+  "network": {"type": "mainnet"},
+  "operationDetails": [
+    {
+      "kind": "transaction",
+      "amount": "0",
+      "destination": "KT1NjMYSVnfrTiuKEKsyXp61hnWP3CL6qPW2",
+      "parameters": {"entrypoint": "mint_tokens", "value": [{"int": "0"}]}
+    }
+  ],
+  "sourceAddress": "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"
+}
