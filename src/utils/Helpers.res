@@ -71,3 +71,15 @@ let resultToOption = r =>
   | Ok(r) => Some(r)
   | Error(_) => None
   }
+
+let tap = val => {
+  Js.Console.log(val)
+  val
+}
+
+let formatHash = (tz1: string, ~beginLength=5, ~endLength=5, ()) => {
+  let length = tz1->Js.String2.length
+  tz1->Js.String2.slice(~from=0, ~to_=beginLength) ++
+  "..." ++
+  tz1->Js.String2.slice(~from=-endLength, ~to_=length)
+}
