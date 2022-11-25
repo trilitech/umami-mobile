@@ -44,46 +44,57 @@ module SingleOpDisplay = {
 
 let unsafeToInt: string => int = %raw("str => Number(str)")
 
-let formatBeaconTezAmount = (a: string) =>
-  Tez(unsafeToInt(a))->Asset.toPrettyAmount->Js.Float.toString
-
 let simulateBeaconTrans = (
-  t: ReBeacon.Message.Request.PartialOperation.transaction,
-  sender: Account.t,
-  network,
-) =>
+  ~transaction: ReBeacon.Message.Request.PartialOperation.transaction,
+  ~senderTz1,
+  ~senderPk,
+  ~network,
+  ~nodeIndex,
+) => {
   TaquitoUtils.estimateSendTez(
-    ~amount=t.amount->formatBeaconTezAmount,
-    ~recipient=t.destination->Pkh.unsafeBuild,
+    ~amount=transaction.amount,
     ~network,
-    ~senderTz1=sender.tz1,
-    ~senderPk=sender.pk,
+    ~nodeIndex,
+    ~recipient=transaction.destination->Pkh.unsafeBuild,
+    ~senderPk,
+    ~senderTz1,
+    ~parameter=transaction.parameters,
+    ~storagelimit=transaction.storage_limit,
+    ~mutez=true,
+    (),
   )
-
+}
 let executeBeaconTrans = (
   password,
-  t: ReBeacon.Message.Request.PartialOperation.transaction,
+  transaction: ReBeacon.Message.Request.PartialOperation.transaction,
   requestId,
   network,
   sender: Account.t,
   respond,
   nodeIndex: int,
 ) => {
-  TaquitoUtils.sendTez(
-    ~password,
-    ~amount=t.amount->formatBeaconTezAmount,
-    ~recipient=t.destination,
-    ~network,
-    ~sk=sender.sk,
-    ~nodeIndex,
-  )->Promise.then(r => {
+  let promise =
+    TaquitoUtils.sendTez(
+      ~network,
+      ~nodeIndex,
+      ~amount=transaction.amount,
+      ~recipient=transaction.destination,
+      ~password,
+      ~sk=sender.sk,
+      ~parameter=transaction.parameters,
+      ~storageLimit=transaction.storage_limit,
+      ~mutez=true,
+      (),
+    )->Promise.thenResolve(r => r.hash)
+
+  promise->Promise.then(hash => {
     let response: Message.ResponseInput.operationResponse = {
       type_: #operation_response,
-      transactionHash: r.hash,
+      transactionHash: hash,
       id: requestId,
     }
 
-    respond(#OperationResponse(response))
+    respond(#OperationResponse(response))->Promise.thenResolve(_ => hash)
   })
 }
 
@@ -96,22 +107,32 @@ module SingleOp = {
     ~requestId: string,
     ~respond,
     ~network,
+    ~nodeIndex: int,
   ) => {
     let notify = SnackBar.useNotification()
     let (loading, setLoading) = React.useState(_ => false)
-    let (estimationRes, setFee) = React.useState(_ => None)
+    let (fee, setFee) = React.useState(_ => None)
 
-    let (nodeIndex, _) = Store.useNodeIndex()
-    React.useEffect4(() => {
-      simulateBeaconTrans(transaction, sender, network, ~nodeIndex)
-      ->Promise.thenResolve(fee => setFee(_ => Some(fee->Ok)))
+    // TODO handle nodeIndex
+    React.useEffect5(() => {
+      simulateBeaconTrans(
+        ~senderTz1=sender.tz1,
+        ~senderPk=sender.pk,
+        ~network,
+        ~nodeIndex,
+        ~transaction,
+      )
+      ->Promise.thenResolve(fee => {
+        setFee(_ => Some(fee->Ok))
+      })
       ->Promise.catch(exn => {
-        setFee(_ => exn->Helpers.getMessage->Error->Some)
+        setFee(_ => Some(exn->Helpers.getMessage->Error))
         Promise.resolve()
       })
       ->ignore
+
       None
-    }, (setFee, transaction, network, sender))
+    }, (transaction, network, sender.tz1, sender.pk, nodeIndex))
 
     let handleAccept = (
       password,
@@ -123,19 +144,22 @@ module SingleOp = {
     ) => {
       setLoading(_ => true)
       executeBeaconTrans(password, t, requestId, network, (sender: Account.t), respond, nodeIndex)
-      ->Promise.thenResolve(() => {
+      ->Promise.thenResolve(hash => {
         setLoading(_ => false)
-        notify("Tez sent!")
+        notify("Transaction successfull! " ++ hash->Helpers.formatHash())
         goBack()
       })
       ->Promise.catch(exn => {
         setLoading(_ => false)
-        notify("Failed to send. " ++ exn->Helpers.getMessage)
+        notify("Failed to execute beacon transaction. " ++ exn->Helpers.getMessage)
+        notify(exn->Helpers.getMessage)
         Promise.resolve()
       })
+      ->ignore
     }
 
-    estimationRes->Helpers.reactFold(result => {
+    fee->Helpers.reactFold(result => {
+      open Taquito.Toolkit
       switch result {
       | Ok(fee) =>
         <SingleOpDisplay
@@ -172,13 +196,26 @@ module Display = {
   @react.component
   let make = (~request: Message.Request.operationRequest, ~goBack, ~sender, ~respond) => {
     let network = safeNetworkParse(request.network.type_)
+    let (nodeIndex, _) = Store.useNodeIndex()
+    let (selectedNetwork, _) = Store.useNetwork()
+
     let el = switch matchSingleTransaction(request.operationDetails) {
     | #single(op) =>
       switch Message.Request.PartialOperation.classify(op) {
       | Transfer(t) =>
         network->Belt.Option.mapWithDefault(
           <BeaconErrorMsg message={"Unknown Network. " ++ request.network.type_} />,
-          network => <SingleOp network sender transaction=t goBack requestId=request.id respond />,
+          network =>
+            <SingleOp
+            // Default nodeIndex to 0 if request not on selected network
+              nodeIndex={network == selectedNetwork ? nodeIndex : 0}
+              network
+              sender
+              transaction=t
+              goBack
+              requestId=request.id
+              respond
+            />,
         )
 
       | _ => <BeaconErrorMsg message="Unsupported operation" />

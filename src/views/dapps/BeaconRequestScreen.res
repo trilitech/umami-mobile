@@ -1,27 +1,41 @@
-open Paper
-
+let unknownAccount = address => <BeaconErrorMsg message={"Unknown account " ++ address} />
 module Display = {
   @react.component
-  let make = (~client, ~account: Account.t, ~beaconRequest: ReBeacon.Message.Request.t) => {
+  let make = (
+    ~client,
+    ~activeAccount: Account.t,
+    ~beaconRequest: ReBeacon.Message.Request.t,
+    ~accounts: array<Account.t>,
+  ) => {
     let goBack = NavUtils.useGoBack()
     let notify = SnackBar.useNotification()
     let respond = Beacon.useRespond(client)
-    let (accounts, _) = Store.useAccounts()
+
+    let (_, refreshPermissions, _) = Beacon.usePermissionInfos(client)
 
     switch beaconRequest {
-    | PermissionRequest(r) => <PermissionRequest request={r} pk=account.pk goBack respond />
+    | PermissionRequest(r) =>
+      // Permission request specifies no account
+      // Reply to permission request with selected account
+      <PermissionRequest request={r} pk=activeAccount.pk goBack respond refreshPermissions />
     | OperationRequest(r) => {
-        let sender = accounts->Belt.Array.getBy(a => a.tz1->Pkh.toString === r.sourceAddress)
-        sender->Belt.Option.mapWithDefault(React.null, sender =>
+        // Handle operations with account specified in request sourceAddress
+        let accountInRequest =
+          accounts->Belt.Array.getBy(a => a.tz1->Pkh.toString === r.sourceAddress)
+        accountInRequest->Belt.Option.mapWithDefault(unknownAccount(r.sourceAddress), sender =>
           <OperationRequest request={r} goBack respond sender />
         )
       }
     | SignPayloadRequest(r) =>
-      <SignPayloadRequest
-        respond request={r} goBack notify sign={SignUtils.signContentGeneric(~account)}
-      />
-    // TODO add nicer display
-    | BroadcastRequest(_) => <Headline> {"Broadcast request not handled"->React.string} </Headline>
+      // Sign payloads with account specified in request sourceAddress
+      let accountInRequest =
+        accounts->Belt.Array.getBy(a => a.tz1->Pkh.toString === r.sourceAddress)
+      accountInRequest->Belt.Option.mapWithDefault(unknownAccount(r.sourceAddress), account =>
+        <SignPayloadRequest
+          respond request={r} goBack notify sign={SignUtils.signContentGeneric(~account)}
+        />
+      )
+    | BroadcastRequest(_) => <BeaconErrorMsg message="Broadcast request not handled" />
     }
   }
 }
@@ -31,10 +45,11 @@ let make = (~navigation as _, ~route) => {
   let beaconRequest = route->NavUtils.getBeaconRequest
   let account = Store.useActiveAccount()
   let (client, _) = Beacon.useClient()
+  let (accounts, _) = Store.useAccounts()
 
   Helpers.three(beaconRequest, account, client)->Helpers.reactFold(((
     beaconRequest,
-    account,
+    activeAccount,
     client,
-  )) => <Display client account beaconRequest />)
+  )) => <Display client activeAccount beaconRequest accounts />)
 }

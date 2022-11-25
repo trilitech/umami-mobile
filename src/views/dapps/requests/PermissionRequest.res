@@ -3,8 +3,15 @@ open CommonComponents
 open Paper
 
 @react.component
-let make = (~request: Message.Request.permissionRequest, ~pk: Pk.t, ~goBack, ~respond) => {
+let make = (
+  ~request: Message.Request.permissionRequest,
+  ~pk: Pk.t,
+  ~goBack,
+  ~respond,
+  ~refreshPermissions,
+) => {
   let {appMetadata} = request
+
   let (loading, setLoading) = React.useState(_ => false)
 
   let acceptRequest = () => {
@@ -17,7 +24,10 @@ let make = (~request: Message.Request.permissionRequest, ~pk: Pk.t, ~goBack, ~re
     }
 
     setLoading(_ => true)
-    respond(#PermissionResponse(response))->Promise.thenResolve(_ => {
+    respond(#PermissionResponse(response))
+    // TODO add this in hook
+    ->Promise.then(refreshPermissions)
+    ->Promise.thenResolve(_ => {
       setLoading(_ => false)
       goBack()
     })

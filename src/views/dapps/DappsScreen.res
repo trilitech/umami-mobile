@@ -1,19 +1,49 @@
 open CommonComponents
+open ReactNative.Style
 open Paper
+
+let useGetAccountName = () => {
+  let (account, _) = Store.useAccounts()
+
+  (pkh: Pkh.t) => account->Belt.Array.getBy(a => a.tz1 === pkh)->Belt.Option.map(a => a.name)
+}
 
 module PeerInfos = {
   @react.component
-  let make = (~peerInfos: array<ReBeacon.peerInfo>, ~onRemove) => {
-    let els =
-      peerInfos->Belt.Array.map(p =>
-        <CustomListItem
-          left={<CommonComponents.Icon size=32 name="application-brackets" />}
-          key=p.id
-          center={<Text> {p.name->React.string} </Text>}
-          right={<CrossRight onPress={_ => onRemove(p)} />}
-        />
-      )
-    <> <Title> {"Peers"->React.string} </Title> {els->React.array} </>
+  let make = (
+    ~peerInfos: array<ReBeacon.peerInfo>,
+    ~onRemove,
+    ~permissionInfos: array<ReBeacon.permissionInfo>,
+  ) => {
+    let getAccountName = useGetAccountName()
+    let disabledColor = UmamiThemeProvider.useDisabledColor()
+    let els = peerInfos->Belt.Array.map(p => {
+      let permissionInfo =
+        permissionInfos->Belt.Array.getBy(permissionInfo =>
+          permissionInfo.appMetadata.senderId == p.senderId
+        )
+      let accountName =
+        permissionInfo
+        ->Belt.Option.flatMap(permissionInfo =>
+          getAccountName(permissionInfo.address->Pkh.unsafeBuild)
+        )
+        ->Belt.Option.getWithDefault("")
+
+      <CustomListItem
+        height=80.
+        left={p.icon->Belt.Option.mapWithDefault(
+          <CommonComponents.Icon size=40 name="application-brackets" />,
+          url => <RoundImage url size=40 />,
+        )}
+        key=p.id
+        center={<ReactNative.View>
+          <Title> {p.name->React.string} </Title>
+          <Text style={style(~color=disabledColor, ())}> {accountName->React.string} </Text>
+        </ReactNative.View>}
+        right={<CrossRight onPress={_ => onRemove(p)} />}
+      />
+    })
+    <> <Title> {"Peers"->React.string} </Title> {<> {els->React.array} </>} </>
   }
 }
 
@@ -21,6 +51,7 @@ module Display = {
   @react.component
   let make = (~client: ReBeacon.WalletClient.t) => {
     let (peerInfos, remove, addPeer) = Beacon.usePeers(client)
+    let (permissionInfos, _, _) = Beacon.usePermissionInfos(client)
     let navigate = NavUtils.useNavigate()
     <InstructionsContainer
       title="Dapps"
@@ -39,7 +70,7 @@ module Display = {
           style={StyleUtils.makeHMargin()}
         />
       </Wrapper>
-      <PeerInfos peerInfos onRemove={p => p->remove->ignore} />
+      <PeerInfos peerInfos permissionInfos onRemove={p => p->remove->ignore} />
     </InstructionsContainer>
   }
 }

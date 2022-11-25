@@ -60,15 +60,19 @@ module Message = {
       ]
       type basePartialOperation = {kind: partialOperationType}
 
+      type rawMethodArg
       type transactionParams = {
-        fee: option<int>,
-        gasLimit: option<int>,
-        storageLimit: option<int>,
+        entrypoint: string,
+        value: rawMethodArg,
+        // fee: option<int>,
+        // gasLimit: option<int>,
+        // storageLimit: option<int>,
       }
 
       type transaction = {
         amount: string,
         destination: string,
+        storage_limit: option<int>,
         parameters: option<transactionParams>,
       }
 
@@ -289,6 +293,7 @@ module Message = {
 
 type peerInfo = {
   id: string,
+  icon: option<string>,
   name: string,
   publicKey: publicKey,
   relayServer: string,
@@ -406,7 +411,7 @@ module WalletClient = {
   //   t->removePermissionRaw(accountIdentifier)->Error.fromPromiseParsed
 
   @send
-  external getPermissionsRaw: t => Js.Promise.t<array<permissionInfo>> = "getPermissions"
+  external getPermissionsRaw: (t, unit) => Js.Promise.t<array<permissionInfo>> = "getPermissions"
 
   // let getPermissions = t => t->getPermissionsRaw->Error.fromPromiseParsed
 
