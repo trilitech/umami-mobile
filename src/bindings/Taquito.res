@@ -4,6 +4,7 @@ module Toolkit = {
   type contract
   type estimate
   type operation = {hash: string}
+  type contractOperation = {opHash: string}
 
   type toolkit = {
     tz: tz,
@@ -19,6 +20,8 @@ module Toolkit = {
   @send external getBalance: (tz, string) => Promise.t<Js.Json.t> = "getBalance"
   @send external setProvider: (toolkit, 'a) => unit = "setProvider"
   @send external transfer: (contract, 'a) => Promise.t<operation> = "transfer"
+
+  // @send external transferContract: (contract, 'a) => Promise.t<contractOperation> = "transfer"
   @send external estimateTransfer: (estimate, 'a) => Promise.t<estimation> = "transfer"
 }
 
@@ -26,7 +29,7 @@ module Contract = {
   type transfer
   type transferParams
 
-  @send external send: (transfer, unit) => Promise.t<'a> = "send"
+  @send external send: (transfer, unit) => Promise.t<Toolkit.contractOperation> = "send"
   @send
   external toTransferParams: (transfer, unit) => transferParams = "toTransferParams"
 }

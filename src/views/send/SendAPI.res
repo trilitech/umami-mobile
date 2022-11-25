@@ -31,6 +31,7 @@ let simulate: simulate = (
         ~senderPk,
         ~network,
         ~nodeIndex,
+        (),
       )
     | CurrencyToken(b, decimals) =>
       estimate(
@@ -64,7 +65,7 @@ type send = (
   ~password: string,
   ~network: Network.t,
   ~nodeIndex: int,
-) => Promise.t<Taquito.Toolkit.operation>
+) => Promise.t<string>
 
 let send: send = (
   ~prettyAmount,
@@ -75,7 +76,7 @@ let send: send = (
   ~password,
   ~network,
   ~nodeIndex,
-) => {
+): Promise.t<string> => {
   let sendToken = TaquitoUtils.sendToken(~password, ~sk, ~senderTz1, ~recipientTz1)
 
   switch assetType {
@@ -89,7 +90,8 @@ let send: send = (
         ~sk,
         ~network,
         ~nodeIndex,
-      )
+        (),
+      )->Promise.thenResolve(r => r.hash)
     | CurrencyToken(b, decimals) =>
       sendToken(
         ~contractAddress=b.contract,
@@ -99,7 +101,7 @@ let send: send = (
         ~network,
         ~nodeIndex,
         (),
-      )
+      )->Promise.thenResolve(r => r.opHash)
     }
   | NftAsset(b, _) =>
     sendToken(
@@ -109,6 +111,6 @@ let send: send = (
       ~network,
       ~nodeIndex,
       (),
-    )
+    )->Promise.thenResolve(r => r.opHash)
   }
 }

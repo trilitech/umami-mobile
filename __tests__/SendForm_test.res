@@ -33,7 +33,7 @@ describe("<SendScreen />", () => {
     ~network as _,
     ~nodeIndex as _,
   ) => {
-    let mockReponse: Taquito.Toolkit.operation = Obj.magic({"hash": "mockHash"})
+    let mockReponse = "mockHash"
     Promise.resolve(mockReponse)
   }
 

@@ -11,9 +11,11 @@ module SendAndConfirmForm = {
   }
 }
 
-let makeNotif = _hash => {
+let makeNotif = hash => {
   <CommonComponents.Wrapper alignItems=#center>
-    <Paper.Text> {React.string("Transaction successful!")} </Paper.Text>
+    <Paper.Text>
+      {React.string("Transaction successful: " ++ hash->Helpers.formatHash())}
+    </Paper.Text>
     // <Paper.IconButton
     //   onPress={_ => ReactNative.Linking.openURL("https://ithaca.tzstats.com/" ++ hash)->ignore}
     //   icon={Paper.Icon.name("open-in-new")}
@@ -99,7 +101,7 @@ module PureSendScreen = {
         setLoading(_ => true)
 
         send(~password)
-        ->Promise.thenResolve(({hash}) => {
+        ->Promise.thenResolve(hash => {
           hash->makeNotif->Some->notifyAdvanced
           navigate("Home")->ignore
         })

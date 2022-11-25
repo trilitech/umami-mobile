@@ -1,35 +1,25 @@
-@module("./sendToken")
-external _makeContractTransferBinding: (
-  Taquito.Toolkit.toolkit,
-  string,
-  string,
-  int,
-  string,
-  string,
-  bool,
-) => Promise.t<Taquito.Contract.transfer> = "default"
+@module("./js/makeContract")
+external makeFA1Contract: (
+  ~toolkit: Taquito.Toolkit.toolkit,
+  ~contractAddress: string,
+  ~amount: int,
+  ~senderTz1: string,
+  ~recipientTz1: string,
+) => Promise.t<Taquito.Contract.transfer> = "makeFA1Contract"
 
-let makeContractTransfer = (
-  ~tezos,
-  ~contractAddress,
-  ~tokenId,
-  ~amount,
-  ~senderTz1: Pkh.t,
-  ~recipientTz1: Pkh.t,
-  ~isFa1=false,
-  (),
-) =>
-  _makeContractTransferBinding(
-    tezos,
-    contractAddress,
-    tokenId,
-    amount,
-    senderTz1->Pkh.toString,
-    recipientTz1->Pkh.toString,
-    isFa1,
-  )
+type methodArg
 
-let _sendToken = (
+external buildMethodArg: 'a => methodArg = "%identity"
+
+@module("./js/makeContract")
+external makeContract: (
+  ~toolkit: Taquito.Toolkit.toolkit,
+  ~contractAddress: string,
+  ~method: string,
+  ~params: methodArg,
+) => Promise.t<Taquito.Contract.transfer> = "makeContract"
+
+let makeContractTokenTransfer = (
   ~tezos,
   ~contractAddress,
   ~tokenId,
@@ -39,31 +29,63 @@ let _sendToken = (
   ~isFa1=false,
   (),
 ) => {
-  makeContractTransfer(
-    ~tezos,
-    ~contractAddress,
-    ~tokenId,
-    ~amount,
-    ~senderTz1,
-    ~recipientTz1,
-    ~isFa1,
-    (),
-  )->Promise.then(t => t->Taquito.Contract.send())
+  if isFa1 {
+    makeFA1Contract(
+      ~toolkit=tezos,
+      ~contractAddress,
+      ~amount,
+      ~senderTz1=senderTz1->Pkh.toString,
+      ~recipientTz1=recipientTz1->Pkh.toString,
+    )
+  } else {
+    let transfer_params = [
+      {
+        "from_": senderTz1,
+        "txs": [
+          {
+            "to_": recipientTz1,
+            "token_id": tokenId,
+            "amount": amount,
+          },
+        ],
+      },
+    ]->buildMethodArg
+
+    makeContract(~toolkit=tezos, ~contractAddress, ~method="transfer", ~params=transfer_params)
+  }
 }
 
 let _makeToolkit = (~network, ~nodeIndex) =>
   Taquito.create("https://" ++ Endpoints.getNodeUrl(network, nodeIndex))
 
-let _getBalance = (~tz1: Pkh.t, ~network, ~nodeIndex) => {
-  open Taquito.Toolkit
+let makeToolkitWithSigner = (~network, ~nodeIndex, ~sk, ~password) => {
   let tezos = _makeToolkit(~network, ~nodeIndex)
-  let res = tezos.tz->Taquito.Toolkit.getBalance(Pkh.toString(tz1))
-  res->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
+
+  Taquito.fromSecretKey(sk, password)->Promise.thenResolve(signer => {
+    tezos->Taquito.Toolkit.setProvider({"signer": signer})
+    tezos
+  })
 }
 
+let makeToolkitWithDummySigner = (~network, ~nodeIndex, ~pk, ~pkh) => {
+  let tezos = _makeToolkit(~network, ~nodeIndex)
+
+  tezos->Taquito.Toolkit.setProvider({
+    "signer": Taquito.createDummySigner(~pk=pk->Pk.toString, ~pkh=pkh->Pkh.toString),
+  })
+  tezos
+}
 exception BalanceFetchFailure(string)
 
-let getBalance = (~tz1, ~network, ~nodeIndex) =>
+let getBalance = (~tz1, ~network, ~nodeIndex) => {
+  let _getBalance = (~tz1: Pkh.t, ~network, ~nodeIndex) => {
+    open Taquito.Toolkit
+    let tezos = _makeToolkit(~network, ~nodeIndex)
+    tezos.tz
+    ->Taquito.Toolkit.getBalance(Pkh.toString(tz1))
+    ->Promise.thenResolve(val => Js.Json.stringify(val)->Js.String2.slice(~from=1, ~to_=-1))
+  }
+
   _getBalance(~tz1, ~network, ~nodeIndex)
   ->Promise.thenResolve(b => Belt.Int.fromString(b))
   ->Promise.then(b => {
@@ -75,14 +97,9 @@ let getBalance = (~tz1, ~network, ~nodeIndex) =>
     })
   })
   ->Promise.catch(err => Promise.reject(BalanceFetchFailure(Helpers.getMessage(err))))
-
-let sendTez = (~recipient, ~amount, ~password, ~sk, ~network, ~nodeIndex) => {
-  let tezos = _makeToolkit(~network, ~nodeIndex)
-  Taquito.fromSecretKey(sk, password)->Promise.then(signer => {
-    tezos->Taquito.Toolkit.setProvider({"signer": signer})
-    tezos.contract->Taquito.Toolkit.transfer({"to": recipient, "amount": amount})
-  })
 }
+
+// Tez and Beacon requests that usually contain params
 
 let estimateSendTez = (
   ~amount,
@@ -91,14 +108,51 @@ let estimateSendTez = (
   ~senderPk: Pk.t,
   ~network: Network.t,
   ~nodeIndex: int,
+  ~parameter=None,
+  ~storagelimit=None,
+  ~fee=None,
+  ~mutez=false,
+  (),
 ) => {
-  let tezos = _makeToolkit(~network, ~nodeIndex)
-  tezos->Taquito.Toolkit.setProvider({
-    "signer": Taquito.createDummySigner(~pk=senderPk->Pk.toString, ~pkh=senderTz1->Pkh.toString),
-  })
+  let tezos = makeToolkitWithDummySigner(~network, ~nodeIndex, ~pk=senderPk, ~pkh=senderTz1)
 
-  tezos.estimate->Taquito.Toolkit.estimateTransfer({"to": recipient, "amount": amount})
+  tezos.estimate->Taquito.Toolkit.estimateTransfer({
+    "to": recipient,
+    "amount": amount,
+    "parameter": parameter,
+    "storagelimit": storagelimit,
+    "fee": fee,
+    "mutez": mutez,
+  })
 }
+
+let sendTez = (
+  ~recipient,
+  ~amount,
+  ~password,
+  ~sk,
+  ~network,
+  ~nodeIndex,
+  ~parameter=None,
+  ~storageLimit=None,
+  ~fee=None,
+  ~mutez=false,
+  (),
+) =>
+  makeToolkitWithSigner(~network, ~nodeIndex, ~sk, ~password)
+  ->Promise.then(tezos =>
+    tezos.contract->Taquito.Toolkit.transfer({
+      "to": recipient,
+      "amount": amount,
+      "parameter": parameter,
+      "storageLimit": storageLimit,
+      "fee": fee,
+      "mutez": mutez,
+    })
+  )
+  ->Promise.thenResolve(Helpers.tap)
+
+// Tokens
 
 let estimateSendToken = (
   ~amount,
@@ -112,12 +166,9 @@ let estimateSendToken = (
   ~nodeIndex: int,
   (),
 ) => {
-  let tezos = _makeToolkit(~network, ~nodeIndex)
-  tezos->Taquito.Toolkit.setProvider({
-    "signer": Taquito.createDummySigner(~pk=senderPk->Pk.toString, ~pkh=senderTz1->Pkh.toString),
-  })
+  let tezos = makeToolkitWithDummySigner(~network, ~nodeIndex, ~pk=senderPk, ~pkh=senderTz1)
 
-  let transfer = makeContractTransfer(
+  let transfer = makeContractTokenTransfer(
     ~tezos,
     ~contractAddress,
     ~tokenId,
@@ -148,13 +199,57 @@ let sendToken = (
   ~nodeIndex: int,
   (),
 ) => {
-  let tezos = _makeToolkit(~network, ~nodeIndex)
-
-  Taquito.fromSecretKey(sk, password)->Promise.then(signer => {
-    tezos->Taquito.Toolkit.setProvider({"signer": signer})
-    _sendToken(~tezos, ~contractAddress, ~tokenId, ~amount, ~senderTz1, ~recipientTz1, ~isFa1, ())
-  })
+  makeToolkitWithSigner(~network, ~nodeIndex, ~password, ~sk)->Promise.then(tezos =>
+    makeContractTokenTransfer(
+      ~tezos,
+      ~contractAddress,
+      ~tokenId,
+      ~amount,
+      ~senderTz1,
+      ~recipientTz1,
+      ~isFa1,
+      (),
+    )
+    ->Promise.then(t => t->Taquito.Contract.send())
+    ->Promise.thenResolve(Helpers.tap)
+  )
 }
+
+// Contracts
+// Finally not used as we do Beacon requests with sendTez
+
+// let estimateContractTransaction = (
+//   ~contractAddress: string,
+//   ~method: string,
+//   ~params: methodArg,
+//   ~network,
+//   ~nodeIndex,
+//   ~senderPk,
+//   ~senderTz1,
+//   (),
+// ) => {
+//   let tezos = makeToolkitWithDummySigner(~network, ~nodeIndex, ~pk=senderPk, ~pkh=senderTz1)
+
+//   makeContract(~toolkit=tezos, ~contractAddress, ~method, ~params)->Promise.then(t => {
+//     let params = t->Taquito.Contract.toTransferParams()
+
+//     tezos.estimate->Taquito.Toolkit.estimateTransfer(params)
+//   })
+// }
+
+// let executContractTransaction = (
+//   ~contractAddress: string,
+//   ~method: string,
+//   ~params: methodArg,
+//   ~network,
+//   ~nodeIndex,
+//   ~password,
+//   ~sk,
+// ) => {
+//   makeToolkitWithSigner(~network, ~nodeIndex, ~password, ~sk)
+//   ->Promise.then(tezos => makeContract(~toolkit=tezos, ~contractAddress, ~method, ~params))
+//   ->Promise.then(t => t->Taquito.Contract.send())
+// }
 
 let getTz1 = (~sk, ~password) =>
   Taquito.fromSecretKey(sk, password)
