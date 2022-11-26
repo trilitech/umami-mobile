@@ -5,33 +5,31 @@ let make = (~navigation as _, ~route as _) => {
   let notify = SnackBar.useNotification()
   let (loading, setLoding) = React.useState(_ => false)
 
-  <Container>
-    {if dangerouseStorage == [] {
-      <InstructionsContainer instructions="Authenticate to unlock backupphrase">
-        <PasswordSubmit
-          label="Authenticate"
-          loading
-          onSubmit={password => {
-            setLoding(_ => true)
-            BackupPhraseStorage.load(password)
-            ->Promise.thenResolve(mnemonic => {
-              setLoding(_ => false)
-              setDangerousStorage(_ => mnemonic->Js.String2.split(" "))
-            })
-            ->Promise.catch(exn => {
-              notify(`Failed to load backup phrase. Reason: ${exn->Helpers.getMessage}`)
-              setLoding(_ => false)
-              Promise.resolve()
-            })
-            ->ignore
-          }}
-        />
-      </InstructionsContainer>
-    } else {
-      <InstructionsContainer title="This is your backup phrase" instructions="Write it down now!">
-        <Mnemonic mnemonic=dangerouseStorage />
-        <ContinueBtn onPress={_ => {goBack()}} text="Close me fast!" />
-      </InstructionsContainer>
-    }}
-  </Container>
+  if dangerouseStorage == [] {
+    <InstructionsContainer instructions="Authenticate to unlock backupphrase">
+      <PasswordSubmit
+        label="Authenticate"
+        loading
+        onSubmit={password => {
+          setLoding(_ => true)
+          BackupPhraseStorage.load(password)
+          ->Promise.thenResolve(mnemonic => {
+            setLoding(_ => false)
+            setDangerousStorage(_ => mnemonic->Js.String2.split(" "))
+          })
+          ->Promise.catch(exn => {
+            notify(`Failed to load backup phrase. Reason: ${exn->Helpers.getMessage}`)
+            setLoding(_ => false)
+            Promise.resolve()
+          })
+          ->ignore
+        }}
+      />
+    </InstructionsContainer>
+  } else {
+    <InstructionsContainer title="This is your backup phrase" instructions="Write it down now!">
+      <Mnemonic mnemonic=dangerouseStorage />
+      <ContinueBtn onPress={_ => {goBack()}} text="Close me fast!" />
+    </InstructionsContainer>
+  }
 }
