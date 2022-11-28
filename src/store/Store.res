@@ -28,12 +28,11 @@ let useReset = () => {
   let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
 
   let (_, setNetwork) = useNetwork()
-  let (_, setNodeIndex) = useNodeIndex()
 
+  open Network
   () => {
     dispatch(Reset)
     setNetwork(_ => Mainnet)
-    setNodeIndex(_ => 0)
   }
 }
 

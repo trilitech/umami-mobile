@@ -34,8 +34,22 @@ let addressMetatdadaAtom: Jotai.Atom.t<addressMetatdataMap, _, _> = AtomStorage.
 )
 
 open Network
-let networkAtom: Jotai.Atom.t<Network.t, _, _> = AtomStorage.make("network", Mainnet)
+%%private(let networkAtom: Jotai.Atom.t<Network.t, _, _> = AtomStorage.make("network", Mainnet))
+
 let nodeIndexAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("nodeIndex", 0)
+
+let networkAtom: Jotai.Atom.t<
+  Network.t,
+  Jotai.Atom.Actions.t<(Network.t => Network.t) => unit>,
+  _,
+> = Jotai.Atom.makeWritableComputed(
+  ({get}) => get(networkAtom),
+  ({get: _, set}, arg) => {
+    // Reset node to first in the list when we switch networks
+    set(nodeIndexAtom, 0)
+    set(networkAtom, arg)
+  },
+)
 
 // biometricsEnabledAtom needed since keychain API provides no way of
 // knowing if there is a password set withouth authenticating

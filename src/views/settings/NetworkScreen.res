@@ -17,11 +17,6 @@ let make = (~navigation as _, ~route as _) => {
   let (network, setNetwork) = Store.useNetwork()
   let (nodeIndex, setNodeIndex) = Store.useNodeIndex()
 
-  let setNetwork = cb => {
-    setNodeIndex(_ => 0)
-    setNetwork(cb)
-  }
-
   let nodes = Endpoints.getNodes(network)
   <InstructionsContainer title="Network" instructions="Select Tezos network and node.">
     <ScrollView>
