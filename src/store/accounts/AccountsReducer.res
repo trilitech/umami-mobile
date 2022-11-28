@@ -60,11 +60,28 @@ let reducer = (accounts: array<Account.t>, action) => {
   }
 }
 
+let accountsReduxAtom: Jotai.Atom.t<
+  array<Account.t>,
+  Jotai.Atom.Actions.t<(unit => actions) => unit>,
+  _,
+> = Jotai.Atom.makeWritableComputed(
+  ({get}) => {
+    get(Atoms.accountsAtom)
+  },
+  ({get, set}, arg) => {
+    let action = arg()
+
+    if action == Reset {
+      set(Atoms.selectedAccount, _ => 0)
+    }
+
+    let updated = Atoms.accountsAtom->get->reducer(action)
+
+    Atoms.accountsAtom->set(updated)
+  },
+)
+
 let useAccountsDispatcher = () => {
-  let (accounts, setAccounts) = SavedStore.useAccounts()
-
-  let fn = action => setAccounts(accounts => reducer(accounts, action))
-
-  let dispatch = React.useCallback1(fn, [])
-  (accounts, dispatch)
+  let (accounts, set) = Jotai.Atom.use(accountsReduxAtom)
+  (accounts, val => set(() => val))
 }

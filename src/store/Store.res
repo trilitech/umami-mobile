@@ -27,12 +27,10 @@ let useWithAccount = cb => {
 let useReset = () => {
   let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
 
-  let (_, setSelectedAccount) = useSelectedAccount()
   let (_, setNetwork) = useNetwork()
   let (_, setNodeIndex) = useNodeIndex()
 
   () => {
-    setSelectedAccount(_ => 0)
     dispatch(Reset)
     setNetwork(_ => Mainnet)
     setNodeIndex(_ => 0)
