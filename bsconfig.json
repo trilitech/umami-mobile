@@ -26,5 +26,6 @@
     "@rescriptbr/react-query",
     "bs-fetch",
     "@glennsl/rescript-json-combinators"
-  ]
+  ],
+  "bs-dev-dependencies": ["@glennsl/rescript-jest"]
 }

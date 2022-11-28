@@ -1,7 +1,6 @@
 open Jest
 open Network
 let mockFn = JestJs.fn(() => ())
-open Expect
 open RNTestingLibrary
 module Router = ReactNavigation.Native.NavigationContainer
 %%raw(`
@@ -71,13 +70,13 @@ describe("<SendScreen />", () => {
 
     // </Router>
     screen.contents = RNTestingLibrary.render(fixture)
-    let result =
+    let element =
       screen.contents
       ->getByTestId(~matcher=#Str("text_input"))
       ->within
       ->getByTestId(~matcher=#Str("text_input"))
 
-    expect(result)->toHaveProp("value", "tez")
+    CustomJestMatchers.toHaveProp(~element, ~prop="value", ~value="tez")
   })
 
   test("it displays provided NFT with 1 copy by default", () => {
@@ -105,8 +104,8 @@ describe("<SendScreen />", () => {
         simulate=mockSimulate
       />
     screen.contents = RNTestingLibrary.render(fixture)
-    let result = screen.contents->getByTestId(~matcher=#Str("nft-editions"))
+    let element = screen.contents->getByTestId(~matcher=#Str("nft-editions"))
 
-    expect(result)->toHaveProp("value", "1")
+    CustomJestMatchers.toHaveProp(~element, ~prop="value", ~value="1")
   })
 })

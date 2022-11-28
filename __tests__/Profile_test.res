@@ -1,8 +1,6 @@
 open Jest
 
 describe("<Profile />", () => {
-  open Expect
-
   test("it displays tez address", () => {
     let account: Account.t = {
       name: "foo",
@@ -18,8 +16,8 @@ describe("<Profile />", () => {
 
     let screen = RNTestingLibrary.render(fixture)
     let res = screen->RNTestingLibrary.getByTestId(~matcher=#Str("tez-display"))
-
     let expected = "tz1Te...9M7d6"
-    expect(res)->toHaveTextContent(expected)
+
+    CustomJestMatchers.toHaveTextContent(~element=res, ~matcher=expected)
   })
 })
