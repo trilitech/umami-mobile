@@ -2,7 +2,25 @@ open Theme
 let themeAtom: Jotai.Atom.t<_, _, _> = AtomStorage.make("theme", Dark)
 let snackBarAtom: Jotai.Atom.t<option<React.element>, _, _> = Jotai.Atom.make(None)
 let accountsAtom: Jotai.Atom.t<array<Account.t>, _, _> = AtomStorage.make("accounts", [])
-let selectedAccountAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("selectedAccount", 0)
+
+%%private(
+  let selectedAccountIndexAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("selectedAccount", 0)
+)
+
+let selectedAccount: Jotai.Atom.t<
+  option<Account.t>,
+  Jotai.Atom.Actions.t<(int => int) => unit>,
+  _,
+> = Jotai.Atom.makeWritableComputed(
+  ({get}) => {
+    let index = get(selectedAccountIndexAtom)
+    let accounts = get(accountsAtom)
+    accounts->Belt.Array.get(index)
+  },
+  ({get: _, set}, arg) => {
+    set(selectedAccountIndexAtom, arg)
+  },
+)
 
 let contactsAtom: Jotai.Atom.t<Contact.contactsMap, _, _> = AtomStorage.make(
   "contacts-v1.0.13",

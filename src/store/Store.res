@@ -3,25 +3,20 @@ open Belt
 open Atoms
 include SavedStore
 
-let useActiveAccount = () => {
-  let (i, _) = useSelectedAccount()
-
-  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
-
-  accounts->Array.get(i)
-}
+let useSelectedAccount = () => Jotai.Atom.use(Atoms.selectedAccount)
 
 let useSnackBar = () => Jotai.Atom.use(snackBarAtom)
 
 let useTokens = () => {
-  switch useActiveAccount() {
+  let (account, _) = useSelectedAccount()
+  switch account {
   | Some(account) => account.tokens
   | None => []
   }
 }
 
 let useWithAccount = cb => {
-  let account = useActiveAccount()
+  let (account, _) = useSelectedAccount()
 
   switch account {
   | Some(account) => cb(account)
@@ -31,6 +26,7 @@ let useWithAccount = cb => {
 
 let useReset = () => {
   let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
+
   let (_, setSelectedAccount) = useSelectedAccount()
   let (_, setNetwork) = useNetwork()
   let (_, setNodeIndex) = useNodeIndex()

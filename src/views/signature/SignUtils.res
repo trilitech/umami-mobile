@@ -34,6 +34,6 @@ let signContent = (~content: string, ~password: string, ~account: Account.t) => 
 }
 
 let useSign = () => {
-  let account = Store.useActiveAccount()
+  let (account, _) = Store.useSelectedAccount()
   account->Option.map((account, ~content, ~password) => signContent(~content, ~password, ~account))
 }

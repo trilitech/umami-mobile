@@ -43,7 +43,7 @@ module Display = {
 @react.component
 let make = (~navigation as _, ~route) => {
   let beaconRequest = route->NavUtils.getBeaconRequest
-  let account = Store.useActiveAccount()
+  let (account, _) = Store.useSelectedAccount()
   let (client, _) = Beacon.useClient()
   let (accounts, _) = Store.useAccounts()
 

@@ -104,7 +104,7 @@ let makeDisplayElement = (
 }
 
 let useCurrentAccountOperations = () => {
-  let account = Store.useActiveAccount()
+  let (account, _) = Store.useSelectedAccount()
 
   switch account {
   | Some(account) => account.transactions
@@ -336,7 +336,7 @@ module Display = {
 @react.component
 let make = (~route, ~navigation as _) => {
   let assetBalance = NavUtils.getAssetBalance(route)
-  let account = Store.useActiveAccount()
+  let (account, _) = Store.useSelectedAccount()
 
   Helpers.both(assetBalance, account)->Helpers.reactFold(((assetBalance, account)) => {
     <Display account assetBalance />

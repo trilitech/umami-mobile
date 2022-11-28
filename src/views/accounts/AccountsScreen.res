@@ -13,7 +13,10 @@ let make = (~navigation, ~route as _) => {
       <ReactNative.ScrollView>
         {accounts
         ->Belt.Array.map(a => {
-          let selected = a.derivationPathIndex == selectedAccount
+          let selected =
+            selectedAccount->Belt.Option.mapWithDefault(false, selectedAccount =>
+              a.derivationPathIndex == selectedAccount.derivationPathIndex
+            )
           <AccountListItem
             key={a.tz1->Pkh.toString}
             account=a
