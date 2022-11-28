@@ -7,6 +7,7 @@ module NftCard = {
     <TouchableRipple style={array([unsafeStyle({"width": "48%"})])} onPress>
       <Surface
         style={array([
+          StyleUtils.makeBottomMargin(),
           unsafeStyle({"width": "100%"}),
           style(~height=220.->dp, ~borderRadius=4., ()),
         ])}>
