@@ -80,14 +80,19 @@ let useBalancesAndOpsSync = () => {
   let (network, _) = Store.useNetwork()
   let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
   let (nodeIndex, _) = Store.useNodeIndex()
+  let (_, setOperations) = Store.useOperations()
 
-  useQueryWithRefetchInterval(
-    _ =>
-      getOperations(~network, ~accounts)
-      ->Promise.thenResolve(o => dispatch(UpdateOperations(o)))
-      ->Promise.catch(tapError),
-    "operations",
-  )->ignore
+  useQueryWithRefetchInterval(_ =>
+    getOperations(~network, ~accounts)
+    ->Promise.thenResolve(ops => {
+      ops
+      ->Belt.Array.reduce(Belt.Map.String.fromArray([]), (acc, curr) =>
+        acc->Belt.Map.String.set(curr.tz1->Pkh.toString, curr.operations)
+      )
+      ->setOperations
+    })
+    ->Promise.catch(tapError)
+  , "operations")->ignore
 
   useQueryWithRefetchInterval(
     _ =>

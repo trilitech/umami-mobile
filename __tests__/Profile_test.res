@@ -10,7 +10,6 @@ describe("<Profile />", () => {
       tokens: [],
       sk: "bar",
       pk: ""->Pk.unsafeBuild,
-      transactions: [],
     }
     let fixture = <Profile.PureProfile account />
 

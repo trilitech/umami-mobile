@@ -3,6 +3,12 @@ let themeAtom: Jotai.Atom.t<_, _, _> = AtomStorage.make("theme", Dark)
 let snackBarAtom: Jotai.Atom.t<option<React.element>, _, _> = Jotai.Atom.make(None)
 let accountsAtom: Jotai.Atom.t<array<Account.t>, _, _> = AtomStorage.make("accounts", [])
 
+let operationsAtom: Jotai.Atom.t<
+  array<(Belt.Map.String.key, array<Operation.t>)>,
+  _,
+  _,
+> = Jotai.Atom.make([])
+
 %%private(
   let selectedAccountIndexAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("selectedAccount", 0)
 )
@@ -18,6 +24,8 @@ let selectedAccount: Jotai.Atom.t<
     accounts->Belt.Array.get(index)
   },
   ({get: _, set}, arg) => {
+    // Reset operations
+    set(operationsAtom, [])
     set(selectedAccountIndexAtom, arg)
   },
 )
@@ -47,6 +55,9 @@ let networkAtom: Jotai.Atom.t<
   ({get: _, set}, arg) => {
     // Reset node to first in the list when we switch networks
     set(nodeIndexAtom, 0)
+    // Reset operations
+    set(operationsAtom, [])
+
     set(networkAtom, arg)
   },
 )

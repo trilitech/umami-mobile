@@ -103,13 +103,13 @@ let makeDisplayElement = (
   })
 }
 
-let useCurrentAccountOperations = () => {
+let useSelectedAccountOperations = () => {
   let (account, _) = Store.useSelectedAccount()
+  let (operations, _) = Store.useOperations()
 
-  switch account {
-  | Some(account) => account.transactions
-  | None => []
-  }
+  account
+  ->Belt.Option.flatMap(account => operations->Belt.Map.String.get(account.tz1->Pkh.toString))
+  ->Belt.Option.getWithDefault([])
 }
 
 let makeKey = (t: Operation.t, i) =>
@@ -290,7 +290,7 @@ let filterOperations = (operations: array<Operation.t>, tokens, selectedAsset: A
 module Display = {
   @react.component
   let make = (~assetBalance, ~account: Account.t) => {
-    let operations = useCurrentAccountOperations()
+    let operations = useSelectedAccountOperations()
     let tokens = Store.useTokens()
     let (network, _) = Store.useNetwork()
 

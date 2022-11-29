@@ -6,22 +6,11 @@ type t = {
   sk: string,
   derivationPathIndex: int,
   tokens: array<Token.t>,
-  transactions: array<Operation.t>,
 }
 
 let changeName = (a, name) => {...a, name: name}
 
-let make = (
-  ~tz1,
-  ~pk,
-  ~sk,
-  ~derivationPathIndex,
-  ~name=?,
-  ~balance=?,
-  ~tokens=[],
-  ~transactions=[],
-  (),
-) => {
+let make = (~tz1, ~pk, ~sk, ~derivationPathIndex, ~name=?, ~balance=?, ~tokens=[], ()) => {
   derivationPathIndex: derivationPathIndex,
   pk: pk,
   sk: sk,
@@ -29,5 +18,4 @@ let make = (
   name: name->Belt.Option.getWithDefault("Account " ++ Js.Int.toString(derivationPathIndex)),
   balance: balance,
   tokens: tokens,
-  transactions: transactions,
 }
