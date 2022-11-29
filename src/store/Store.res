@@ -9,10 +9,22 @@ let useSnackBar = () => Jotai.Atom.use(snackBarAtom)
 
 let useTokens = () => {
   let (account, _) = useSelectedAccount()
-  switch account {
-  | Some(account) => account.tokens
-  | None => []
-  }
+  let (balances, _) = useBalances()
+  account
+  ->Belt.Option.flatMap(account => balances->Belt.Map.String.get(account.tz1->Pkh.toString))
+  ->Belt.Option.map(b => b.tokens)
+  ->Belt.Option.getWithDefault([])
+}
+
+let useGetBalance = () => {
+  let (balances, _) = useBalances()
+  (pkh: Pkh.t) => balances->Belt.Map.String.get(pkh->Pkh.toString)
+}
+
+let useSelectedAccountTezBalance = () => {
+  let (account, _) = useSelectedAccount()
+  let getBalance = useGetBalance()
+  account->Belt.Option.flatMap(account => getBalance(account.tz1))->Belt.Option.flatMap(b => b.tez)
 }
 
 let useWithAccount = cb => {

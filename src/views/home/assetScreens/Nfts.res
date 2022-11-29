@@ -96,24 +96,17 @@ module NftGallery = {
   }
 }
 
-module PureNfts = {
-  @react.component
-  let make = (~account: Account.t) => {
-    let nfts = account.tokens->Token.filterNFTs
-
-    if nfts == [] {
-      <DefaultView
-        icon="diamond-stone"
-        title="Your NFTs will appear here"
-        subTitle="Umami will automatically discover any NFT you possess"
-      />
-    } else {
-      <Container> <NftGallery tokens=nfts /> </Container>
-    }
-  }
-}
-
 @react.component
-let make = () => {
-  Store.useWithAccount(account => <PureNfts account />)
+let make = (~tokens) => {
+  let nfts = tokens->Token.filterNFTs
+
+  if nfts == [] {
+    <DefaultView
+      icon="diamond-stone"
+      title="Your NFTs will appear here"
+      subTitle="Umami will automatically discover any NFT you possess"
+    />
+  } else {
+    <Container> <NftGallery tokens=nfts /> </Container>
+  }
 }

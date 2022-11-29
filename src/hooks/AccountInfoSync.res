@@ -78,9 +78,10 @@ let useQueryWithRefetchInterval = (queryFn, queryKey) => {
 
 let useBalancesAndOpsSync = () => {
   let (network, _) = Store.useNetwork()
-  let (accounts, dispatch) = AccountsReducer.useAccountsDispatcher()
+  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
   let (nodeIndex, _) = Store.useNodeIndex()
   let (_, setOperations) = Store.useOperations()
+  let (_, setBalances) = Store.useBalances()
 
   useQueryWithRefetchInterval(_ =>
     getOperations(~network, ~accounts)
@@ -97,7 +98,7 @@ let useBalancesAndOpsSync = () => {
   useQueryWithRefetchInterval(
     _ =>
       getBalances(~network, ~accounts, ~nodeIndex)
-      ->Promise.thenResolve(b => dispatch(UpdateBalances(b)))
+      ->Promise.thenResolve(setBalances)
       ->Promise.catch(tapError),
     "balances",
   )->ignore

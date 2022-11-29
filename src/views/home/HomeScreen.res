@@ -29,27 +29,27 @@ module HomeCoreView = {
     open Paper
     let (routeIndex, setRouteIndex) = React.useState(() => 0)
 
-    open ReactNative.Style
-    let render = account => <>
-      <BottomNavigation
-        shifting=true
-        barStyle={style(~backgroundColor, ~shadowOffset=offset(~height=19., ~width=14.), ())}
-        navigationState={{"index": routeIndex, "routes": routes}}
-        onIndexChange={i => {
-          setRouteIndex(_ => i)
-        }}
-        renderScene={s => {
-          let key = s["route"]["key"]
-          switch key {
-          | "account" => <Balances account />
-          | "nft" => <Nfts />
-          | _ => React.null
-          }
-        }}
-      />
-    </>
+    let balance = Store.useSelectedAccountTezBalance()
+    let tokens = Store.useTokens()
 
-    Store.useWithAccount(account => render(account))
+    open ReactNative.Style
+
+    <BottomNavigation
+      shifting=true
+      barStyle={style(~backgroundColor, ~shadowOffset=offset(~height=19., ~width=14.), ())}
+      navigationState={{"index": routeIndex, "routes": routes}}
+      onIndexChange={i => {
+        setRouteIndex(_ => i)
+      }}
+      renderScene={s => {
+        let key = s["route"]["key"]
+        switch key {
+        | "account" => <Balances balance tokens />
+        | "nft" => <Nfts tokens />
+        | _ => React.null
+        }
+      }}
+    />
   }
 }
 

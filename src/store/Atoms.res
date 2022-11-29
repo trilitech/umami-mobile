@@ -9,6 +9,11 @@ let operationsAtom: Jotai.Atom.t<
   _,
 > = Jotai.Atom.make([])
 
+let balancesAtom: Jotai.Atom.t<array<(Belt.Map.String.key, Balance.t)>, _, _> = AtomStorage.make(
+  "balances",
+  [],
+)
+
 %%private(
   let selectedAccountIndexAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("selectedAccount", 0)
 )
@@ -42,7 +47,7 @@ let addressMetatdadaAtom: Jotai.Atom.t<addressMetatdataMap, _, _> = AtomStorage.
 )
 
 open Network
-%%private(let networkAtom: Jotai.Atom.t<Network.t, _, _> = AtomStorage.make("network", Mainnet))
+%%private(let _networkAtom: Jotai.Atom.t<Network.t, _, _> = AtomStorage.make("network", Mainnet))
 
 let nodeIndexAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("nodeIndex", 0)
 
@@ -51,14 +56,16 @@ let networkAtom: Jotai.Atom.t<
   Jotai.Atom.Actions.t<(Network.t => Network.t) => unit>,
   _,
 > = Jotai.Atom.makeWritableComputed(
-  ({get}) => get(networkAtom),
+  ({get}) => get(_networkAtom),
   ({get: _, set}, arg) => {
     // Reset node to first in the list when we switch networks
     set(nodeIndexAtom, 0)
     // Reset operations
     set(operationsAtom, [])
+    // Reset balances
+    set(balancesAtom, [])
 
-    set(networkAtom, arg)
+    set(_networkAtom, arg)
   },
 )
 

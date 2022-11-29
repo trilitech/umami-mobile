@@ -11,30 +11,17 @@ type operationPayload = {
   operations: array<Operation.t>,
 }
 
-let updateAccountBalances = (accounts: array<Account.t>, updates: array<balancePayload>) => {
-  accounts->Belt.Array.map(acc => {
-    updates
-    ->Belt.Array.getBy(u => u.tz1 == acc.tz1)
-    ->Belt.Option.mapWithDefault(acc, u => {
-      {...acc, balance: u.balance, tokens: u.tokens}
-    })
-  })
-}
-
 type actions =
   | Add(array<Account.t>)
   | ReplaceAll(array<Account.t>)
   | Reset
-  | UpdateBalances(array<balancePayload>)
   | RenameAccount({"name": string, "tz1": Pkh.t})
-  | ResetAssets
 
 let reducer = (accounts: array<Account.t>, action) => {
   switch action {
   | Reset => []
   | Add(newAccounts) => Array.concat(accounts, newAccounts)
   | ReplaceAll(newAccounts) => newAccounts
-  | ResetAssets => accounts->Array.map(account => {...account, balance: None, tokens: []})
   | RenameAccount(p) => {
       let indexToUpdate = accounts->Array.getIndexBy(a => a.tz1 == p["tz1"])
       let accountToUpdate = accounts->Array.getBy(a => a.tz1 == p["tz1"])
@@ -44,7 +31,6 @@ let reducer = (accounts: array<Account.t>, action) => {
         i,
       )) => accounts->Helpers.update(i, account->Account.changeName(p["name"])))
     }
-  | UpdateBalances(b) => accounts->updateAccountBalances(b)
   }
 }
 

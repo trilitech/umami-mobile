@@ -9,7 +9,9 @@ let make = (
   ~disabled=false,
   ~showBorder=?,
 ) => {
-  let {tz1, name, balance} = account
+  let getBalance = Store.useGetBalance()
+  let {tz1, name} = account
+  let balance = getBalance(tz1)->Belt.Option.flatMap(b => b.tez)
   open Asset
   <GenericListItem
     ?showBorder

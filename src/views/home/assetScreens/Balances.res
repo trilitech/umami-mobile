@@ -1,9 +1,9 @@
 @react.component
-let make = (~account: Account.t) => {
+let make = (~balance, ~tokens) => {
   let navigateWithParams = NavUtils.useNavigateWithParams()
   <Container>
     <CurrentyBalanceDisplay
-      tokens=account.tokens
+      tokens
       onPress={asset =>
         navigateWithParams(
           "Operations",
@@ -18,7 +18,7 @@ let make = (~account: Account.t) => {
             beaconRequest: None,
           },
         )}
-      balance=account.balance
+      balance
     />
   </Container>
 }

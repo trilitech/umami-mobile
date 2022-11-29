@@ -15,7 +15,6 @@ jest.mock('@react-navigation/native', () => {
 describe("<SendScreen />", () => {
   let mockAccount = Account.make(
     ~tz1="foo"->Pkh.unsafeBuild,
-    ~balance=30,
     ~pk="cool"->Pk.unsafeBuild,
     ~sk="mike",
     ~derivationPathIndex=0,

@@ -29,18 +29,25 @@ describe("Store", () => {
       expect(network)->toBe(Ghostnet)
     })
 
-    test("setting network resets nodeIndex and operations", () => {
+    test("setting network resets nodeIndex, operations and balances", () => {
       let networkHook = renderHook(Store.useNetwork, ()).result
       let nodeIndexHook = renderHook(Store.useNodeIndex, ()).result
       let operationsHook = renderHook(Store.useOperations, ()).result
+      let balancesHook = renderHook(Store.useBalances, ()).result
 
       // Setup
       act(() => {
         let (_, setNodeIndex) = nodeIndexHook.current
         let (_, setOperations) = operationsHook.current
+        let (_, setBalances) = balancesHook.current
         setNodeIndex(_ => 2)
         let ops = Belt.Map.String.fromArray([("bar", {"src": "foo"})])
         setOperations(ops->Obj.magic)
+
+        let bs: array<AccountsReducer.balancePayload> = [
+          {tz1: "bar"->Pkh.unsafeBuild, balance: 3->Some, tokens: []},
+        ]
+        setBalances(bs)
       })
 
       act(() => {
@@ -50,7 +57,12 @@ describe("Store", () => {
 
       let (nodeIndex, _) = nodeIndexHook.current
       let (operations, _) = operationsHook.current
-      expect((nodeIndex, operations))->toEqual((0, Belt.Map.String.fromArray([])))
+      let (balances, _) = balancesHook.current
+      expect((nodeIndex, operations, balances))->toEqual((
+        0,
+        Belt.Map.String.fromArray([]),
+        Belt.Map.String.fromArray([]),
+      ))
     })
   })
 

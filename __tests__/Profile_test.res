@@ -6,8 +6,6 @@ describe("<Profile />", () => {
       name: "foo",
       tz1: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"->Pkh.unsafeBuild,
       derivationPathIndex: 0,
-      balance: Some(44),
-      tokens: [],
       sk: "bar",
       pk: ""->Pk.unsafeBuild,
     }
