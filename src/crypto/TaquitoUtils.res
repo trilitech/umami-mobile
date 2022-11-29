@@ -139,8 +139,7 @@ let sendTez = (
   ~mutez=false,
   (),
 ) =>
-  makeToolkitWithSigner(~network, ~nodeIndex, ~sk, ~password)
-  ->Promise.then(tezos =>
+  makeToolkitWithSigner(~network, ~nodeIndex, ~sk, ~password)->Promise.then(tezos =>
     tezos.contract->Taquito.Toolkit.transfer({
       "to": recipient,
       "amount": amount,
@@ -150,7 +149,6 @@ let sendTez = (
       "mutez": mutez,
     })
   )
-  ->Promise.thenResolve(Helpers.tap)
 
 // Tokens
 
@@ -209,9 +207,7 @@ let sendToken = (
       ~recipientTz1,
       ~isFa1,
       (),
-    )
-    ->Promise.then(t => t->Taquito.Contract.send())
-    ->Promise.thenResolve(Helpers.tap)
+    )->Promise.then(t => t->Taquito.Contract.send())
   )
 }
 
