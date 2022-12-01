@@ -5,7 +5,7 @@ let useGetContact = () => {
 
 %%private(
   let useGetAccount = () => {
-    let (accounts, _) = Store.useAccounts()
+    let (accounts, _) = Store.useAccountsDispatcher()
     (tz1: Pkh.t) => accounts->Belt.Array.getBy(a => a.tz1 == tz1)
   }
 )

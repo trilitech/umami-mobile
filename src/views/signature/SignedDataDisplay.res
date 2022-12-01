@@ -2,7 +2,7 @@ open CommonComponents
 open SignedData
 
 let useAccountByPk = () => {
-  let (accounts, _) = Store.useAccounts()
+  let (accounts, _) = Store.useAccountsDispatcher()
   pk => accounts->Belt.Array.getBy(a => a.pk === pk)
 }
 

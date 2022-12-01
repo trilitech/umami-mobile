@@ -67,15 +67,16 @@ describe("Store", () => {
   })
 
   describe("SelectedAccount", () => {
+    open AccountsReducer
     test("First account is returned by default", () => {
       let selectedAccountHook = renderHook(Store.useSelectedAccount, ()).result
-      let accountsHook = renderHook(Store.useAccounts, ()).result
+      let accountsHook = renderHook(Store.useAccountsDispatcher, ()).result
 
       // Setup
       act(() => {
-        let (_, setAccounts) = accountsHook.current
+        let (_, dispatch) = accountsHook.current
         let accounts = [{"name": "first"}, {"name": "second"}]
-        setAccounts(_ => accounts->Obj.magic)
+        dispatch(Add(accounts->Obj.magic))
       })
 
       let (account, _) = selectedAccountHook.current
@@ -84,13 +85,13 @@ describe("Store", () => {
 
     test("returns selected account by index", () => {
       let selectedAccountHook = renderHook(Store.useSelectedAccount, ()).result
-      let accountsHook = renderHook(Store.useAccounts, ()).result
+      let accountsHook = renderHook(Store.useAccountsDispatcher, ()).result
 
       // Setup
       act(() => {
-        let (_, setAccounts) = accountsHook.current
+        let (_, dispatch) = accountsHook.current
         let accounts = [{"name": "first"}, {"name": "second"}]
-        setAccounts(_ => accounts->Obj.magic)
+        dispatch(Add(accounts->Obj.magic))
       })
 
       act(() => {

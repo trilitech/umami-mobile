@@ -45,7 +45,7 @@ let make = (~navigation as _, ~route) => {
   let beaconRequest = route->NavUtils.getBeaconRequest
   let (account, _) = Store.useSelectedAccount()
   let (client, _) = Beacon.useClient()
-  let (accounts, _) = Store.useAccounts()
+  let (accounts, _) = Store.useAccountsDispatcher()
 
   Helpers.three(beaconRequest, account, client)->Helpers.reactFold(((
     beaconRequest,

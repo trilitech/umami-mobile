@@ -2,7 +2,6 @@ open Belt
 open Atoms
 
 let useTheme = () => Jotai.Atom.use(Atoms.themeAtom)
-let useAccounts = () => Jotai.Atom.use(Atoms.accountsAtom)
 let useContacts = () => Jotai.Atom.use(Atoms.contactsAtom)
 let useNetwork = () => Jotai.Atom.use(Atoms.networkAtom)
 let useNodeIndex = () => Jotai.Atom.use(Atoms.nodeIndexAtom)
@@ -100,7 +99,7 @@ let useReset = () => {
 let useAccountsAndContacts = () => {
   open AccountOrContact
   let (contacts, _) = useContacts()
-  let (accounts, _) = useAccounts()
+  let (accounts, _) = useAccountsDispatcher()
   let allContacts = Array.concat(
     accounts->Array.map(a => AccountCard(a)),
     contacts->Contact.toArray->Array.map(c => ContactCard(c)),

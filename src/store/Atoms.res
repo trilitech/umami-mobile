@@ -1,7 +1,10 @@
 open Theme
 let themeAtom: Jotai.Atom.t<_, _, _> = AtomWithStorage.make("theme", Dark)
 let snackBarAtom: Jotai.Atom.t<option<React.element>, _, _> = Jotai.Atom.make(None)
-let accountsAtom: Jotai.Atom.t<array<Account.t>, _, _> = AtomWithStorage.make("accounts", [])
+
+%%private(
+  let accountsAtom: Jotai.Atom.t<array<Account.t>, _, _> = AtomWithStorage.make("accounts", [])
+)
 
 let operationsAtom: Jotai.Atom.t<
   array<(Belt.Map.String.key, array<Operation.t>)>,

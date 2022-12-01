@@ -3,7 +3,7 @@ open ReactNative.Style
 open Paper
 
 let useGetAccountName = () => {
-  let (account, _) = Store.useAccounts()
+  let (account, _) = Store.useAccountsDispatcher()
 
   (pkh: Pkh.t) => account->Belt.Array.getBy(a => a.tz1 === pkh)->Belt.Option.map(a => a.name)
 }
