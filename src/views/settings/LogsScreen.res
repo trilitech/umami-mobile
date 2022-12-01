@@ -98,8 +98,8 @@ let make = (~navigation as _, ~route as _) => {
       logoName="delete"
       onPressLogo={() => clearLogs(~done=fetchLogs)}
     />
-    <Container>
-      <ReactNative.ScrollView>
+    <ReactNative.ScrollView>
+      <Container>
         {logs->Helpers.reactFold(logs => {
           logs == []
             ? <DefaultView icon="script-outline" title="You have no logs yet..." />
@@ -111,7 +111,7 @@ let make = (~navigation as _, ~route as _) => {
                 ->React.array
               }
         })}
-      </ReactNative.ScrollView>
-    </Container>
+      </Container>
+    </ReactNative.ScrollView>
   </>
 }

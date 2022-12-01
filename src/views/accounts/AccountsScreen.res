@@ -9,8 +9,8 @@ let make = (~navigation, ~route as _) => {
       logoName="plus"
       onPressLogo={() => navigation->NavStacks.OnBoard.Navigation.navigate("CreateAccount")}
     />
-    <Container>
-      <ReactNative.ScrollView>
+    <ReactNative.ScrollView>
+      <Container>
         {accounts
         ->Belt.Array.map(a => {
           let selected =
@@ -43,7 +43,7 @@ let make = (~navigation, ~route as _) => {
           />
         })
         ->React.array}
-      </ReactNative.ScrollView>
-    </Container>
+      </Container>
+    </ReactNative.ScrollView>
   </>
 }

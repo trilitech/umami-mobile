@@ -23,8 +23,8 @@ let make = (~navigation as _, ~route as _) => {
       right={<ChevronRight />}
     />
 
-  <Container>
-    <ReactNative.ScrollView>
+  <ReactNative.ScrollView>
+    <Container>
       {makeListItem("Theme", "Theme")}
       {makeListItem("Contacts", "Contacts")}
       {makeListItem("Dapps", "Dapps")}
@@ -38,6 +38,6 @@ let make = (~navigation as _, ~route as _) => {
       {makeListItem("SignContent", "Sign Content")}
       <PrivacyPolicy />
       <Version />
-    </ReactNative.ScrollView>
-  </Container>
+    </Container>
+  </ReactNative.ScrollView>
 }

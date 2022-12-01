@@ -30,8 +30,8 @@ module SelectedRecipients = {
         },
       )
     }
-    <Container noVPadding=true>
-      <ReactNative.ScrollView>
+    <ReactNative.ScrollView>
+      <Container noVPadding=true>
         {cards == []
           ? <NoResult search />
           : cards
@@ -48,8 +48,8 @@ module SelectedRecipients = {
               }
             )
             ->React.array}
-      </ReactNative.ScrollView>
-    </Container>
+      </Container>
+    </ReactNative.ScrollView>
   }
 }
 

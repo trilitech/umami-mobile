@@ -41,15 +41,15 @@ module FilteredContacts = {
   let make = (~contacts: array<Contact.t>, ~search) => {
     let contacts = contacts->FormUtils.filterBySearch(c => c.name, search)
 
-    <Container noVPadding=true>
-      <ReactNative.ScrollView>
+    <ReactNative.ScrollView>
+      <Container noVPadding=true>
         {contacts == []
           ? <NoResult search />
           : contacts
             ->Array.map(c => <ContactTile key={c.tz1->Pkh.toString} contact=c />)
             ->React.array}
-      </ReactNative.ScrollView>
-    </Container>
+      </Container>
+    </ReactNative.ScrollView>
   }
 }
 
