@@ -1,5 +1,4 @@
 open CommonComponents
-open ReactNative
 
 open Network
 open Paper
