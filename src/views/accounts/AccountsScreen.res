@@ -1,6 +1,6 @@
 @react.component
 let make = (~navigation, ~route as _) => {
-  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
+  let (accounts, _) = Store.useAccountsDispatcher()
   let (selectedAccount, setSelectedAccount) = Store.useSelectedAccount()
 
   <>

@@ -78,3 +78,25 @@ let biometricsEnabledAtom: Jotai.Atom.t<bool, _, _> = AtomWithStorage.make(
   "biometricsEnabled",
   false,
 )
+
+open AccountsReducer
+let accountsReduxAtom: Jotai.Atom.t<
+  array<Account.t>,
+  Jotai.Atom.Actions.t<(unit => actions) => unit>,
+  _,
+> = Jotai.Atom.makeWritableComputed(
+  ({get}) => {
+    get(accountsAtom)
+  },
+  ({get, set}, arg) => {
+    let action = arg()
+
+    if action == Reset {
+      set(selectedAccount, _ => 0)
+    }
+
+    let updated = accountsAtom->get->reducer(action)
+
+    accountsAtom->set(updated)
+  },
+)

@@ -27,7 +27,7 @@ let restoreAndSave = (
 }
 
 let useRestoreAndSave = () => {
-  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
+  let (_, dispatch) = Store.useAccountsDispatcher()
   let notify = SnackBar.useNotification()
   let updateKeychain = Biometrics.useKeychainStorage()
   restoreAndSave(

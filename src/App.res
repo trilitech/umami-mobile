@@ -25,7 +25,7 @@ let useLocalStorageShimForBeaconInit = () =>
   )
 
 let useHasAccount = () => {
-  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
+  let (accounts, _) = Store.useAccountsDispatcher()
   accounts->Belt.Array.get(0)->Belt.Option.isSome
 }
 

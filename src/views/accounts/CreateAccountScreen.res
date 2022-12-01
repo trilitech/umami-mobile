@@ -13,13 +13,13 @@ let addNewAccount = (~name, ~password, ~derivationIndex) => {
 }
 
 let useLastDerivationIndex = () => {
-  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
+  let (accounts, _) = Store.useAccountsDispatcher()
   accounts->Belt.Array.length
 }
 
 @react.component
 let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
-  let (_, dispatch) = AccountsReducer.useAccountsDispatcher()
+  let (_, dispatch) = Store.useAccountsDispatcher()
 
   let notify = SnackBar.useNotification()
   let derivationIndex = useLastDerivationIndex()

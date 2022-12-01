@@ -39,7 +39,7 @@ module Controls = {
 let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
   let getContact = Alias.useGetContact()
   let tz1 = route.params->Option.flatMap(p => p.tz1ForContact)
-  let dispatch = ContactReducer.useContactsDispatcher()
+  let dispatch = Store.useContactsDispatcher()
   let goBack = NavUtils.useGoBack()
   let navigateWithParams = NavUtils.useNavigateWithParams()
 

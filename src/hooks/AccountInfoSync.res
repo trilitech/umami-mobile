@@ -78,7 +78,7 @@ let useQueryWithRefetchInterval = (queryFn, queryKey) => {
 
 let useBalancesAndOpsSync = () => {
   let (network, _) = Store.useNetwork()
-  let (accounts, _) = AccountsReducer.useAccountsDispatcher()
+  let (accounts, _) = Store.useAccountsDispatcher()
   let (nodeIndex, _) = Store.useNodeIndex()
   let (_, setOperations) = Store.useOperations()
   let (_, setBalances) = Store.useBalances()
