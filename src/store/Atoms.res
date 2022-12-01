@@ -1,7 +1,7 @@
 open Theme
-let themeAtom: Jotai.Atom.t<_, _, _> = AtomStorage.make("theme", Dark)
+let themeAtom: Jotai.Atom.t<_, _, _> = AtomWithStorage.make("theme", Dark)
 let snackBarAtom: Jotai.Atom.t<option<React.element>, _, _> = Jotai.Atom.make(None)
-let accountsAtom: Jotai.Atom.t<array<Account.t>, _, _> = AtomStorage.make("accounts", [])
+let accountsAtom: Jotai.Atom.t<array<Account.t>, _, _> = AtomWithStorage.make("accounts", [])
 
 let operationsAtom: Jotai.Atom.t<
   array<(Belt.Map.String.key, array<Operation.t>)>,
@@ -9,13 +9,14 @@ let operationsAtom: Jotai.Atom.t<
   _,
 > = Jotai.Atom.make([])
 
-let balancesAtom: Jotai.Atom.t<array<(Belt.Map.String.key, Balance.t)>, _, _> = AtomStorage.make(
-  "balances",
-  [],
-)
+let balancesAtom: Jotai.Atom.t<
+  array<(Belt.Map.String.key, Balance.t)>,
+  _,
+  _,
+> = AtomWithStorage.make("balances", [])
 
 %%private(
-  let selectedAccountIndexAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("selectedAccount", 0)
+  let selectedAccountIndexAtom: Jotai.Atom.t<int, _, _> = AtomWithStorage.make("selectedAccount", 0)
 )
 
 let selectedAccount: Jotai.Atom.t<
@@ -35,21 +36,23 @@ let selectedAccount: Jotai.Atom.t<
   },
 )
 
-let contactsAtom: Jotai.Atom.t<Contact.contactsMap, _, _> = AtomStorage.make(
+let contactsAtom: Jotai.Atom.t<Contact.contactsMap, _, _> = AtomWithStorage.make(
   "contacts-v1.0.13",
   Belt.Map.String.fromArray([]),
 )
 
 type addressMetatdataMap = Belt.Map.String.t<AddressMetadata.t>
-let addressMetatdadaAtom: Jotai.Atom.t<addressMetatdataMap, _, _> = AtomStorage.make(
+let addressMetatdadaAtom: Jotai.Atom.t<addressMetatdataMap, _, _> = AtomWithStorage.make(
   "metadatas-v1.0.13",
   Belt.Map.String.fromArray([]),
 )
 
 open Network
-%%private(let _networkAtom: Jotai.Atom.t<Network.t, _, _> = AtomStorage.make("network", Mainnet))
+%%private(
+  let _networkAtom: Jotai.Atom.t<Network.t, _, _> = AtomWithStorage.make("network", Mainnet)
+)
 
-let nodeIndexAtom: Jotai.Atom.t<int, _, _> = AtomStorage.make("nodeIndex", 0)
+let nodeIndexAtom: Jotai.Atom.t<int, _, _> = AtomWithStorage.make("nodeIndex", 0)
 
 let networkAtom: Jotai.Atom.t<
   Network.t,
@@ -71,4 +74,7 @@ let networkAtom: Jotai.Atom.t<
 
 // biometricsEnabledAtom needed since keychain API provides no way of
 // knowing if there is a password set withouth authenticating
-let biometricsEnabledAtom: Jotai.Atom.t<bool, _, _> = AtomStorage.make("biometricsEnabled", false)
+let biometricsEnabledAtom: Jotai.Atom.t<bool, _, _> = AtomWithStorage.make(
+  "biometricsEnabled",
+  false,
+)

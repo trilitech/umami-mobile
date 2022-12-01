@@ -1,6 +1,6 @@
 open Jotai
 
-@module("./atomStorage")
+@module("./js/atomWithStorage")
 external make: (
   string,
   'value,
