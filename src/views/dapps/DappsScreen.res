@@ -43,7 +43,16 @@ module PeerInfos = {
         right={<CrossRight onPress={_ => onRemove(p)} />}
       />
     })
-    <> <Title> {"Peers"->React.string} </Title> {<> {els->React.array} </>} </>
+
+    {
+      els == []
+        ? <DefaultView
+            title="No dApps connected"
+            subTitle="Your dApps will appear here"
+            icon="application-cog-outline"
+          />
+        : <> <Title> {"Peers"->React.string} </Title> {<> {els->React.array} </>} </>
+    }
   }
 }
 
