@@ -74,23 +74,23 @@ module NftGallery = {
       ->Belt.Array.map(tokenToElement(navigate))
 
     <>
-      <Paper.Card>
-        <Paper.Searchbar
-          placeholder="Search NFT"
-          onChangeText={t => setSearch(_ => t)}
-          value=search
-          style={array([StyleUtils.makeBottomMargin(), border])}
-          onIconPress={t => setSearch(_ => "")}
-        />
-      </Paper.Card>
+      <Paper.Searchbar
+        placeholder="Search NFT"
+        onChangeText={t => setSearch(_ => t)}
+        value=search
+        style={array([border, StyleUtils.makeMargin()])}
+        onIconPress={t => setSearch(_ => "")}
+      />
       <ScrollView>
-        <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
-          {if nftEls == [] {
-            <NoResult search />
-          } else {
-            nftEls->React.array
-          }}
-        </Wrapper>
+        <Container noVPadding=true>
+          <Wrapper style={style(~flexWrap=#wrap, ~justifyContent=#spaceBetween, ())}>
+            {if nftEls == [] {
+              <NoResult search />
+            } else {
+              nftEls->React.array
+            }}
+          </Wrapper>
+        </Container>
       </ScrollView>
     </>
   }
@@ -107,6 +107,6 @@ let make = (~tokens) => {
       subTitle="Umami will automatically discover any NFT you possess"
     />
   } else {
-    <Container> <NftGallery tokens=nfts /> </Container>
+    <NftGallery tokens=nfts />
   }
 }
