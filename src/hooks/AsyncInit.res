@@ -1,6 +1,7 @@
 let _useAsyncInit = (~init, ~errMsgPrefix=?, ~notify, ()) => {
   let (ready, setReady) = React.useState(_ => false)
 
+  let initRef = React.useRef(init)
   let formatMsg = React.useCallback1(
     exn =>
       errMsgPrefix->Belt.Option.mapWithDefault(exn->Helpers.getMessage, msg =>
@@ -9,8 +10,8 @@ let _useAsyncInit = (~init, ~errMsgPrefix=?, ~notify, ()) => {
     [errMsgPrefix],
   )
 
-  React.useEffect4(() => {
-    init()
+  React.useEffect3(() => {
+    initRef.current()
     ->Promise.thenResolve(_ => {
       setReady(_ => true)
     })
@@ -21,7 +22,7 @@ let _useAsyncInit = (~init, ~errMsgPrefix=?, ~notify, ()) => {
     })
     ->ignore
     None
-  }, (notify, setReady, init, formatMsg))
+  }, (notify, setReady, formatMsg))
   ready
 }
 
