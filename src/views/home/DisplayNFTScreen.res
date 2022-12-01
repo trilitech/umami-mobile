@@ -2,6 +2,7 @@ open ReactNative.Style
 open CommonComponents
 open Paper
 let vMargin = StyleUtils.makeVMargin()
+
 module DisplayNFT = {
   @react.component
   let make = (~token: Token.tokenNFT, ~onSign) => {
@@ -12,16 +13,27 @@ module DisplayNFT = {
 
     let url = displayUri
     let source = ReactNative.Image.uriSource(~uri=url, ())
+    let imageSize = ReactNative.Dimensions.get(#window).width
+    let editionsTextColor = UmamiThemeProvider.usePlaceHolderColor()
     <ReactNative.ScrollView>
       <Container>
         <Wrapper flexDirection=#column justifyContent=#flexStart alignItems=#center>
-          <Title style=vMargin> {React.string(name)} </Title>
+          <Headline style=vMargin> {React.string(name)} </Headline>
           <FastImage
-            source resizeMode=#contain style={style(~height=300.->dp, ~width=300.->dp, ())} key=url
+            source
+            resizeMode=#contain
+            style={style(~height=imageSize->dp, ~width=imageSize->dp, ())}
+            key=url
           />
           <Text style=vMargin> {description->React.string} </Text>
-          <Text style=vMargin> {("Editions: " ++ b.balance->Js.Int.toString)->React.string} </Text>
-          <Wrapper style={StyleUtils.makeVMargin(~size=3, ())}>
+          <Text
+            style={array([
+              StyleUtils.makeVMargin(~size=2, ()),
+              style(~color=editionsTextColor, ()),
+            ])}>
+            {("Editions: " ++ b.balance->Js.Int.toString)->React.string}
+          </Text>
+          <Wrapper style={StyleUtils.makeVMargin(~size=1, ())}>
             <Paper.FAB
               style={StyleUtils.makeHMargin(~size=2, ())}
               onPress={_ => onSign()}

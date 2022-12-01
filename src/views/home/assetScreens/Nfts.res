@@ -1,23 +1,29 @@
 module NftCard = {
   open Paper
 
+  open ReactNative
   open ReactNative.Style
   @react.component
-  let make = (~url, ~name, ~onPress) => {
+  let make = (~url, ~name, ~onPress, ~editions: int) => {
     <TouchableRipple style={array([unsafeStyle({"width": "48%"})])} onPress>
       <Surface
         style={array([
           StyleUtils.makeBottomMargin(),
           unsafeStyle({"width": "100%"}),
-          style(~height=220.->dp, ~borderRadius=4., ()),
+          style(~height=240.->dp, ~borderRadius=4., ()),
         ])}>
         {<FastImage
           resizeMode=#cover
-          style={style(~flex=1., ~borderRadius=4., ())}
+          style={array([style(~flex=1., ~borderRadius=4., ())])}
           key=url
           source={ReactNative.Image.uriSource(~uri=url, ())}
         />}
-        <Title> {name->React.string} </Title>
+        <View style={StyleUtils.makeHMargin()}>
+          <Title numberOfLines=1 style={array([style(~fontSize=16., ())])}>
+            {name->React.string}
+          </Title>
+          <Caption> {`Editions: ${editions->Belt.Int.toString}`->React.string} </Caption>
+        </View>
       </Surface>
     </TouchableRipple>
   }
@@ -36,10 +42,11 @@ let positiveBalance = (s: string) => {
 
 let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
   open NavStacks.OnboardParams
-  let (_, metadata) = tokenNFT
+  let (base, metadata) = tokenNFT
 
   let {name, displayUri} = metadata
   <NftCard
+    editions=base.balance
     onPress={_ => {
       navigate(
         "NFT",

@@ -81,6 +81,12 @@ let useDisabledColor = () => {
   open Paper.ThemeProvider
   useTheme()->Theme.colors->Theme.Colors.disabled
 }
+
+let usePlaceHolderColor = () => {
+  open Paper.ThemeProvider
+  useTheme()->Theme.colors->Theme.Colors.placeholder
+}
+
 let useBgColor = () => {
   open Paper.ThemeProvider
   useTheme()->Theme.colors->Theme.Colors.background
