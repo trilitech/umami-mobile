@@ -10,7 +10,7 @@ external parseBackupPhrase: string => AES.aesEncrypted = "parse"
 let save = (backupPhrase: string, password: string) => {
   AESCrypto.encrypt(backupPhrase, password)->Promise.then(encrypted => {
     switch Js.Json.stringifyAny(encrypted) {
-    | Some(d) => Storage.set("backupPhrase", d)
+    | Some(d) => AsyncStorage.set("backupPhrase", d)
     | None => Promise.reject(BackupPhraseError("Failed to parse backup phrase"))
     }
   })
@@ -24,7 +24,7 @@ let getFriendlyMsg = (msg: string) => {
   }
 }
 let load = password => {
-  Storage.get("backupPhrase")
+  AsyncStorage.get("backupPhrase")
   ->Promise.then(encrypted =>
     switch encrypted {
     | Some(s) => {
@@ -37,6 +37,6 @@ let load = password => {
   ->Promise.catch(exn => exn->Helpers.getMessage->getFriendlyMsg->Js.Exn.raiseError)
 }
 
-let erase = () => Storage.remove("backupPhrase")
+let erase = () => AsyncStorage.remove("backupPhrase")
 
 let validatePassword = (password: string) => load(password)->Promise.thenResolve(_ => true)

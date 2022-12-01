@@ -16,9 +16,11 @@ let getByIndex = (d: t, i: int) => d->toString->Js.String2.replace("?", i->Js.In
 
 let default = unsafeBuild("m/44'/1729'/?'/0'")
 
-let save = t => Storage.set("derivationPath", t)
+let save = t => AsyncStorage.set("derivationPath", t)
 
 let load = () =>
-  Storage.get("derivationPath")->Promise.thenResolve(d => d->Belt.Option.getWithDefault(default))
+  AsyncStorage.get("derivationPath")->Promise.thenResolve(d =>
+    d->Belt.Option.getWithDefault(default)
+  )
 
-let erase = () => Storage.remove("derivationPath")
+let erase = () => AsyncStorage.remove("derivationPath")
