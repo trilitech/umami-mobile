@@ -1,5 +1,3 @@
-open Paper
-
 let addNewAccount = (~name, ~password, ~derivationIndex) => {
   BackupPhraseStorage.load(password)->Promise.then(b => {
     AccountUtils.generateAccount(
@@ -48,17 +46,18 @@ let make = (~navigation, ~route as _: NavStacks.OnBoard.route) => {
 
   <>
     <TopBarAllScreens title="Create account" />
-    <Headline> {React.string("Create account")} </Headline>
-    <EditAccountForm
-      loading
-      submitWithPassword=true
-      name="New Account"
-      onSubmit={(name, p) =>
-        p
-        ->Belt.Option.map(password => {
-          handleSubmit(name, password)
-        })
-        ->ignore}
-    />
+    <InstructionsContainer title="Create account" instructions="Derive a new account">
+      <EditAccountForm
+        loading
+        name=""
+        submitWithPassword=true
+        onSubmit={(name, p) =>
+          p
+          ->Belt.Option.map(password => {
+            handleSubmit(name, password)
+          })
+          ->ignore}
+      />
+    </InstructionsContainer>
   </>
 }

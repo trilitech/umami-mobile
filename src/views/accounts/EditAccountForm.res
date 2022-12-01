@@ -6,10 +6,11 @@ open FormValidators.NameValidator
 @react.component
 let make = (~name, ~onSubmit, ~submitWithPassword=false, ~loading=false) => {
   let (name, setName) = React.useState(_ => name)
-  let style = StyleUtils.makeVMargin()
-  let error = getError(name)
+  let pristine = name === ""
+  let error = pristine ? None : getError(name)
   let disabled = error->Option.isSome
 
+  let style = StyleUtils.makeVMargin()
   let submiBtn = submitWithPassword
     ? <PasswordSubmit
         disabled
@@ -24,11 +25,16 @@ let make = (~name, ~onSubmit, ~submitWithPassword=false, ~loading=false) => {
 
   <>
     <UI.Input
-      error={error->Option.isSome} style value=name label="Name" onChangeText={t => setName(_ => t)}
+      error={error->Option.isSome}
+      style
+      value=name
+      placeholder="Enter account name"
+      label="Name"
+      onChangeText={t => setName(_ => t)}
     />
-    <HelperText _type=#error visible={error->Option.isSome}>
+    {<HelperText _type=#error visible={error->Option.isSome}>
       {error->Option.mapWithDefault("", getErrorName)->React.string}
-    </HelperText>
+    </HelperText>}
     {submiBtn}
   </>
 }
