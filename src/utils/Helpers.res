@@ -30,7 +30,9 @@ let getMessage = (e: exn) => {
   | Promise.JsError(jsExn) => jsExn->Js.Exn.message
   | e => e->Js.Exn.asJsExn->Belt.Option.flatMap(Js.Exn.message)
   }
-  message->Belt.Option.getWithDefault("Unknown error")
+  message->Belt.Option.getWithDefault(
+    "Could not parse message from provided error. Exn is probably not of type Js.Exn.t",
+  )
 }
 
 let cancelRef: ref<option<unit => unit>> = ref(None)

@@ -15,6 +15,8 @@ module Decode = {
     sig: field.required(. "sig", string),
   })
 
-  let decode = (data: string) =>
-    data->JsonCombinators.Json.parseExn->JsonCombinators.Json.decode(recoveryPhraseData)
+  let fromString = (data: string) =>
+    data
+    ->SafeJSON.parse
+    ->Belt.Result.flatMap(res => res->JsonCombinators.Json.decode(recoveryPhraseData))
 }

@@ -84,8 +84,7 @@ module ScanSignedContent = {
 
     makeScanner(~subTitle, ~title, ~onRead=str => {
       str
-      // TODO catch exception bevause library crashes if base form is unvalid
-      ->SignedData.Decode.decode
+      ->SignedData.Decode.fromString
       ->Helpers.resultToOption
       ->Option.map(signed => {
         navigateWithParams(

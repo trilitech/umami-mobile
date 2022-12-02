@@ -24,7 +24,7 @@ module JSON = {
     })
 
     let decode = (data: string) =>
-      data->JsonCombinators.Json.parseExn->JsonCombinators.Json.decode(qrPayload)
+      SafeJSON.parse(data)->Belt.Result.flatMap(d => d->JsonCombinators.Json.decode(qrPayload))
   }
 }
 
@@ -35,7 +35,8 @@ type t = {
 
 let fromJson = (json: JSON.t) => {
   DerivationPath.build(json.derivationPath)->Belt.Result.map(d => {
-    {recoveryPhrase: json.recoveryPhrase, derivationPath: d}
+    recoveryPhrase: json.recoveryPhrase,
+    derivationPath: d,
   })
 }
 
