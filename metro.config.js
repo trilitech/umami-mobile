@@ -6,13 +6,12 @@
  */
 
 const path = require('path');
-const watchFolders = [path.resolve(__dirname + '/../common')];
+// If you ever want to import files from outside the project
+// const watchFolders = [path.resolve(__dirname + '/../common')];
 
 module.exports = {
+  // watchFolders,
   resolver: {
-    // extraNodeModules: {
-    //   stream: path.resolve(__dirname, './node_modules/readable-stream'),
-    // },
     extraNodeModules: new Proxy(
       {
         stream: path.resolve(__dirname, './node_modules/readable-stream'),
@@ -27,7 +26,6 @@ module.exports = {
       },
     ),
   },
-  watchFolders,
   transformer: {
     getTransformOptions: async () => ({
       transform: {
