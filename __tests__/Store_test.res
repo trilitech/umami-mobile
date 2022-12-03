@@ -1,6 +1,6 @@
 open Jest
 open Expect
-open Testing
+open RescriptHooksTestingLibrary.Testing
 
 let useCounter = () => {
   let (count, setCount) = React.useState(_ => 0)

@@ -27,5 +27,8 @@
     "bs-fetch",
     "@glennsl/rescript-json-combinators"
   ],
-  "bs-dev-dependencies": ["@glennsl/rescript-jest"]
+  "bs-dev-dependencies": [
+    "@glennsl/rescript-jest",
+    "rescript-hooks-testing-library"
+  ]
 }
