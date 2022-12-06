@@ -186,7 +186,7 @@ describe("Operation functions", () => {
     ])
   })
 
-  test("handleJSONarray ignores transfers to kt1 and non transaction operations", () => {
+  test("handleJSONarray ignores non transaction operations", () => {
     let input = parseJSON(`
     [
         {
@@ -371,6 +371,16 @@ describe("Operation functions", () => {
     `)
     let result = handleJSONArray(input)
     expect(result)->toEqual([
+      {
+        hash: "opHFDksunqGYjTXbmcV9PnieDuTERnAtyN8cxK6TxfLq6agNktj",
+        src: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"->Pkh.unsafeBuild,
+        destination: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ"->Pkh.unsafeBuild,
+        level: 445832,
+        timestamp: "2022-04-26T18:13:55Z",
+        amount: Tez(0),
+        kind: "transaction",
+        blockHash: "BME3gJMJ8Ym5J87hJSxULuLqAiuc7auCwDKbFAF6a8JxEPoLPq4"->Some,
+      },
       {
         hash: "op4LvXr33jDwo1bBFXpv3UJqQsohKR6JvLW2Y6xq6LmgX3yAchY",
         src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
