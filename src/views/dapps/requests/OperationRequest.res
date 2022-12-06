@@ -111,28 +111,25 @@ module SingleOp = {
   ) => {
     let notify = SnackBar.useNotification()
     let (loading, setLoading) = React.useState(_ => false)
-    let (fee, setFee) = React.useState(_ => None)
 
-    // TODO handle nodeIndex
-    React.useEffect5(() => {
-      simulateBeaconTrans(
-        ~senderTz1=sender.tz1,
-        ~senderPk=sender.pk,
-        ~network,
-        ~nodeIndex,
-        ~transaction,
-      )
-      ->Promise.thenResolve(fee => {
-        setFee(_ => Some(fee->Ok))
-      })
-      ->Promise.catch(exn => {
-        setFee(_ => Some(exn->Helpers.getMessage->Error))
-        Promise.resolve()
-      })
-      ->ignore
-
-      None
-    }, (transaction, network, sender.tz1, sender.pk, nodeIndex))
+    let query = ReactQuery.useQuery(
+      ReactQuery.queryOptions(
+        ~retry=false->Obj.magic,
+        ~queryFn={
+          _ =>
+            simulateBeaconTrans(
+              ~senderTz1=sender.tz1,
+              ~senderPk=sender.pk,
+              ~network,
+              ~nodeIndex,
+              ~transaction,
+            )
+        },
+        ~queryKey="simulation",
+        ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(#bool(false)),
+        (),
+      ),
+    )
 
     let handleAccept = (
       password,
@@ -158,32 +155,37 @@ module SingleOp = {
       ->ignore
     }
 
-    fee->Helpers.reactFold(result => {
-      open Taquito.Toolkit
-      switch result {
-      | Ok(fee) =>
-        <SingleOpDisplay
-          fee=fee.suggestedFeeMutez
-          transaction
-          onAccept={p =>
-            handleAccept(p, transaction, network, sender, requestId, nodeIndex)->ignore}
-          loading
-          goBack
-          sender
-        />
+    switch query.data {
+    | Some(fee) =>
+      <SingleOpDisplay
+        fee=fee.suggestedFeeMutez
+        transaction
+        onAccept={p => handleAccept(p, transaction, network, sender, requestId, nodeIndex)->ignore}
+        loading
+        goBack
+        sender
+      />
 
-      | Error(msg) => <>
-          <BeaconErrorMsg message={msg} />
-          <Button style={StyleUtils.makeVMargin()} onPress={_ => goBack()} mode=#outlined>
-            {"Decline"->React.string}
-          </Button>
-        </>
-      }
-    })
+    | None =>
+      query.isLoading
+        ? <CommonComponents.CenteredSpinner />
+        : query.error
+          ->Helpers.nullToOption
+          ->Belt.Option.map(errorIncompatibleWithRescript =>
+            errorIncompatibleWithRescript["message"]
+          )
+          ->Helpers.reactFold(message => {
+            <Container>
+              <BeaconErrorMsg message />
+              <Button style={StyleUtils.makeVMargin()} onPress={_ => goBack()} mode=#outlined>
+                {"Decline"->React.string}
+              </Button>
+            </Container>
+          })
+    }
   }
 }
 
-// TODO refactor with store deserializer
 let safeNetworkParse = (str: string) => {
   open Network
   switch str {
