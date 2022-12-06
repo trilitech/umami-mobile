@@ -262,3 +262,12 @@ module RoundImage = {
     />
   }
 }
+
+module CenteredSpinner = {
+  @react.component
+  let make = () => {
+    <Wrapper style={StyleUtils.makeTopMargin(~size=3, ())} justifyContent=#center>
+      <Paper.ActivityIndicator />
+    </Wrapper>
+  }
+}

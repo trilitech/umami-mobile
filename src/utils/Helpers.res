@@ -74,6 +74,9 @@ let resultToOption = r =>
   | Error(_) => None
   }
 
+// Always a pain to find this
+let nullToOption = n => Js.Nullable.toOption(n)
+
 let tap = val => {
   Js.Console.log(val)
   val

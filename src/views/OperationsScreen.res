@@ -323,11 +323,7 @@ module Display = {
     | _ => React.null
     }
 
-    query.isLoading
-      ? <Wrapper style={StyleUtils.makeTopMargin(~size=3, ())} justifyContent=#center>
-          <ActivityIndicator />
-        </Wrapper>
-      : el
+    query.isLoading ? <CenteredSpinner /> : el
   }
 }
 
