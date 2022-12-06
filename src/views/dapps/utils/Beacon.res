@@ -11,14 +11,10 @@ let beaconAtom: Jotai.Atom.t<option<ReBeacon.WalletClient.t>, _, _> = Jotai.Atom
 let peerInfosAtom: Jotai.Atom.t<array<ReBeacon.peerInfo>, _, _> = Jotai.Atom.make([])
 let permissionInfosAtom: Jotai.Atom.t<array<ReBeacon.permissionInfo>, _, _> = Jotai.Atom.make([])
 
-let makePeerInfo = (encodedPeerInfo: string) => {
+let makePeerInfo = (encodedPeerInfo: string) =>
   ReBeacon.Serializer.make()->ReBeacon.Serializer.deserializeRaw(encodedPeerInfo)
-}
-let useClient = () => {
-  let (client, setClient) = Jotai.Atom.use(beaconAtom)
 
-  (client, setClient)
-}
+let useClient = () => Jotai.Atom.use(beaconAtom)
 
 let useInit = () => {
   let navigate = NavUtils.useNavigateWithParams()
@@ -53,107 +49,102 @@ let useInit = () => {
   }, (navigate, client, setClient))
 }
 
-let usePermissionInfos = client => {
-  let (permisionInfos, setPermissionInfos) = Jotai.Atom.use(permissionInfosAtom)
+%%private(
+  let usePermissionInfos = client => {
+    let (permisionInfos, setPermissionInfos) = Jotai.Atom.use(permissionInfosAtom)
 
-  let refresh = React.useMemo2(() => {
-    () => {
+    let refresh = React.useMemo2(() => {
+      () =>
+        client
+        ->ReBeacon.WalletClient.getPermissionsRaw()
+        ->Promise.thenResolve(p => setPermissionInfos(_ => p))
+    }, (setPermissionInfos, client))
+
+    // React.useEffect1(() => {
+    //   refresh()->ignore
+    //   None
+    // }, [refresh])
+
+    // Not needed at the moment
+    // let removePermissionInfo = React.useMemo2(() => {
+    //   id => client->ReBeacon.WalletClient.removePermissionRaw(id)->Promise.then(refresh)
+    // }, (client, refresh))
+
+    (permisionInfos, refresh)
+  }
+)
+
+let useRespond = client => {
+  let (_, refreshPermissions) = usePermissionInfos(client)
+  let respond = React.useMemo1(() => {
+    r => {
       client
-      ->ReBeacon.WalletClient.getPermissionsRaw()
-      ->Promise.thenResolve(p => setPermissionInfos(_ => p))
+      ->ReBeacon.WalletClient.respondRaw(r)
+      ->Promise.then(() =>
+        switch r {
+        | #PermissionResponse(_) => refreshPermissions()
+        | _ => Promise.resolve()
+        }
+      )
     }
-  }, (setPermissionInfos, client))
-
-  React.useEffect1(() => {
-    refresh()->ignore
-    None
-  }, [refresh])
-
-  let removePermissionInfo = React.useMemo2(() => {
-    id => client->ReBeacon.WalletClient.removePermissionRaw(id)->Promise.then(refresh)
-  }, (client, refresh))
-
-  (permisionInfos, refresh, removePermissionInfo)
+  }, [client])
+  respond
 }
 
-let getExisting = (p: ReBeacon.peerInfo, ps: array<ReBeacon.peerInfo>) =>
+let _getExisting = (p: ReBeacon.peerInfo, ps: array<ReBeacon.peerInfo>) =>
   ps->Belt.Array.getBy(peerInfo => peerInfo.name === p.name)
 
-// let removeIfExists = (client, p: ReBeacon.peerInfo) => {
-//   client
-//   ->ReBeacon.WalletClient.getPeersRaw()
-//   ->Promise.thenResolve(peerInfos => {
-//     Js.Console.log(peerInfos)
-//     Js.Console.log(p)
-//     peerInfos->Belt.Array.getBy(peerInfo => peerInfo.name === p.name)->Belt.Option.isSome
-//   })
-//   ->Promise.then(exists => {
-//     Js.Console.log(exists)
-//     if exists {
-//       client->ReBeacon.WalletClient.removePeerRaw(p)
-//     } else {
-//       Promise.resolve()
-//     }
-//   })
-// }
-
-let usePeers = client => {
+let usePeers = (client, ~onError=_ => (), ()) => {
   let (peerInfos, setPeerInfos) = Jotai.Atom.use(peerInfosAtom)
-  let (_, refreshPermissions, _) = usePermissionInfos(client)
-  // let (permisionInfos, setPermissionInfos) = Jotai.Atom.use(permissionInfosAtom)
+  let (permisionInfos, refreshPermissions) = usePermissionInfos(client)
 
   let refresh = React.useMemo2(() => {
     () => {
       client
       ->ReBeacon.WalletClient.getPeersRaw()
-      ->Promise.thenResolve(peerInfos => {
-        setPeerInfos(_ => peerInfos)
-      })
-      // ->Promise.then(refreshPermissions)
+      ->Promise.thenResolve(peerInfos => setPeerInfos(_ => peerInfos))
     }
   }, (setPeerInfos, client))
-
-  React.useEffect1(() => {
-    refresh()->ignore
-    None
-  }, [refresh])
 
   React.useEffect2(() => {
     refreshPermissions()->ignore
     None
   }, (peerInfos, refreshPermissions))
 
+  React.useEffect1(() => {
+    refresh()->ignore
+    None
+  }, [refresh])
+
   let removePeer = React.useMemo2(() => {
-    p => client->ReBeacon.WalletClient.removePeerRaw(p)->Promise.then(refresh)
+    p => {
+      client
+      ->ReBeacon.WalletClient.removePeerRaw(p)
+      ->Promise.then(refresh)
+      ->Promise.catch(exn => {
+        `Failed to remove peer. Reason: ${exn->Helpers.getMessage}`->onError
+        Promise.resolve()
+      })
+    }
   }, (client, refresh))
 
-  // let addPeer = React.useMemo2(() => {
-  //   (encodedPeerInfo: string) => {
-  //     makePeerInfo(encodedPeerInfo)
-  //     ->Promise.then(p => client->ReBeacon.WalletClient.addPeerRaw(p))
-  //     ->Promise.then(refresh)
-  //   }
-  // }, (client, refresh))
-
-  let addPeer2 = p => client->ReBeacon.WalletClient.addPeerRaw(p)->Promise.then(refresh)
+  let addPeer = p => client->ReBeacon.WalletClient.addPeerRaw(p)->Promise.then(refresh)
 
   let _safeAddPeer = (p: ReBeacon.peerInfo) => {
-    switch getExisting(p, peerInfos) {
-    | Some(p) => removePeer(p)->Promise.then(() => addPeer2(p))
-    | None => addPeer2(p)
+    switch _getExisting(p, peerInfos) {
+    | Some(p) => removePeer(p)->Promise.then(() => addPeer(p))
+    | None => addPeer(p)
     }
   }
 
   let safeAddPeer = (encodedPeerInfo: string) => {
-    makePeerInfo(encodedPeerInfo)->Promise.then(_safeAddPeer)
+    makePeerInfo(encodedPeerInfo)
+    ->Promise.then(_safeAddPeer)
+    ->Promise.catch(exn => {
+      `Failed to add peer. Reason: ${exn->Helpers.getMessage}`->onError
+      Promise.resolve()
+    })
   }
 
-  (peerInfos, removePeer, safeAddPeer)
-}
-
-let useRespond = client => {
-  let respond = React.useMemo1(() => {
-    r => client->ReBeacon.WalletClient.respondRaw(r)
-  }, [client])
-  respond
+  (peerInfos, removePeer, safeAddPeer, permisionInfos)
 }

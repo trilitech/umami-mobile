@@ -11,13 +11,11 @@ module Display = {
     let notify = SnackBar.useNotification()
     let respond = Beacon.useRespond(client)
 
-    let (_, refreshPermissions, _) = Beacon.usePermissionInfos(client)
-
     switch beaconRequest {
     | PermissionRequest(r) =>
       // Permission request specifies no account
       // Reply to permission request with selected account
-      <PermissionRequest request={r} pk=activeAccount.pk goBack respond refreshPermissions />
+      <PermissionRequest request={r} pk=activeAccount.pk goBack respond />
     | OperationRequest(r) => {
         // Handle operations with account specified in request sourceAddress
         let accountInRequest =

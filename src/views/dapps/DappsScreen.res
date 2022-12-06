@@ -59,8 +59,7 @@ module PeerInfos = {
 module Display = {
   @react.component
   let make = (~client: ReBeacon.WalletClient.t) => {
-    let (peerInfos, remove, addPeer) = Beacon.usePeers(client)
-    let (permissionInfos, _, _) = Beacon.usePermissionInfos(client)
+    let (peerInfos, remove, addPeer, permissionInfos) = Beacon.usePeers(client, ())
     let navigate = NavUtils.useNavigate()
     <InstructionsContainer
       title="Dapps"
