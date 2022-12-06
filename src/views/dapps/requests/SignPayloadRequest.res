@@ -17,7 +17,7 @@ let safeParse = (payload: string) =>
 module DisplayRequest = {
   @react.component
   let make = (~appMetadata, ~unpackedPayload: string, ~onSign, ~onDecline, ~loading) => {
-    <>
+    <Container>
       <MetadataDisplay.Header title="Sign payload request" appMetadata />
       <CommonComponents.CustomListItem
         style={StyleUtils.makeVMargin()}
@@ -27,7 +27,7 @@ module DisplayRequest = {
       <Button style={StyleUtils.makeVMargin()} onPress={_ => onDecline()} mode=#outlined>
         {"decline"->React.string}
       </Button>
-    </>
+    </Container>
   }
 }
 
@@ -78,7 +78,6 @@ let make = (
       unpackedPayload={p}
     />
 
-  // TODO handle this
-  | Error(_) => React.null
+  | Error(error) => <BeaconErrorMsg message={"Failed to parse Beacon payload. Reason: " ++ error} />
   }
 }
