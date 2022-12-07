@@ -200,6 +200,7 @@ module TransactionItem = {
       />
 
     <CustomListItem
+      height=#small
       left={arrowIcon}
       center={<ReactNative.View>
         <Target tz1={transaction.target} /> <Caption> {transaction.date->React.string} </Caption>

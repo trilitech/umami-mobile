@@ -10,6 +10,7 @@ let make = (
   ~onPressEdit=?,
   ~disabled=false,
   ~showBorder=?,
+  ~height=#medium,
 ) => {
   // passing element in the right prop overrides onPressEdit
   let editElement = switch onPressEdit {
@@ -23,6 +24,6 @@ let make = (
   }
 
   <CustomListItem
-    ?showBorder disabled selected onPress height=90. left center={center} right=rightElement
+    ?showBorder disabled selected onPress height left center={center} right=rightElement
   />
 }

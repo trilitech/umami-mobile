@@ -22,8 +22,10 @@ module Wrapper = {
     ~alignItems=#center,
     ~justifyContent=#flexStart,
     ~style as extraStyle=style(),
+    ~testID=?,
   ) => {
     <View
+      ?testID
       style={array([
         style(~display=#flex, ~alignItems, ~flexDirection, ~justifyContent, ()),
         extraStyle,
@@ -31,53 +33,6 @@ module Wrapper = {
       children
     </View>
   }
-}
-
-let makeListItem = (
-  ~theme,
-  ~onPress,
-  ~title,
-  ~left=?,
-  ~right=?,
-  ~testID=?,
-  ~description=?,
-  ~selected=false,
-  ~height,
-  (),
-) => {
-  let disabled = Colors.Light.scrim
-  open Paper
-
-  open ThemeProvider
-  open Theme
-  <Surface
-    key=title
-    style={style(
-      ~borderRadius=4.,
-      ~elevation=1.,
-      ~backgroundColor=selected ? disabled : theme->colors->Colors.surface,
-      ~marginVertical=4.->dp,
-      // ~alignItems=#center,
-      // ~flexDirection=#row,
-      // ~justifyContent=#flexStart,
-      (),
-    )}>
-    <List.Item
-      ?testID
-      style={style(
-        ~alignItems=#center,
-        ~flexDirection=#row,
-        ~justifyContent=#flexStart,
-        ~height=height->dp,
-        (),
-      )}
-      ?description
-      onPress
-      title
-      ?left
-      ?right
-    />
-  </Surface>
 }
 
 module Icon = {
@@ -123,25 +78,13 @@ module ThreeDotsRight = {
   @react.component
   let make = (~onPress) => <PressableIcon size=16 name="dots-vertical" onPress />
 }
-module ListItem = {
-  @react.component
-  let make = (~onPress=_ => (), ~title, ~iconName=?, ~iconColor=?, ~selected=false, ~testID=?) => {
-    let theme = Paper.ThemeProvider.useTheme()
-
-    let icon = _ =>
-      iconName->Belt.Option.mapWithDefault(React.null, n => {
-        <Icon name=n color=?iconColor />
-      })
-    makeListItem(~theme, ~onPress, ~title, ~left=icon, ~selected, ~height=50., ~testID?, ())
-  }
-}
 
 module ListItemBase = {
   open Paper
   @react.component
-  let make = (~height=50., ~left, ~center, ~right, ~transparent=false, ~backgroundColor) => {
+  let make = (~height, ~left, ~center, ~right, ~transparent=false, ~backgroundColor, ~testID=?) => {
     let el =
-      <Wrapper alignItems=#center style={style(~minHeight=height->dp, ())}>
+      <Wrapper ?testID alignItems=#center style={style(~minHeight=height->dp, ())}>
         <ReactNative.View style={StyleUtils.makeHMargin()}> {left} </ReactNative.View>
         <ReactNative.View style={StyleUtils.makeHMargin()}> {center} </ReactNative.View>
         <ReactNative.View style={style(~position=#absolute, ~right=StyleUtils.u->dp, ())}>
@@ -165,14 +108,22 @@ module CustomListItem = {
     ~left=React.null,
     ~center=React.null,
     ~right=React.null,
-    ~height=?,
+    ~height=#medium,
     ~selected=false,
     ~onPress=?,
     ~disabled=false,
     ~transparent=false,
     ~style as extraStyle=style(),
     ~showBorder=false,
+    ~testID=?,
   ) => {
+    let height = switch height {
+    | #large => 96.
+    | #medium => 72.
+    | #small => 56.
+    | #custom(height) => height->Belt.Int.toFloat
+    }
+
     let theme = useTheme()
 
     let borderStyle = useCustomBorder()
@@ -189,12 +140,25 @@ module CustomListItem = {
       ])}
       ?onPress>
       <ListItemBase
-        ?height left center right={disabled ? React.null : right} transparent backgroundColor
+        ?testID height left center right={disabled ? React.null : right} transparent backgroundColor
       />
     </TouchableRipple>
   }
 }
 
+module ListItem = {
+  @react.component
+  let make = (~onPress=_ => (), ~title, ~iconName=?, ~iconColor=?, ~selected=false, ~testID=?) => {
+    let icon = iconName->Belt.Option.mapWithDefault(React.null, n => {
+      <Icon name=n color=?iconColor />
+    })
+
+    open Paper
+    <CustomListItem
+      ?testID height=#small left=icon selected onPress center={<Text> {title->React.string} </Text>}
+    />
+  }
+}
 module NicerIconBtn = {
   @react.component
   let make = (~onPress, ~small=true, ~iconName, ~style as extraStyle=style()) => {

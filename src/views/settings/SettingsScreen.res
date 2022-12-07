@@ -18,6 +18,7 @@ let make = (~navigation as _, ~route as _) => {
 
   let makeListItem = (route, label) =>
     <CustomListItem
+      height=#small
       onPress={_ => navigate(route)->ignore}
       center={<Text> {React.string(label)} </Text>}
       right={<ChevronRight />}

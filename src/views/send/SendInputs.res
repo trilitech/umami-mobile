@@ -5,7 +5,7 @@ open ReactNative.Style
 open Belt
 open SendTypes
 
-let standardInputHeight = 54.
+let rnNativePaperInputHeight = 54
 
 module SenderDisplay = {
   @react.component
@@ -63,7 +63,7 @@ module NFTInput = {
         <Caption> {"NFT"->React.string} </Caption>
         <CustomListItem
           showBorder=true
-          height=standardInputHeight
+          height=#custom(rnNativePaperInputHeight)
           left={<FastImage
             source resizeMode=#contain style={style(~height=40.->dp, ~width=40.->dp, ())}
           />}
@@ -141,7 +141,7 @@ module CurrencyPicker = {
       testID="currency-picker">
       <CustomListItem
         showBorder=true
-        height=standardInputHeight // same height at RN Paper input outlined
+        height=#custom(rnNativePaperInputHeight)
         center={<Picker
           icon={_ => <ChevronDown />}
           items
@@ -229,7 +229,7 @@ module Recipient = {
       | None =>
         <CustomListItem
           style
-          height=standardInputHeight
+          height=#medium
           onPress={_ => onPressSelectRecipient()}
           center={<Text> {"Select from address book..."->React.string} </Text>}
           right={<ChevronRight />}

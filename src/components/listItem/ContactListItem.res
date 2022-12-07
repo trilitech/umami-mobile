@@ -12,7 +12,8 @@ let make = (
 ) => {
   let {tz1, name} = contact
 
-  <GenericListItem
+  <ListItemEditable
+    height=#large
     disabled
     selected
     onPress

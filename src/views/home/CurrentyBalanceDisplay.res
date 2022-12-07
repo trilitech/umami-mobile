@@ -19,7 +19,7 @@ module CurrencyItem = {
       asset->Asset.getStandard->Option.mapWithDefault(React.null, standard => <FABadge standard />)
 
     <CustomListItem
-      height=70.
+      height=#medium
       left={icon}
       center={<Wrapper>
         <Paper.Title style={style()}> {React.string(prettyDisplay)} </Paper.Title> {standardBadge}

@@ -30,7 +30,7 @@ module PeerInfos = {
         ->Belt.Option.getWithDefault("")
 
       <CustomListItem
-        height=80.
+        height=#large
         left={p.icon->Belt.Option.mapWithDefault(
           <CommonComponents.Icon size=40 name="application-brackets" />,
           url => <RoundImage url size=40 />,

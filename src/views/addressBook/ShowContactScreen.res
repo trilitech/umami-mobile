@@ -9,7 +9,9 @@ let vMargin = StyleUtils.makeVMargin()
 module ContactBox = {
   @react.component
   let make = (~name, ~tz1) =>
-    <CustomListItem left={<AvatarDisplay tz1 />} center={<ContactDisplay name tz1 />} />
+    <CustomListItem
+      height=#large left={<AvatarDisplay tz1 />} center={<ContactDisplay name tz1 />}
+    />
 }
 
 module Controls = {

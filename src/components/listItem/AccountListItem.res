@@ -13,7 +13,7 @@ let make = (
   let {tz1, name} = account
   let balance = getBalance(tz1)->Belt.Option.flatMap(b => b.tez)
   open Asset
-  <GenericListItem
+  <ListItemEditable
     ?showBorder
     disabled
     selected
@@ -27,6 +27,7 @@ let make = (
       <Caption> {tz1->Pkh.toPretty->React.string} </Caption>
     </>}
     ?right
+    height=#large
     ?onPressEdit
   />
 }
