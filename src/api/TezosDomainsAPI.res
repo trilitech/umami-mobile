@@ -65,6 +65,8 @@ external parseReverse: Js_dict.t<Js.Json.t> => {
   "data": {"reverseRecord": Js.Nullable.t<{"domain": reverseRecord}>},
 } = "%identity"
 
+exception FetchTezosDomainError(string)
+
 let getDomain = (address: string) => {
   let payload = Js.Dict.empty()
   Js.Dict.set(payload, "query", Js.Json.string(getDomainByAddress(address)))
@@ -83,6 +85,7 @@ let getDomain = (address: string) => {
   ->Promise.thenResolve(parseReverse)
   ->Promise.thenResolve(d => d["data"]["reverseRecord"])
   ->Promise.thenResolve(d => Js.Nullable.toOption(d)->Option.map(res => res["domain"].name))
+  ->Promise.catch(exn => exn->Helpers.getMessage->FetchTezosDomainError->Promise.reject)
 }
 
 let isTezosDomain = (str: string) => Js.Re.test_(%re("/^\S+\.tez$/"), str)

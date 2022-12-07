@@ -23,6 +23,8 @@ external parseTzProfile: Js_dict.t<Js.Json.t> => {
   "data": {"tzprofiles_by_pk": Js.Nullable.t<tzProfile>},
 } = "%identity"
 
+exception FetchTzProfilError(string)
+
 let getProfile = (tz1: string) => {
   let payload = Js.Dict.empty()
   Js.Dict.set(payload, "query", Js.Json.string(query(tz1)))
@@ -40,4 +42,5 @@ let getProfile = (tz1: string) => {
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(parseTzProfile)
   ->Promise.thenResolve(d => d["data"]["tzprofiles_by_pk"]->Js.Nullable.toOption)
+  ->Promise.catch(exn => exn->Helpers.getMessage->FetchTzProfilError->Promise.reject)
 }

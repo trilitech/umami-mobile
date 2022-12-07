@@ -71,7 +71,7 @@ module Base = {
 
 @react.component
 let make = () => {
-  InitAddressMetadata.useRefresh()
+  InitAddressMetadata.useSingleRefresh()
   AccountInfoSync.useBalancesAndOpsSync()
   <Base />
 }

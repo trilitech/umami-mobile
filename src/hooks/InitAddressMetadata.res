@@ -16,24 +16,46 @@ let useGetAddressMetataData = () => {
 
 let useRefresh = () => {
   let cards = Store.useAccountsAndContacts()
-  let (metaDatas, setMetaDatas) = Store.useAddressMetadatas()
+  let (metadatas, setMetadatas) = Store.useAddressMetadatas()
 
   let toUpdate =
     cards
     ->Array.map(AccountOrContact.getAddress)
     ->Array.keep(tz1 => {
-      switch metaDatas->Belt.Map.String.get(tz1->Pkh.toString) {
+      switch metadatas->Belt.Map.String.get(tz1->Pkh.toString) {
       | None => true
       | Some(_) => false
       }
     })
+    ->React.useRef
+
+  open TezosProfilesAPI
+  open TezosDomainsAPI
+  let stableRefresh = React.useMemo1(((), ()) => {
+    Promise.all(toUpdate.current->Belt.Array.map(tz1 => getMetadatas(Pkh.toString(tz1))))
+    ->Promise.thenResolve(d =>
+      d->Array.forEach(d => setMetadatas(_ => Map.String.set(metadatas, d.tz1, d)))
+    )
+    ->Promise.catch(exn => {
+      let message = switch exn {
+      | FetchTzProfilError(message) => `Failed to fetch Tezos profile. Reason: ${message}`
+      | FetchTezosDomainError(message) => `Failed to fetch Tezos profile. Reason: ${message}`
+      | other => other->Helpers.getMessage
+      }
+      Logger.error(`Failed to fetch metatdatas. Reason: ${message}`)
+      Promise.resolve()
+    })
+    ->ignore
+  }, [setMetadatas])
+
+  stableRefresh
+}
+
+let useSingleRefresh = () => {
+  let refresh = useRefresh()
 
   React.useEffect1(() => {
-    Promise.all(toUpdate->Belt.Array.map(tz1 => getMetadatas(Pkh.toString(tz1))))
-    ->Promise.thenResolve(d =>
-      d->Array.forEach(d => setMetaDatas(_ => Map.String.set(metaDatas, d.tz1, d)))
-    )
-    ->ignore
+    refresh()
     None
-  }, [toUpdate])
+  }, [])
 }
