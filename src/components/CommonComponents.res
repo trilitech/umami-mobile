@@ -235,3 +235,14 @@ module CenteredSpinner = {
     </Wrapper>
   }
 }
+
+module DataInRow = {
+  @react.component
+  let make = (~title, ~content) => {
+    let vMargin = StyleUtils.makeVMargin()
+    open Paper
+    <Wrapper justifyContent=#spaceBetween style=vMargin>
+      <Caption> {title->React.string} </Caption> <Text> {content->React.string} </Text>
+    </Wrapper>
+  }
+}

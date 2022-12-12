@@ -6,6 +6,7 @@ let getPrettyTitle = (routeName: string) => {
   | "OffboardWallet" => "Offboard wallet"
   | "ChangePassword" => "Change password"
   | "NewRecipient" => "Transfer to new recipient"
+  | "VerifySignedContent" => "Certificate"
   | _ => routeName
   }
 }

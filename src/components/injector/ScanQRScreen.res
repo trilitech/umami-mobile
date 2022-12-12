@@ -12,14 +12,21 @@ module QRCodeScanner = {
 
 %%private(
   let makeScanner = (~title: string, ~subTitle: string, ~onRead) => {
-    <QRCodeScanner
-      onRead={e => {
-        let scannedString = e["data"]
-        onRead(scannedString)
-      }}
-      topContent={<Headline> {React.string(title)} </Headline>}
-      bottomContent={<TouchableRipple> <Text> {React.string(subTitle)} </Text> </TouchableRipple>}
-    />
+    // https://github.com/moaazsidat/react-native-qrcode-scanner/issues/230
+    // Unmount scanner when screen is unfocused otherwise we can't rescan
+    let isFocused = ReactNavigation.Native.useIsFocused()
+    isFocused
+      ? <QRCodeScanner
+          onRead={e => {
+            let scannedString = e["data"]
+            onRead(scannedString)
+          }}
+          topContent={<Headline> {React.string(title)} </Headline>}
+          bottomContent={<TouchableRipple>
+            <Text> {React.string(subTitle)} </Text>
+          </TouchableRipple>}
+        />
+      : React.null
   }
 )
 

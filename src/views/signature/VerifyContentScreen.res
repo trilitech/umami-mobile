@@ -2,34 +2,30 @@ open Paper
 open Belt
 open ReactNative.Style
 
-module NotOwned = {
-  @react.component
-  let make = () => {
-    <Title> {"Nft not owned by signer!"->React.string} </Title>
-  }
-}
-
 module SingedContentBase = {
   @react.component
   let make = (~signerAddress, ~prettySigDate, ~content, ~isValid) => {
-    <Container>
-      {isValid
-        ? <CommonComponents.Icon
-            size=100
-            color=Colors.Light.positive
-            name="certificate"
-            style={style(~alignSelf=#center, ())}
-          />
-        : <CommonComponents.Icon
-            size=100
-            color=Colors.Light.negative
-            name="alert-circle"
-            style={style(~alignSelf=#center, ())}
-          />}
-      <Caption> {"Signer account"->React.string} </Caption>
-      <SigListItem tz1=signerAddress prettySigDate />
-      {content}
-    </Container>
+    let goBack = NavUtils.useGoBack()
+
+    <ReactNative.ScrollView>
+      <Container>
+        {isValid
+          ? <CommonComponents.Icon
+              size=100
+              color=Colors.Light.positive
+              name="certificate"
+              style={style(~alignSelf=#center, ())}
+            />
+          : <BeaconErrorMsg message="Invalid signature!" />}
+        <Caption> {"Signer account"->React.string} </Caption>
+        <SigListItem tz1=signerAddress prettySigDate />
+        {content}
+        <Button
+          style={StyleUtils.makeTopMargin(~size=2, ())} mode=#outlined onPress={_ => goBack()}>
+          {"Dismiss"->React.string}
+        </Button>
+      </Container>
+    </ReactNative.ScrollView>
   }
 }
 
@@ -55,20 +51,25 @@ module Generic = {
 
 module SignedNFTDisplay2 = {
   @react.component
-  let make = (~prettySigDate, ~signerAddress: Pkh.t, ~nftUrl: string, ~name, ~isValid) => {
-    let source = ReactNative.Image.uriSource(~uri=nftUrl, ())
+  let make = (~prettySigDate, ~signerAddress: Pkh.t, ~nft: Token.tokenNFT, ~isValid) => {
+    let (b, m) = nft
+    let source = ReactNative.Image.uriSource(~uri=m.displayUri, ())
+    open CommonComponents
     <SingedContentBase
       isValid
       signerAddress
       prettySigDate
       content={<>
+        <DataInRow title="Contract" content={b.contract->Helpers.formatHash()} />
+        <DataInRow title="Token ID" content={b.tokenId} />
+        <DataInRow title="Editions" content={b.balance->Belt.Int.toString} />
         <Title style={array([style(~alignSelf=#center, ()), StyleUtils.makeVMargin(~size=2, ())])}>
-          {name->React.string}
+          {m.name->React.string}
         </Title>
         <FastImage
           source
           resizeMode=#contain
-          style={style(~height=300.->dp, ~width=300.->dp, ~alignSelf=#center, ())}
+          style={style(~height=250.->dp, ~width=250.->dp, ~alignSelf=#center, ())}
         />
       </>}
     />
@@ -78,16 +79,11 @@ module SignedNFTDisplay2 = {
 module SignedNFTDisplay = {
   @react.component
   let make = (~signed: SignedData.t, ~signatureDate, ~nft: Token.tokenNFT) => {
-    let (_, m) = nft
     let tz1 = signed.pk->Pkh.buildFromPk
 
     let date = signatureDate->Moment.getRelativeDate
     <SignedNFTDisplay2
-      isValid={signed->SignUtils.checkIsValid}
-      prettySigDate=date
-      name=m.name
-      nftUrl=m.displayUri
-      signerAddress=tz1
+      isValid={signed->SignUtils.checkIsValid} prettySigDate=date nft signerAddress=tz1
     />
   }
 }
@@ -100,39 +96,41 @@ module SignedNFT = {
 
     let (network, _) = Store.useNetwork()
 
-    let queryResult = ReactQuery.useQuery(
-      ReactQuery.queryOptions(
-        ~queryFn=_ => TzktAPI.getNft(~tz1, ~nftInfo=data, ~network),
-        ~queryKey="nft",
-        ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(#bool(false)),
-        (),
-      ),
-    )
+    let opts = {
+      "queryFn": _ => TzktAPI.getNft(~tz1, ~nftInfo=data, ~network),
+      "queryKey": "nft certificate " ++ data.tokenId,
+      "cacheTime": 0,
+    }
+
+    // need to use Obj.magic since cacheTime not supported yet in binding
+    let queryResult = ReactQuery.useQuery(opts->Obj.magic)
 
     let {data, isLoading, isError, error} = queryResult
 
-    let el = if isLoading {
+    if isLoading {
       <ActivityIndicator />
     } else if isError {
-      Js.Console.warn(error)
-      React.null
+      error
+      ->Helpers.nullToOption
+      ->Helpers.reactFold(error =>
+        <BeaconErrorMsg message={`Failed to fetch nft. Reason ${error->Helpers.getMessage}`} />
+      )
     } else {
-      //Bad
-      data->Belt.Option.mapWithDefault(<NotOwned />, nft => {
-        nft->Belt.Option.mapWithDefault(<NotOwned />, nft => {
-          <SignedNFTDisplay signed signatureDate=date nft />
-        })
-      })
+      data->Helpers.reactFold(nft =>
+        switch nft {
+        | Some(nft) => <SignedNFTDisplay signed signatureDate=date nft />
+        | None => <BeaconErrorMsg message={"Nft not owned by signer!"} />
+        }
+      )
     }
-
-    <Container> {el} </Container>
   }
 }
 
 @react.component
 let make = (~navigation as _, ~route) => {
-  let signed = NavUtils.getSignedContent(route)
-  signed->Helpers.reactFold(signed =>
+  route
+  ->NavUtils.getSignedContent
+  ->Helpers.reactFold(signed =>
     signed.content
     ->TimestampedNft.Decode.decode
     ->Helpers.resultToOption

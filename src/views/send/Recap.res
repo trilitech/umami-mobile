@@ -4,11 +4,7 @@ open Paper
 open SendInputs
 
 let vMargin = StyleUtils.makeVMargin()
-
-let makeRow = (title, content) =>
-  <Wrapper justifyContent=#spaceBetween style=vMargin>
-    <Caption> {title->React.string} </Caption> <Text> {content->React.string} </Text>
-  </Wrapper>
+let makeRow = (title, content) => <DataInRow title content />
 
 module TransactionAmounts = {
   @react.component
