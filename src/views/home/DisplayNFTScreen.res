@@ -13,7 +13,8 @@ module DisplayNFT = {
 
     let url = displayUri
     let source = ReactNative.Image.uriSource(~uri=url, ())
-    let imageSize = ReactNative.Dimensions.get(#window).width
+    // Image width ignores margin so we have to limit image width
+    let imageSize = ReactNative.Dimensions.get(#window).width -. 2. *. StyleUtils.u
     let editionsTextColor = UmamiThemeProvider.usePlaceHolderColor()
     <ReactNative.ScrollView>
       <Container>
