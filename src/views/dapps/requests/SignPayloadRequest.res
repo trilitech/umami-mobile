@@ -78,6 +78,6 @@ let make = (
       unpackedPayload={p}
     />
 
-  | Error(error) => <BeaconErrorMsg message={"Failed to parse Beacon payload. Reason: " ++ error} />
+  | Error(error) => <ErrorMsg message={"Failed to parse Beacon payload. Reason: " ++ error} />
   }
 }

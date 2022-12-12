@@ -1,4 +1,4 @@
-let unknownAccount = address => <BeaconErrorMsg message={"Unknown account " ++ address} />
+let unknownAccount = address => <ErrorMsg message={"Unknown account " ++ address} />
 module Display = {
   @react.component
   let make = (
@@ -33,7 +33,7 @@ module Display = {
           respond request={r} goBack notify sign={SignUtils.signContentGeneric(~account)}
         />
       )
-    | BroadcastRequest(_) => <BeaconErrorMsg message="Broadcast request not handled" />
+    | BroadcastRequest(_) => <ErrorMsg message="Broadcast request not handled" />
     }
   }
 }

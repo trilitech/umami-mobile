@@ -176,7 +176,7 @@ module SingleOp = {
           )
           ->Helpers.reactFold(message => {
             <Container>
-              <BeaconErrorMsg message />
+              <ErrorMsg message />
               <Button style={StyleUtils.makeVMargin()} onPress={_ => goBack()} mode=#outlined>
                 {"Decline"->React.string}
               </Button>
@@ -206,7 +206,7 @@ module Display = {
       switch Message.Request.PartialOperation.classify(op) {
       | Transfer(t) =>
         network->Belt.Option.mapWithDefault(
-          <BeaconErrorMsg message={"Unknown Network. " ++ request.network.type_} />,
+          <ErrorMsg message={"Unknown Network. " ++ request.network.type_} />,
           network =>
             <SingleOp
             // Default nodeIndex to 0 if request not on selected network
@@ -220,10 +220,10 @@ module Display = {
             />,
         )
 
-      | _ => <BeaconErrorMsg message="Unsupported operation" />
+      | _ => <ErrorMsg message="Unsupported operation" />
       }
-    | #empty => <BeaconErrorMsg message="No transactions found in request" />
-    | #batch => <BeaconErrorMsg message="Batch transactions are not supported" />
+    | #empty => <ErrorMsg message="No transactions found in request" />
+    | #batch => <ErrorMsg message="Batch transactions are not supported" />
     }
     <> {el} </>
   }

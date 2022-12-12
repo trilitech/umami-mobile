@@ -16,7 +16,7 @@ module SingedContentBase = {
               name="certificate"
               style={style(~alignSelf=#center, ())}
             />
-          : <BeaconErrorMsg message="Invalid signature!" />}
+          : <ErrorMsg message="Invalid signature!" />}
         <Caption> {"Signer account"->React.string} </Caption>
         <SigListItem tz1=signerAddress prettySigDate />
         {content}
@@ -113,13 +113,13 @@ module SignedNFT = {
       error
       ->Helpers.nullToOption
       ->Helpers.reactFold(error =>
-        <BeaconErrorMsg message={`Failed to fetch nft. Reason ${error->Helpers.getMessage}`} />
+        <ErrorMsg message={`Failed to fetch nft. Reason ${error->Helpers.getMessage}`} />
       )
     } else {
       data->Helpers.reactFold(nft =>
         switch nft {
         | Some(nft) => <SignedNFTDisplay signed signatureDate=date nft />
-        | None => <BeaconErrorMsg message={"Nft not owned by signer!"} />
+        | None => <ErrorMsg message={"Nft not owned by signer!"} />
         }
       )
     }
