@@ -64,6 +64,9 @@ module Base = {
             )}>
           {({navigation, route}) => <BeaconRequestScreen navigation route />}
         </ScreenWithCallback>
+        <ScreenWithCallback name="Browser" options={headerStyles}>
+          {({navigation, route}) => <BrowserScreen navigation route />}
+        </ScreenWithCallback>
       </Group>
     </Navigator>
   })

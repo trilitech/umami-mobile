@@ -60,6 +60,7 @@ let make = (~navigation as _, ~route: NavStacks.OnBoard.route) => {
             injectedAdress: None,
             signedContent: None,
             beaconRequest: None,
+            browserUrl: None,
           },
         )
       })

@@ -37,6 +37,7 @@ let make = (~navigation, ~route as _) => {
                   injectedAdress: None,
                   signedContent: None,
                   beaconRequest: None,
+                  browserUrl: None,
                 },
               )
             }}

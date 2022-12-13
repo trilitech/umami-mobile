@@ -13,6 +13,7 @@ module OnboardParams = {
     assetBalance: option<Asset.t>,
     signedContent: option<SignedData.t>,
     beaconRequest: option<ReBeacon.Message.Request.t>,
+    browserUrl: option<string>,
   }
 }
 

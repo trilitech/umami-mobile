@@ -123,11 +123,11 @@ let matchAmount = (a: tradeAmount) =>
 
 let isCredit = (a: tradeAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
 
-let useLinkToTzkt = () => {
-  let (network, _) = Store.useNetwork()
-  let host = Endpoints.getTzktUrl(network)
-  hash => ReactNative.Linking.openURL(`https://${host}/${hash}`)->ignore
-}
+// let useLinkToTzkt = () => {
+//   let (network, _) = Store.useNetwork()
+//   let host = Endpoints.getTzktUrl(network)
+//   hash => ReactNative.Linking.openURL(`https://${host}/${hash}`)->ignore
+// }
 
 let useAliasDisplay = (
   ~textRender=text => <Text> {text->React.string} </Text>,
@@ -175,13 +175,41 @@ let makeTradeEl = (a: tradeAmount) => {
   | CurrencyTrade(a) => makeTradeDisplay(a, isCredit)
   }
 }
+
+let useNavToTzkt = () => {
+  let (network, _) = Store.useNetwork()
+  let host = Endpoints.getTzktUrl(network)
+
+  let navigate = NavUtils.useNavigateWithParams()
+
+  hash => {
+    let url = `https://${host}/${hash}`
+
+    navigate(
+      "Browser",
+      {
+        tz1ForContact: None,
+        derivationIndex: None,
+        nft: None,
+        assetBalance: None,
+        tz1ForSendRecipient: None,
+        injectedAdress: None,
+        signedContent: None,
+        beaconRequest: None,
+        browserUrl: url->Some,
+      },
+    )
+  }
+}
+
 module TransactionItem = {
   open Paper
   @react.component
   let make = (~transaction) => {
     open Colors.Light
 
-    let goToTzktTransaction = useLinkToTzkt()
+    // let goToTzktTransaction = useLinkToTzkt()
+    let navToTzkt = useNavToTzkt()
 
     let statusIcon = switch transaction.status {
     | Done => "check"
@@ -209,7 +237,9 @@ module TransactionItem = {
         {amountEl}
         <Paper.IconButton icon={Paper.Icon.name(statusIcon)} size={15} />
         <Paper.IconButton
-          onPress={_ => goToTzktTransaction(transaction.hash)}
+          onPress={_ => navToTzkt(transaction.hash)}
+          // goToTzktTransaction(transaction.hash)
+
           icon={Paper.Icon.name("open-in-new")}
           size={15}
         />

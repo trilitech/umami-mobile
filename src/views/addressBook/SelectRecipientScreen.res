@@ -27,6 +27,7 @@ module SelectedRecipients = {
           injectedAdress: None,
           signedContent: None,
           beaconRequest: None,
+          browserUrl: None,
         },
       )
     }
@@ -76,6 +77,7 @@ let make = (~navigation as _, ~route as _: NavStacks.OnBoard.route) => {
             injectedAdress: None,
             signedContent: None,
             beaconRequest: None,
+            browserUrl: None,
           },
         )}
     />

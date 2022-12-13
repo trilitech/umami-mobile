@@ -27,6 +27,7 @@ let make = (
             injectedAdress: None,
             signedContent: None,
             beaconRequest: None,
+            browserUrl: None,
           },
         )}
     />

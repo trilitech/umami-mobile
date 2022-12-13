@@ -16,6 +16,7 @@ let make = (~balance, ~tokens) => {
             injectedAdress: None,
             signedContent: None,
             beaconRequest: None,
+            browserUrl: None,
           },
         )}
       balance

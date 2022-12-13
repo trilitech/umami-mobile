@@ -51,6 +51,7 @@ module ScanTezosDomain = {
           injectedAdress: a->Some,
           signedContent: None,
           beaconRequest: None,
+          browserUrl: None,
         })
       )
       ->ignore
@@ -105,6 +106,7 @@ module ScanSignedContent = {
             injectedAdress: None,
             signedContent: signed->Some,
             beaconRequest: None,
+            browserUrl: None,
           },
         )
       })

@@ -37,6 +37,7 @@ let useInit = () => {
             injectedAdress: None,
             signedContent: None,
             beaconRequest: ReBeacon.Message.Request.classify(m)->Some,
+            browserUrl: None,
           },
         )
       })

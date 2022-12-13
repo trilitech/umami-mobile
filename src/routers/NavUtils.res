@@ -89,6 +89,10 @@ let getBeaconRequest = (route: NavStacks.OnBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.beaconRequest)
 }
 
+let getBrowserUrl = (route: NavStacks.OnBoard.route) => {
+  route.params->Belt.Option.flatMap(p => p.browserUrl)
+}
+
 let getDesktopSeedPhrase = (route: NavStacks.OffBoard.route) => {
   route.params->Belt.Option.flatMap(p => p.desktopSeedPhrase)
 }

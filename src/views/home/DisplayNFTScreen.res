@@ -54,6 +54,7 @@ module DisplayNFT = {
                     injectedAdress: None,
                     signedContent: None,
                     beaconRequest: None,
+                    browserUrl: None,
                   },
                 )->ignore}
               icon={Paper.Icon.name("arrow-top-right-thin")}
