@@ -19,6 +19,13 @@ external makeContract: (
   ~params: methodArg,
 ) => Promise.t<Taquito.Contract.transfer> = "makeContract"
 
+@module("./js/getMetadata")
+external _getMetadata: (
+  ~toolkit: Taquito.Toolkit.toolkit,
+  ~contractAddress: string,
+  ~tokenId: string,
+) => Promise.t<'a> = "getMetadata"
+
 let makeContractTokenTransfer = (
   ~tezos,
   ~contractAddress,
@@ -57,6 +64,11 @@ let makeContractTokenTransfer = (
 
 let _makeToolkit = (~network, ~nodeIndex) =>
   Taquito.create("https://" ++ Endpoints.getNodeUrl(network, nodeIndex))
+
+let getMetadata = (~network, ~nodeIndex, ~contractAddress: string, ~tokenId: string) => {
+  let toolkit = _makeToolkit(~network, ~nodeIndex)
+  _getMetadata(~toolkit, ~contractAddress, ~tokenId)
+}
 
 let makeToolkitWithSigner = (~network, ~nodeIndex, ~sk, ~password) => {
   let tezos = _makeToolkit(~network, ~nodeIndex)

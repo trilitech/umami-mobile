@@ -46,6 +46,7 @@ type tokenBase = {
   tz1: string,
   tokenId: string, // on tzkt, fa1.2 tokens have a tokenId
   contract: string,
+  standard: string,
 }
 
 type nftMetadata = {
@@ -81,47 +82,6 @@ let filterNFTs = (arr: array<t>) =>
   ->Helpers.filterNone
 
 open Belt
-let decodeJSON = (token: JSON.t) => {
-  token.balance
-  ->Int.fromString
-  ->Option.flatMap(balance => {
-    let base = {
-      id: token.id,
-      balance: balance,
-      tz1: token.account.address,
-      contract: token.token.contract.address,
-      tokenId: token.token.tokenId,
-    }
-
-    token.token.metadata->Option.mapWithDefault(Some(FA1(base)), metadata =>
-      switch JSON.matchNftFields(metadata) {
-      // Nfts MUST have displayUrl, thumbnailUri, description
-      | Some(displayUri, thumbnailUri, description) =>
-        NFT((
-          base,
-          {
-            name: metadata.name,
-            symbol: metadata.symbol->Option.getWithDefault("FKR"),
-            displayUri: displayUri->JSON.getNftUrl,
-            thumbnailUri: thumbnailUri->JSON.getNftUrl,
-            description: description,
-            creators: metadata.creators->Belt.Option.getWithDefault([]),
-          },
-        ))->Some
-
-      | None =>
-        // FA2 tokens MUST have a symbol
-        Helpers.both(metadata.decimals->Int.fromString, metadata.symbol)->Option.map(((
-          decimals,
-          symbol,
-        )) => {
-          FA2((base, {name: metadata.name, symbol: symbol, decimals: decimals}))
-        })
-      }
-    )
-  })
-}
-let decodeJsonArray = arr => arr->Belt.Array.map(decodeJSON)->Helpers.filterNone
 
 let matchBase = (t: t) => {
   switch t {
@@ -160,3 +120,83 @@ let getNftInfo = (nft: tokenNFT) => {
   let (b, _) = nft
   {tokenId: b.tokenId, contract: b.contract, balance: b.balance}
 }
+
+type tokenPossiblyIncomplete = Complete(t) | Incomplete(tokenBase)
+
+let makeToken = (base: tokenBase, metadata: JSON.metadata) => {
+  switch metadata.displayUri {
+  | Some(displayUri) =>
+    NFT((
+      base,
+      {
+        name: metadata.name,
+        symbol: metadata.symbol->Option.getWithDefault("FKR"),
+        displayUri: displayUri->JSON.getNftUrl,
+        thumbnailUri: metadata.thumbnailUri->Belt.Option.getWithDefault("")->JSON.getNftUrl,
+        description: metadata.description->Belt.Option.getWithDefault(""),
+        creators: metadata.creators->Belt.Option.getWithDefault([]),
+      },
+    ))
+  | None =>
+    FA2((
+      base,
+      {
+        name: metadata.name,
+        symbol: metadata.symbol->Belt.Option.getWithDefault("UNKOWN_TOKEN"),
+        decimals: metadata.decimals->Belt.Int.fromString->Belt.Option.getWithDefault(0),
+      },
+    ))
+  }
+}
+
+let decodeJSON = (token: JSON.t) => {
+  token.balance
+  ->Int.fromString
+  ->Option.map(balance => {
+    let base = {
+      id: token.id,
+      balance: balance,
+      tz1: token.account.address,
+      contract: token.token.contract.address,
+      tokenId: token.token.tokenId,
+      standard: token.token.standard,
+    }
+
+    let metadata = token.token.metadata
+
+    base.standard === "fa1.2"
+      ? Complete(FA1(base))
+      : metadata->Belt.Option.mapWithDefault(Incomplete(base), metadata =>
+          makeToken(base, metadata)->Complete
+        )
+  })
+}
+
+@scope("JSON") @val
+external parseJSON: string => array<JSON.t> = "parse"
+
+let jsonStringToTokens = str =>
+  str
+  ->parseJSON
+  ->Belt.Array.map(decodeJSON)
+  ->Belt.Array.map(t =>
+    t->Belt.Option.flatMap(t =>
+      switch t {
+      | Complete(t) => t->Some
+      | Incomplete(_) => None
+      }
+    )
+  )
+  ->Helpers.filterNone
+
+let addMetadata = (
+  t: tokenPossiblyIncomplete,
+  ~getMetadata: (~tokenId: string, ~contractAddress: string) => Promise.t<JSON.metadata>,
+) =>
+  switch t {
+  | Complete(t) => Promise.resolve(t)
+  | Incomplete(base) => getMetadata(
+      ~contractAddress=base.contract,
+      ~tokenId=base.tokenId,
+    )->Promise.thenResolve(metadata => makeToken(base, metadata))
+  }

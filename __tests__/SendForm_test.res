@@ -80,7 +80,14 @@ describe("<SendScreen />", () => {
 
   test("it displays provided NFT with 1 copy by default", () => {
     let nft: Token.tokenNFT = (
-      {id: 3, balance: 1, tz1: "foo", tokenId: "bar", contract: "foo"},
+      {
+        id: 3,
+        balance: 1,
+        tz1: "foo",
+        tokenId: "bar",
+        contract: "foo",
+        standard: "FA2",
+      },
       {
         name: "cat",
         symbol: "bar",

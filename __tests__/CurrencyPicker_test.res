@@ -10,6 +10,7 @@ let tokens = [
     tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
     tokenId: "0",
     contract: "KT1UCPcXExqEYRnfoXWYvBkkn5uPjn8TBTEe",
+    standard: "FA2",
   }),
   FA2(
     {
@@ -18,6 +19,7 @@ let tokens = [
       tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
       tokenId: "0",
       contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
+      standard: "FA2",
     },
     {name: "Klondike2", symbol: "KL2", decimals: 5},
   ),
@@ -28,6 +30,7 @@ let tokens = [
       id: 3935,
       tokenId: "1",
       tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+      standard: "FA2",
     },
     {
       decimals: 5,
@@ -42,6 +45,7 @@ let tokens = [
       id: 40465,
       tokenId: "3",
       tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+      standard: "FA2",
     },
     {
       creators: ["George Goodwin (@omgidrawedit)"],
@@ -59,6 +63,7 @@ let tokens = [
       id: 42130,
       tokenId: "4",
       tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+      standard: "FA2",
     },
     {
       creators: ["George Goodwin (@omgidrawedit)"],

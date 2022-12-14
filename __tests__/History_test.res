@@ -12,7 +12,7 @@ describe("History functions", () => {
 
   test("makeDisplayInfo returns the right value", () => {
     let operations = OperationJSON.jsonString1->parseOperationJSON->Operation.handleJSONArray
-    let tokens = TokenJSON.jsonString1->parseTokenJSON->Token.decodeJsonArray
+    let tokens = TokenJSON.jsonString1->Token.jsonStringToTokens
 
     let result = OperationsScreen.makePrettyOperations(
       ~myTz1,
@@ -112,7 +112,7 @@ describe("History functions", () => {
           blockHash: Some("blockHash3"),
         },
       ]
-      let tokens = TokenJSON.jsonString1->parseTokenJSON->Token.decodeJsonArray
+      let tokens = TokenJSON.jsonString1->Token.jsonStringToTokens
 
       let result =
         input
@@ -188,8 +188,8 @@ describe("History functions", () => {
           blockHash: Some("blockHash3"),
         },
       ]
-      let tokens = TokenJSON.jsonString1->parseTokenJSON->Token.decodeJsonArray
 
+      let tokens = TokenJSON.jsonString1->Token.jsonStringToTokens
       let result =
         input
         ->Belt.Array.map(op => OperationsScreen.makeDisplayElement(op, myTz1, 117, tokens))

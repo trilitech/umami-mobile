@@ -356,3 +356,29 @@ let jsonStringBloxxer = `
   }
 ]
 `
+
+let jsonStringMetadataMissing2 = `
+[
+  {
+    "id": 82705170563073,
+    "account": {
+      "address": "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"
+    },
+    "token": {
+      "id": 82704303390721,
+      "contract": {
+        "address": "KT18f225bFCeTt1AHLT5n7gTf3a8wv7iyEYC"
+      },
+      "tokenId": "2",
+      "standard": "fa2",
+      "totalSupply": "210"
+    },
+    "balance": "1",
+    "transfersCount": 1,
+    "firstLevel": 1652615,
+    "firstTime": "2022-12-12T17:08:30Z",
+    "lastLevel": 1652615,
+    "lastTime": "2022-12-12T17:08:30Z"
+  }
+]
+`

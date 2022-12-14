@@ -2,7 +2,7 @@ let getAccountBalance = (~tz1: Pkh.t, ~network, ~nodeIndex) => {
   open AccountsReducer
   Promise.all2((
     TaquitoUtils.getBalance(~tz1, ~network, ~nodeIndex),
-    TzktAPI.getTokens(~tz1, ~network),
+    TzktAPI.getTokens(~tz1, ~network, ~nodeIndex),
   ))->Promise.thenResolve(((b, t)) => {
     {tz1: tz1, balance: Some(b), tokens: t}
   })

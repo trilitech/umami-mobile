@@ -2,15 +2,12 @@
 open Jest
 open Token
 
-@scope("JSON") @val
-external parseJSON: string => array<JSON.t> = "parse"
-
 describe("Token functions", () => {
   open Expect
 
   test("handleJSONarray returns the right value (nominal case)", () => {
-    let input = parseJSON(TokenJSON.jsonString1)
-    let result = decodeJsonArray(input)
+    let result = jsonStringToTokens(TokenJSON.jsonString1)
+
     expect(result)->toEqual([
       FA1({
         id: 3922,
@@ -18,6 +15,7 @@ describe("Token functions", () => {
         tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
         tokenId: "0",
         contract: "KT1UCPcXExqEYRnfoXWYvBkkn5uPjn8TBTEe",
+        standard: "fa1.2",
       }),
       FA2(
         {
@@ -26,6 +24,7 @@ describe("Token functions", () => {
           tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
           tokenId: "0",
           contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
+          standard: "fa2",
         },
         {name: "Klondike2", symbol: "KL2", decimals: 5},
       ),
@@ -36,6 +35,7 @@ describe("Token functions", () => {
           id: 3935,
           tokenId: "1",
           tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+          standard: "fa2",
         },
         {
           decimals: 5,
@@ -50,6 +50,7 @@ describe("Token functions", () => {
           id: 40465,
           tokenId: "3",
           tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+          standard: "fa2",
         },
         {
           creators: ["George Goodwin (@omgidrawedit)"],
@@ -67,6 +68,7 @@ describe("Token functions", () => {
           id: 42130,
           tokenId: "4",
           tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+          standard: "fa2",
         },
         {
           creators: ["George Goodwin (@omgidrawedit)"],
@@ -84,6 +86,7 @@ describe("Token functions", () => {
           id: 42145,
           tokenId: "5",
           tz1: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
+          standard: "fa2",
         },
         {
           creators: ["George Goodwin (@omgidrawedit)"],
@@ -98,8 +101,8 @@ describe("Token functions", () => {
   })
 
   test("handleJSONarray returns the right value (fix for bloxxer NFT bug)", () => {
-    let input = parseJSON(TokenJSON.jsonStringBloxxer)
-    let result = decodeJsonArray(input)
+    let result = jsonStringToTokens(TokenJSON.jsonStringBloxxer)
+
     expect(result)->toEqual([
       NFT(
         {
@@ -108,6 +111,7 @@ describe("Token functions", () => {
           id: %raw("387481387139073"), // TODO fix bigint rescript issue
           tokenId: "0",
           tz1: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
+          standard: "fa2",
         },
         {
           creators: [],
@@ -119,5 +123,59 @@ describe("Token functions", () => {
         },
       ),
     ])
+  })
+})
+
+@scope("JSON") @val
+external parseJSON: string => array<Token.JSON.t> = "parse"
+
+describe("Tokens missing metadata", () => {
+  testAsync("metadata is fetched and added", finish => {
+    let tokens = parseJSON(TokenJSON.jsonStringMetadataMissing2)
+
+    let m: Token.JSON.metadata = {
+      "displayUri": "foo",
+      "thumbnailUri": "bar",
+      "description": "cool",
+      "name": "Umami nft",
+    }->Obj.magic
+
+    let mockGetMetadata = (~tokenId as _, ~contractAddress as _) => Promise.resolve(m)
+
+    let result =
+      tokens
+      ->Belt.Array.map(Token.decodeJSON)
+      ->Helpers.filterNone
+      ->Belt.Array.map(Token.addMetadata(~getMetadata=mockGetMetadata))
+      ->Promise.all
+
+    result
+    ->Promise.thenResolve(result => {
+      let b: Token.tokenBase = {
+        id: %raw("82705170563073"),
+        balance: 1,
+        tz1: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
+        tokenId: "2",
+        contract: "KT18f225bFCeTt1AHLT5n7gTf3a8wv7iyEYC",
+        standard: "fa2",
+      }
+
+      let m: Token.nftMetadata = {
+        displayUri: "foo",
+        thumbnailUri: "bar",
+        description: "cool",
+        symbol: "FKR",
+        name: "Umami nft",
+        creators: [],
+      }
+
+      open Token
+      let expected = [NFT(b, m)]
+
+      if result == expected {
+        finish(pass)
+      }
+    })
+    ->ignore
   })
 })

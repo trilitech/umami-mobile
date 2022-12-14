@@ -15,7 +15,6 @@ module NftCard = {
         {<FastImage
           resizeMode=#cover
           style={array([style(~flex=1., ~borderRadius=4., ())])}
-          key=url
           source={ReactNative.Image.uriSource(~uri=url, ())}
         />}
         <View style={StyleUtils.makeHMargin()}>
@@ -63,7 +62,7 @@ let tokenToElement = (navigate, tokenNFT: Token.tokenNFT) => {
         },
       )->ignore
     }}
-    key=displayUri
+    key={base.contract ++ base.tokenId}
     url=displayUri
     name
   />
