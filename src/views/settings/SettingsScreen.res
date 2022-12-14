@@ -5,6 +5,7 @@ module PrivacyPolicy = {
   let make = () => {
     let url = "https://umamiwallet.com/tos.html"
     <CustomListItem
+      height=#small
       onPress={_ => ReactNative.Linking.openURL(url)->ignore}
       center={<Text> {React.string("Privacy policy")} </Text>}
       right={<CommonComponents.Icon name="open-in-new" />}
