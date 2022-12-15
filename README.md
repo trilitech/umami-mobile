@@ -6,6 +6,13 @@ A mobile version of the Umami Tezos wallet.
 
 ## Commands
 
+Compile rescript source to javascript:
+
+```sh
+yarn res:build
+
+```
+
 Compile rescript source to javascript in watch mode:
 
 ```sh

@@ -9,7 +9,8 @@
     "test": "jest",
     "test:watch": "jest --watch --verbose",
     "lint": "eslint .",
-    "res:watch": "rescript clean && rescript build -w"
+    "res:watch": "rescript clean && rescript build -w",
+    "res:build": "rescript clean && rescript build"
   },
   "dependencies": {
     "@airgap/beacon-sdk": "^3.2.0",
