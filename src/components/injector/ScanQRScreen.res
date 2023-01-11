@@ -125,8 +125,12 @@ module ScanBeacon_ = {
     let subTitle = "Scan beacon permission request"
 
     makeScanner(~subTitle, ~title, ~onRead=str => {
-      let peerData = str->Js.String2.replace("tezos://?type=tzip10&data=", "")
-      addPeer(peerData)->Promise.thenResolve(_ => goBack())->ignore
+      str
+      ->PeerData.buildFromUri
+      ->Belt.Option.map(d => {
+        addPeer(d)->Promise.thenResolve(_ => goBack())->ignore
+      })
+      ->ignore
     })
   }
 }

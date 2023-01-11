@@ -6,7 +6,6 @@ module Base = {
   @react.component
   let make = React.memo(() => {
     let headerStyles = HeaderStyle.useHeaderStyle()
-    Beacon.useInit()
 
     <Navigator initialRouteName="Home">
       <Group>
@@ -76,5 +75,10 @@ module Base = {
 let make = () => {
   InitAddressMetadata.useSingleRefresh()
   AccountInfoSync.useBalancesAndOpsSync()
-  <Base />
+  Beacon.useInit()
+  <>
+    // Component is needed for BeaconDeepLink because we can't conditionaly call hooks
+    <BeaconDeepLink />
+    <Base />
+  </>
 }

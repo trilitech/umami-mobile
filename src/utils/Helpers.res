@@ -76,6 +76,7 @@ let resultToOption = r =>
 
 // Always a pain to find this
 let nullToOption = n => Js.Nullable.toOption(n)
+let nullToOption2 = n => Js.Null.toOption(n)
 
 let tap = val => {
   Js.Console.log(val)

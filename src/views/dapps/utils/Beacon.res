@@ -11,43 +11,74 @@ let beaconAtom: Jotai.Atom.t<option<ReBeacon.WalletClient.t>, _, _> = Jotai.Atom
 let peerInfosAtom: Jotai.Atom.t<array<ReBeacon.peerInfo>, _, _> = Jotai.Atom.make([])
 let permissionInfosAtom: Jotai.Atom.t<array<ReBeacon.permissionInfo>, _, _> = Jotai.Atom.make([])
 
-let makePeerInfo = (encodedPeerInfo: string) =>
-  ReBeacon.Serializer.make()->ReBeacon.Serializer.deserializeRaw(encodedPeerInfo)
+let makePeerInfo = encodedPeerInfo =>
+  ReBeacon.Serializer.make()->ReBeacon.Serializer.deserializeRaw(encodedPeerInfo->PeerData.toString)
 
 let useClient = () => Jotai.Atom.use(beaconAtom)
 
-let useInit = () => {
-  let navigate = NavUtils.useNavigateWithParams()
+let _useInit = (
+  ~onDone=_ => (),
+  ~onError=_ => (),
+  ~makeClient: ReBeacon.WalletClient.options => ReBeacon.WalletClient.t,
+  ~onBeaconRequest,
+  (),
+) => {
   let (client, setClient) = useClient()
+  let onError = React.useRef(onError)
+  let onDone = React.useRef(onDone)
+  let onBeaconRequest = React.useRef(onBeaconRequest)
+  let makeClient = React.useRef(makeClient)
 
-  React.useEffect3(() => {
+  React.useEffect2(() => {
+    Js.Console.log("init")
     switch client {
     | Some(client) =>
-      client->ReBeacon.WalletClient.initRaw()->ignore
       client
-      ->ReBeacon.WalletClient.connectRaw(m => {
-        navigate(
-          "BeaconRequest",
-          {
-            tz1ForContact: None,
-            derivationIndex: None,
-            nft: None,
-            assetBalance: None,
-            tz1ForSendRecipient: None,
-            injectedAdress: None,
-            signedContent: None,
-            beaconRequest: ReBeacon.Message.Request.classify(m)->Some,
-            browserUrl: None,
-          },
+      ->ReBeacon.WalletClient.initRaw()
+      ->Promise.then(_ => {
+        client->ReBeacon.WalletClient.connectRaw(m =>
+          m->ReBeacon.Message.Request.classify->onBeaconRequest.current
         )
       })
-      ->Promise.thenResolve(_ => Js.Console.log("Beacon successfully started"))
+      ->Promise.thenResolve(_ => onDone.current())
+      ->Promise.catch(exn => {
+        `Failed to remove peer. Reason: ${exn->Helpers.getMessage}`->onError.current
+        Promise.resolve()
+      })
       ->ignore
-    | None => setClient(_ => ReBeacon.WalletClient.make({name: "Umami mobile"})->Some)
+
+    | None => setClient(_ => makeClient.current({name: "Umami mobile"})->Some)
     }
 
     None
-  }, (navigate, client, setClient))
+  }, (client, setClient))
+}
+
+let useInit = () => {
+  let navigate = NavUtils.useNavigateWithParams()
+  let handleBeaconRequest = r =>
+    navigate(
+      "BeaconRequest",
+      {
+        tz1ForContact: None,
+        derivationIndex: None,
+        nft: None,
+        assetBalance: None,
+        tz1ForSendRecipient: None,
+        injectedAdress: None,
+        signedContent: None,
+        beaconRequest: r->Some,
+        browserUrl: None,
+      },
+    )
+
+  _useInit(
+    ~makeClient=ReBeacon.WalletClient.make,
+    ~onDone=_ => Js.Console.log("Beacon successfully started"),
+    ~onError=Logger.error,
+    ~onBeaconRequest=handleBeaconRequest,
+    (),
+  )
 }
 
 %%private(
@@ -138,7 +169,7 @@ let usePeers = (client, ~onError=_ => (), ()) => {
     }
   }
 
-  let safeAddPeer = (encodedPeerInfo: string) => {
+  let safeAddPeer = (encodedPeerInfo: PeerData.t) => {
     makePeerInfo(encodedPeerInfo)
     ->Promise.then(_safeAddPeer)
     ->Promise.catch(exn => {

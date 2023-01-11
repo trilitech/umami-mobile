@@ -72,7 +72,10 @@ module Display = {
         />
         <NicerIconBtn
           onPress={_ => {
-            Clipboard.getString()->Promise.then(addPeer)->ignore
+            Clipboard.getString()
+            ->Promise.thenResolve(PeerData.unsafeBuild)
+            ->Promise.then(addPeer)
+            ->ignore
           }}
           iconName="content-copy"
           style={StyleUtils.makeHMargin()}

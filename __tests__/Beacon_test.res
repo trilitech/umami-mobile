@@ -18,8 +18,59 @@ let mockPermission2: ReBeacon.permissionInfo = {"accountIdentifier": "mockId2"}-
 let getPeers = JestJs.fn(() => Promise.resolve([mockPeer, mockPeer2]))->MockJs.fn
 let getPermissions = JestJs.fn(() => Promise.resolve([mockPermission, mockPermission2]))->MockJs.fn
 
+let clientAddPeer = JestJs.fn(_ => {Promise.resolve()})
+
 describe("Beacon", () => {
-  describe("peer hooks", () => {
+  open Expect
+  describe("PeerData type", () => {
+    test("it builds from tezos or umami url", () => {
+      let beaconCode = "gTSV5LvWyJq6LH6XaS8ZYxndZT5ByoQYowx3DFkvjmQ8XbWp87973JHFM7Mtqu4LpPpd9eXkWFBBSg5TfqA5btqagnoNLiDMZuQ4i13LcKS5V9yQpp1gpgbLPdtBC3kTatHeo6a4wBt2xLoUtGtRWPYpLifnFbHXfFxvKZBdoyraWtyBntUfkH3R2BPYFANLoqKXQ24FRBTgu4abkrZJpRdTtJFCb1itmqT4z1jzvS4yZm4gfb8cGP6FNuWydSmfNaQjDK9DoqU14ENyuJ88XZDGHc6HA23vrkRUAx2QaGCQgPgPEFTvgQa6dvocMcAyMDRsDmETQLRhCQrNyd1AvawWQaXRDMp1d6tJciwAtZPbpQqs575uGLDa8W8c85ujekF7LBr4Jg62iTzLS1bP7B4p6vsM6c3s96CY2LCrZY"
+      let result = (
+        PeerData.buildFromUri("umami://?type=tzip10&data=" ++ beaconCode),
+        PeerData.buildFromUri("tezos://?type=tzip10&data=" ++ beaconCode),
+        PeerData.buildFromUri("invalidumami://?type=tzip10&data=" ++ beaconCode),
+      )
+
+      expect(result)->toEqual((
+        beaconCode->PeerData.unsafeBuild->Some,
+        beaconCode->PeerData.unsafeBuild->Some,
+        None,
+      ))
+    })
+  })
+
+  describe("useInit", () => {
+    testAsync(
+      "it creates client with Umami Mobile name and calls onDone when client is ready",
+      finish => {
+        let client = {
+          "getPeers": getPeers,
+          "getPermissions": getPermissions,
+          "init": _ => Promise.resolve(),
+          "connect": _ => Promise.resolve(),
+        }->Obj.magic
+
+        let makeClientMock = JestJs.fn(_ => client)
+        let makeClient = makeClientMock->MockJs.fn
+
+        renderHook(() =>
+          Beacon._useInit(
+            ~onDone=_ => {
+              let expected: ReBeacon.WalletClient.options = {name: "Umami mobile"}
+              if [expected] == makeClientMock->MockJs.calls {
+                finish(pass)
+              }
+            },
+            ~makeClient,
+            ~onBeaconRequest=_ => (),
+            (),
+          )
+        , ())->ignore
+      },
+    )
+  })
+
+  describe("usePeers", () => {
     testAsync("it returns client peers", finish => {
       let client = {
         "getPeers": getPeers,
@@ -57,7 +108,7 @@ describe("Beacon", () => {
 
       let (_, _, addPeer, _) = hookResult.result.current
 
-      act(() => addPeer("invalid peer")->ignore)
+      act(() => addPeer("invalid peer"->PeerData.unsafeBuild)->ignore)
 
       waitForNextUpdate()
       ->Promise.thenResolve(() =>
@@ -69,7 +120,6 @@ describe("Beacon", () => {
     })
 
     testAsync("addPeer refreshes state with peers and permissions produced by client", finish => {
-      let clientAddPeer = JestJs.fn(_ => {Promise.resolve()})
       let clientGetPeers = JestJs.fn(() => Promise.resolve([]))
 
       let clientGetPermissions = JestJs.fn(() => {
@@ -88,7 +138,8 @@ describe("Beacon", () => {
 
       let (_, _, addPeer, _) = hookResult.result.current
 
-      let validPeerStr = "419hUvAwDHeqf6dAbrHa7bosGZCCd9r6DZVFfsnynGh1KE7ZLVB2gStbJrGgu1x1GhqbY7qXkDScB4fKGCChakgpQvGFVXYBRnM3jYkEB9FzehQvF1UgYEJ5qrwuwzDM2b6F1RkYvHQvfPww8Y52zkg9bmWRHg8SMkBmRL3nCXZuZzVew1pTEoUg6ULg9CZmGYemZWsjht9zSy6buZoGgv4wB8yHsWtJem5YRwvh1Rcb1bAmUVsJvnfgm748SPandFwsdvohuirrRMV8VZTqzEdVEufZ1LiG7fdDNN2M3CqTkaLbFaYH5yRHHvpdnJLojZdJetSTdTmJqB6D1zYcbSbGysUerW7tnBPCBjYLz8MfYfZG2mBD4FqnsCKzCPN2CSEfdKaGRkkviCgJxriMpKSsHRhPUNgfNYv25e5L5KMh"
+      let validPeerStr =
+        "419hUvAwDHeqf6dAbrHa7bosGZCCd9r6DZVFfsnynGh1KE7ZLVB2gStbJrGgu1x1GhqbY7qXkDScB4fKGCChakgpQvGFVXYBRnM3jYkEB9FzehQvF1UgYEJ5qrwuwzDM2b6F1RkYvHQvfPww8Y52zkg9bmWRHg8SMkBmRL3nCXZuZzVew1pTEoUg6ULg9CZmGYemZWsjht9zSy6buZoGgv4wB8yHsWtJem5YRwvh1Rcb1bAmUVsJvnfgm748SPandFwsdvohuirrRMV8VZTqzEdVEufZ1LiG7fdDNN2M3CqTkaLbFaYH5yRHHvpdnJLojZdJetSTdTmJqB6D1zYcbSbGysUerW7tnBPCBjYLz8MfYfZG2mBD4FqnsCKzCPN2CSEfdKaGRkkviCgJxriMpKSsHRhPUNgfNYv25e5L5KMh"->PeerData.unsafeBuild
 
       let peerInfo: ReBeacon.peerInfo = {
         "id": "dd0cace3-4d99-daf8-9823-03185a83a15a",
@@ -150,8 +201,10 @@ describe("Beacon", () => {
 
       let (_, _, addPeer, _) = hookResult.result.current
 
-      let validPeerStr = "419hUvAwDHeqf6dAbrHa7bosGZCCd9r6DZVFfsnynGh1KE7ZLVB2gStbJrGgu1x1GhqbY7qXkDScB4fKGCChakgpQvGFVXYBRnM3jYkEB9FzehQvF1UgYEJ5qrwuwzDM2b6F1RkYvHQvfPww8Y52zkg9bmWRHg8SMkBmRL3nCXZuZzVew1pTEoUg6ULg9CZmGYemZWsjht9zSy6buZoGgv4wB8yHsWtJem5YRwvh1Rcb1bAmUVsJvnfgm748SPandFwsdvohuirrRMV8VZTqzEdVEufZ1LiG7fdDNN2M3CqTkaLbFaYH5yRHHvpdnJLojZdJetSTdTmJqB6D1zYcbSbGysUerW7tnBPCBjYLz8MfYfZG2mBD4FqnsCKzCPN2CSEfdKaGRkkviCgJxriMpKSsHRhPUNgfNYv25e5L5KMh"
-      let validPeerStr2 = "419hUvAwDHXQVJcnDSCW29qwPuNHNzaW1jCa6yLWHx75TN3LwyCJ5Bdzs52ePLdttAqwW9XqKVAiaLEeZgGPajip92ZdtDAjzvomsGADBAumrEMQ6TgG3ic8DhzfN8C4qLbRqAMBUdELQLff3ZnHhRqGj4iURHoRxAuL4SmuKCnTvGJZwJbYDmattG4YaG6FyD6xcpS9kCfsruxKMQYs6HDuuPjQebZpEfArt59w8qC4aRHYBp5u7EkwnkGqcckjuPZMxUmJ9ZubntVPRmMtruKBmQUpaBgWVPyu3ECk4jcfPafvkfHokQQWeKEfApeva8XJnP9xpXoa4RCg7jjKuMv5JB3TqCZZaPxe3NnAdJZ65vRvBVgZ6EyTatxwDngDckrHU51hbCVGJKBSP3dL22ExVoy8Qe5dber9LibTouV3"
+      let validPeerStr =
+        "419hUvAwDHeqf6dAbrHa7bosGZCCd9r6DZVFfsnynGh1KE7ZLVB2gStbJrGgu1x1GhqbY7qXkDScB4fKGCChakgpQvGFVXYBRnM3jYkEB9FzehQvF1UgYEJ5qrwuwzDM2b6F1RkYvHQvfPww8Y52zkg9bmWRHg8SMkBmRL3nCXZuZzVew1pTEoUg6ULg9CZmGYemZWsjht9zSy6buZoGgv4wB8yHsWtJem5YRwvh1Rcb1bAmUVsJvnfgm748SPandFwsdvohuirrRMV8VZTqzEdVEufZ1LiG7fdDNN2M3CqTkaLbFaYH5yRHHvpdnJLojZdJetSTdTmJqB6D1zYcbSbGysUerW7tnBPCBjYLz8MfYfZG2mBD4FqnsCKzCPN2CSEfdKaGRkkviCgJxriMpKSsHRhPUNgfNYv25e5L5KMh"->PeerData.unsafeBuild
+      let validPeerStr2 =
+        "419hUvAwDHXQVJcnDSCW29qwPuNHNzaW1jCa6yLWHx75TN3LwyCJ5Bdzs52ePLdttAqwW9XqKVAiaLEeZgGPajip92ZdtDAjzvomsGADBAumrEMQ6TgG3ic8DhzfN8C4qLbRqAMBUdELQLff3ZnHhRqGj4iURHoRxAuL4SmuKCnTvGJZwJbYDmattG4YaG6FyD6xcpS9kCfsruxKMQYs6HDuuPjQebZpEfArt59w8qC4aRHYBp5u7EkwnkGqcckjuPZMxUmJ9ZubntVPRmMtruKBmQUpaBgWVPyu3ECk4jcfPafvkfHokQQWeKEfApeva8XJnP9xpXoa4RCg7jjKuMv5JB3TqCZZaPxe3NnAdJZ65vRvBVgZ6EyTatxwDngDckrHU51hbCVGJKBSP3dL22ExVoy8Qe5dber9LibTouV3"->PeerData.unsafeBuild
 
       let peerInfo: ReBeacon.peerInfo = {
         "id": "dd0cace3-4d99-daf8-9823-03185a83a15a",
