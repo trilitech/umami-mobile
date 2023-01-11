@@ -53,9 +53,10 @@ let useRefresh = () => {
 
 let useSingleRefresh = () => {
   let refresh = useRefresh()
+  let refresh = React.useRef(refresh)
 
   React.useEffect1(() => {
-    refresh()
+    refresh.current()
     None
   }, [])
 }
