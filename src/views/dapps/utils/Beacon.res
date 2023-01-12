@@ -84,17 +84,13 @@ let useInit = () => {
   let usePermissionInfos = client => {
     let (permisionInfos, setPermissionInfos) = Jotai.Atom.use(permissionInfosAtom)
 
-    let refresh = React.useMemo2(() => {
+    let refresh = React.useCallback2(
       () =>
         client
         ->ReBeacon.WalletClient.getPermissionsRaw()
-        ->Promise.thenResolve(p => setPermissionInfos(_ => p))
-    }, (setPermissionInfos, client))
-
-    // React.useEffect1(() => {
-    //   refresh()->ignore
-    //   None
-    // }, [refresh])
+        ->Promise.thenResolve(p => setPermissionInfos(_ => p)),
+      (setPermissionInfos, client),
+    )
 
     // Not needed at the moment
     // let removePermissionInfo = React.useMemo2(() => {
@@ -107,75 +103,70 @@ let useInit = () => {
 
 let useRespond = client => {
   let (_, refreshPermissions) = usePermissionInfos(client)
-  let respond = React.useMemo1(() => {
+
+  let respond = React.useMemo2(() => {
     r => {
       client
       ->ReBeacon.WalletClient.respondRaw(r)
       ->Promise.then(() =>
         switch r {
-        | #PermissionResponse(_) => refreshPermissions()
+        | #PermissionResponse(_) => {
+            // Timeout needed to let client update internal persmissions before refresh
+            Js.Global.setTimeout(() => refreshPermissions()->ignore, 1)->ignore
+            Promise.resolve()
+          }
         | _ => Promise.resolve()
         }
       )
     }
-  }, [client])
+  }, (client, refreshPermissions))
   respond
 }
-
-let _getExisting = (p: ReBeacon.peerInfo, ps: array<ReBeacon.peerInfo>) =>
-  ps->Belt.Array.getBy(peerInfo => peerInfo.name === p.name)
 
 let usePeers = (client, ~onError=_ => (), ()) => {
   let (peerInfos, setPeerInfos) = Jotai.Atom.use(peerInfosAtom)
   let (permisionInfos, refreshPermissions) = usePermissionInfos(client)
 
-  let refresh = React.useMemo2(() => {
-    () => {
-      client
-      ->ReBeacon.WalletClient.getPeersRaw()
-      ->Promise.thenResolve(peerInfos => setPeerInfos(_ => peerInfos))
-    }
-  }, (setPeerInfos, client))
+  let onError = React.useRef(onError)
+  let refreshPeersState = React.useRef(() => {
+    client
+    ->ReBeacon.WalletClient.getPeersRaw()
+    ->Promise.thenResolve(peerInfos => setPeerInfos(_ => peerInfos))
+  })
 
+  // Refresh peerInfos on init
+  React.useEffect1(() => {
+    refreshPeersState.current()->ignore
+    None
+  }, [])
+
+  // Refresh permissions when peerInfo updates
   React.useEffect2(() => {
     refreshPermissions()->ignore
     None
   }, (peerInfos, refreshPermissions))
 
-  React.useEffect1(() => {
-    refresh()->ignore
-    None
-  }, [refresh])
-
-  let removePeer = React.useMemo2(() => {
+  let removePeer = React.useMemo1(() => {
     p => {
       client
       ->ReBeacon.WalletClient.removePeerRaw(p)
-      ->Promise.then(refresh)
+      ->Promise.then(refreshPeersState.current)
       ->Promise.catch(exn => {
-        `Failed to remove peer. Reason: ${exn->Helpers.getMessage}`->onError
+        `Failed to remove peer. Reason: ${exn->Helpers.getMessage}`->onError.current
         Promise.resolve()
       })
     }
-  }, (client, refresh))
+  }, [client])
 
-  let addPeer = p => client->ReBeacon.WalletClient.addPeerRaw(p)->Promise.then(refresh)
-
-  let _safeAddPeer = (p: ReBeacon.peerInfo) => {
-    switch _getExisting(p, peerInfos) {
-    | Some(p) => removePeer(p)->Promise.then(() => addPeer(p))
-    | None => addPeer(p)
-    }
-  }
-
-  let safeAddPeer = (encodedPeerInfo: PeerData.t) => {
+  let addPeer = React.useCallback1((encodedPeerInfo: PeerData.t) => {
     makePeerInfo(encodedPeerInfo)
-    ->Promise.then(_safeAddPeer)
+    ->Promise.then(p => client->ReBeacon.WalletClient.addPeerRaw(p))
+    ->Promise.then(refreshPeersState.current)
     ->Promise.catch(exn => {
-      `Failed to add peer. Reason: ${exn->Helpers.getMessage}`->onError
+      `Failed to add peer. Reason: ${exn->Helpers.getMessage}`->onError.current
       Promise.resolve()
     })
-  }
+  }, [client])
 
-  (peerInfos, removePeer, safeAddPeer, permisionInfos)
+  (peerInfos, removePeer, addPeer, permisionInfos)
 }
