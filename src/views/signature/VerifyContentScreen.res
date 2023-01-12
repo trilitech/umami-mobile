@@ -95,9 +95,10 @@ module SignedNFT = {
     let tz1 = signed.pk->Pkh.buildFromPk
 
     let (network, _) = Store.useNetwork()
+    let (nodeIndex, _) = Store.useNodeIndex()
 
     let opts = {
-      "queryFn": _ => TzktAPI.getNft(~tz1, ~nftInfo=data, ~network),
+      "queryFn": _ => TzktAPI.getNft(~tz1, ~nftInfo=data, ~network, ~nodeIndex),
       "queryKey": "nft certificate " ++ data.tokenId,
       "cacheTime": 0,
     }
