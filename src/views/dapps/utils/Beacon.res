@@ -30,7 +30,6 @@ let _useInit = (
   let makeClient = React.useRef(makeClient)
 
   React.useEffect2(() => {
-    Js.Console.log("init")
     switch client {
     | Some(client) =>
       client
