@@ -54,7 +54,7 @@ describe("Beacon", () => {
         let makeClient = makeClientMock->MockJs.fn
 
         renderHook(() =>
-          Beacon._useInit(
+          BeaconHooks._useInit(
             ~onDone=_ => {
               let expected: ReBeacon.WalletClient.options = {name: "Umami mobile"}
               if [expected] == makeClientMock->MockJs.calls {
@@ -77,7 +77,7 @@ describe("Beacon", () => {
         "getPermissions": getPermissions,
       }->Obj.magic
 
-      let hookResult = renderHook(() => Beacon.usePeers(client, ()), ())
+      let hookResult = renderHook(() => BeaconHooks.usePeers(client, ()), ())
 
       let waitForNextUpdate: unit => Promise.t<unit> = Obj.magic(hookResult)["waitForNextUpdate"]
 
@@ -100,7 +100,7 @@ describe("Beacon", () => {
       let handleError = JestJs.fn(_ => ())
 
       let hookResult = renderHook(
-        () => Beacon.usePeers(client, ~onError={err => MockJs.fn(handleError)(err)}, ()),
+        () => BeaconHooks.usePeers(client, ~onError={err => MockJs.fn(handleError)(err)}, ()),
         (),
       )
 
@@ -132,7 +132,7 @@ describe("Beacon", () => {
         "getPermissions": clientGetPermissions->MockJs.fn,
       }->Obj.magic
 
-      let hookResult = renderHook(() => Beacon.usePeers(client, ()), ())
+      let hookResult = renderHook(() => BeaconHooks.usePeers(client, ()), ())
 
       let waitForNextUpdate: unit => Promise.t<unit> = Obj.magic(hookResult)["waitForNextUpdate"]
 

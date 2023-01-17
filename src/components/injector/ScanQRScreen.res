@@ -118,7 +118,7 @@ module ScanSignedContent = {
 module ScanBeacon_ = {
   @react.component
   let make = (~client) => {
-    let (_, _, addPeer, _) = Beacon.usePeers(client, ())
+    let (_, _, addPeer, _) = BeaconHooks.usePeers(client, ())
     let goBack = NavUtils.useGoBack()
 
     let title = "Scan beacon permission request"
@@ -137,7 +137,7 @@ module ScanBeacon_ = {
 module ScanBeacon = {
   @react.component
   let make = (~navigation as _, ~route as _) => {
-    let (client, _) = Beacon.useClient()
+    let (client, _) = BeaconHooks.useClient()
 
     client->Helpers.reactFold(client => <ScanBeacon_ client />)
   }

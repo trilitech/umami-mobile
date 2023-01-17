@@ -18,7 +18,7 @@ let useBeaconDeepLink = (~onDeepLink: PeerData.t => unit) => {
 module Base = {
   @react.component
   let make = (~client: ReBeacon.WalletClient.t) => {
-    let (_, _, addPeer, _) = Beacon.usePeers(client, ())
+    let (_, _, addPeer, _) = BeaconHooks.usePeers(client, ())
     useBeaconDeepLink(~onDeepLink=d => addPeer(d)->ignore)
 
     React.null
@@ -27,6 +27,6 @@ module Base = {
 
 @react.component
 let make = () => {
-  let (client, _) = Beacon.useClient()
+  let (client, _) = BeaconHooks.useClient()
   client->Helpers.reactFold(client => <Base client />)
 }

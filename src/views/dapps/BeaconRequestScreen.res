@@ -9,7 +9,7 @@ module Display = {
   ) => {
     let goBack = NavUtils.useGoBack()
     let notify = SnackBar.useNotification()
-    let respond = Beacon.useRespond(client)
+    let respond = BeaconHooks.useRespond(client)
 
     switch beaconRequest {
     | PermissionRequest(r) =>
@@ -42,7 +42,7 @@ module Display = {
 let make = (~navigation as _, ~route) => {
   let beaconRequest = route->NavUtils.getBeaconRequest
   let (account, _) = Store.useSelectedAccount()
-  let (client, _) = Beacon.useClient()
+  let (client, _) = BeaconHooks.useClient()
   let (accounts, _) = Store.useAccountsDispatcher()
 
   Helpers.three(beaconRequest, account, client)->Helpers.reactFold(((

@@ -19,7 +19,7 @@ let useDeviceIdInit = () =>
 
 let useLocalStorageShimForBeaconInit = () =>
   AsyncInit.useAsyncInit(
-    ~init=Beacon.hydrateBeaconStorage,
+    ~init=BeaconHooks.hydrateBeaconStorage,
     ~errMsgPrefix="Failed to initialize beacon local storage shim.",
     (),
   )

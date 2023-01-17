@@ -75,7 +75,7 @@ module Base = {
 let make = () => {
   InitAddressMetadata.useSingleRefresh()
   AccountInfoSync.useBalancesAndOpsSync()
-  Beacon.useInit()
+  BeaconHooks.useInit()
   <>
     // Component is needed for BeaconDeepLink because we can't conditionaly call hooks
     <BeaconDeepLink />
