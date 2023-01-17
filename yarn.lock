@@ -1921,6 +1921,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@nomadic-labs/rescript-beacon-sdk@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@nomadic-labs/rescript-beacon-sdk/-/rescript-beacon-sdk-1.0.8.tgz#a0300f2b5d0b1bc7a652420d606ef399a569469b"
+  integrity sha512-h2rPBOE0DL0IMliln5jobMI5dozwof0NkAcBE42htdYagpNE0MpiA9vX2SMYE/dx1f55mR6EpAMgTOC6l39fog==
+
 "@react-native-async-storage/async-storage@^1.13.4":
   version "1.17.4"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.17.4.tgz#f03837565f085c487bc9e8a9f1862c3e4e3f8fb6"

@@ -25,7 +25,8 @@
     "@ryyppy/rescript-promise",
     "@rescriptbr/react-query",
     "bs-fetch",
-    "@glennsl/rescript-json-combinators"
+    "@glennsl/rescript-json-combinators",
+    "@nomadic-labs/rescript-beacon-sdk"
   ],
   "bs-dev-dependencies": [
     "@glennsl/rescript-jest",
