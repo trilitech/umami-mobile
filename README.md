@@ -4,6 +4,20 @@
 
 A mobile version of the Umami Tezos wallet.
 
+## Initial setup
+
+You need to make sure that all the dependencies are installed. Please make sure that you are using yarn v1 (e.g. v1.22.19).
+
+```sh
+yarn install
+```
+
+If you are going to build and run your app on an iOS then please also make sure that cocoapods are installed and then run this command from the ios folder
+
+```sh
+pod install
+```
+
 ## Commands
 
 Compile rescript source to javascript:
