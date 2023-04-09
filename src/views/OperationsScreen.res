@@ -325,7 +325,7 @@ module Display = {
 
     let query =
       ReactQuery.queryOptions(
-        ~queryFn=_ => MezosAPI.getIndexerLastBlock(~network),
+        ~queryFn=_ => TzktAPI.getIndexerLastBlock(~network),
         ~queryKey="lastBlock",
         ~refetchOnWindowFocus=ReactQuery.refetchOnWindowFocus(#bool(false)),
         ~enabled=false,

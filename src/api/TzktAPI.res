@@ -1,6 +1,7 @@
 external unsafeParse: Js.Json.t => Token.JSON.t = "%identity"
 
 exception TokensFetchFailure(string)
+exception LastBlockFetchFailure(string)
 
 // Memoize getMetaddata as it is exepensive
 module MemoizedGetMetadata = {
@@ -90,4 +91,14 @@ let checkExistsAllNetworks = (~tz1) => {
   ))->Promise.thenResolve(((existsInTestNet, existsInMainNet)) =>
     existsInTestNet || existsInMainNet
   )
+}
+
+let getIndexerLastBlock = (~network) => {
+  let host = Endpoints.getTzktUrl(network)
+  Fetch.fetch(`https://api.${host}/v1/blocks/count`)
+  ->Promise.then(Fetch.Response.json)
+  ->Promise.thenResolve(Js.Json.decodeNumber)
+  ->Promise.thenResolve(Belt.Option.getExn)
+  ->Promise.thenResolve(Belt.Float.toInt)
+  ->Promise.catch(err => Promise.reject(LastBlockFetchFailure(err->Helpers.getMessage)))
 }

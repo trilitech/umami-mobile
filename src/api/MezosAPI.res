@@ -1,7 +1,6 @@
 external unsafeToOperationJSON: Js.Json.t => Operation.JSON.t = "%identity"
 
 exception MezosTransactionFetchFailure(string)
-exception MezosLastBlockFetchFailure(string)
 
 let makeHeaders = () =>
   DeviceId.id.contents->Belt.Option.mapWithDefault(Fetch.RequestInit.make(~method_=Get, ()), id => {
@@ -20,16 +19,4 @@ let getTransactions = (~tz1: Pkh.t, ~network) => {
   ->Promise.thenResolve(Array.map(unsafeToOperationJSON))
   ->Promise.thenResolve(Operation.handleJSONArray)
   ->Promise.catch(err => Promise.reject(MezosTransactionFetchFailure(err->Helpers.getMessage)))
-}
-
-external unsafeToBlockJSON: Js_dict.t<Js.Json.t> => {"indexer_last_block": int} = "%identity"
-
-let getIndexerLastBlock = (~network) => {
-  let host = Endpoints.getMezosUrl(network)
-  Fetch.fetchWithInit(`https://${host}/monitor/blocks`, makeHeaders())
-  ->Promise.then(Fetch.Response.json)
-  ->Promise.thenResolve(Js.Json.decodeObject)
-  ->Promise.thenResolve(Belt.Option.getExn)
-  ->Promise.thenResolve(json => unsafeToBlockJSON(json)["indexer_last_block"])
-  ->Promise.catch(err => Promise.reject(MezosLastBlockFetchFailure(err->Helpers.getMessage)))
 }

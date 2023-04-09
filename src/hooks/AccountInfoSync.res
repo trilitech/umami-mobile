@@ -50,7 +50,7 @@ let _parseError = (e: exn) => {
   open TzktAPI
   open TaquitoUtils
   switch e {
-  | MezosLastBlockFetchFailure(m) => "Failed to fetch last block. Reason: " ++ m
+  | LastBlockFetchFailure(m) => "Failed to fetch last block. Reason: " ++ m
   | MezosTransactionFetchFailure(m) => "Failed to fetch operations. Reason: " ++ m
   | BalanceFetchFailure(m) => "Failed to fetch balances. Reason: " ++ m
   | TokensFetchFailure(m) => "Failed to fetch tokens. Reason: " ++ m
