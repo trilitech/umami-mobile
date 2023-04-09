@@ -65,3 +65,29 @@ let getNft = (~tz1: Pkh.t, ~network: Network.t, ~nftInfo: Token.nftInfo, ~nodeIn
     )
   )
 }
+
+
+%%private(
+  let checkExists = (~tz1, ~network) => {
+    let host = Endpoints.getTzktUrl(network)
+
+    Fetch.fetch(`https://api.${host}/v1/accounts/${tz1->Pkh.toString}`)
+    ->Promise.then(Fetch.Response.json)
+    ->Promise.thenResolve(Js.Json.decodeObject)
+    ->Promise.thenResolve(Belt.Option.getExn)
+    ->Promise.thenResolve(obj => Js.Dict.unsafeGet(obj, "type"))
+    ->Promise.thenResolve(Js.Json.decodeString)
+    ->Promise.thenResolve(Belt.Option.getExn)
+    ->Promise.thenResolve(address_type => address_type != "empty")
+  }
+)
+
+open Network
+let checkExistsAllNetworks = (~tz1) => {
+  Promise.all2((
+    checkExists(~tz1, ~network=Mainnet),
+    checkExists(~tz1, ~network=Ghostnet),
+  ))->Promise.thenResolve(((existsInTestNet, existsInMainNet)) =>
+    existsInTestNet || existsInMainNet
+  )
+}
