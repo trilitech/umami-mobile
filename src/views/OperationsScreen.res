@@ -10,7 +10,7 @@ type diplayElement = {
   target: Pkh.t,
   date: string,
   prettyAmountDisplay: tradeAmount,
-  hash: string,
+  hash: option<string>,
   status: status,
 }
 
@@ -34,13 +34,12 @@ let getStatus = (op: Operation.t, indexorLevel) => {
 
 let getTokenByAddressAndId = (tokens: array<Token.t>, address, tokenId) => {
   tokens->Belt.Array.getBy(t =>
-    switch (t, tokenId) {
-    | (FA2(b, _), Some(tokenId))
-    | (NFT(b, _), Some(tokenId)) =>
+    switch t {
+    | FA2(b, _)
+    | NFT(b, _) =>
       b.contract == address && b.tokenId == tokenId
     // If we match an FA1 token, we must have provided no tokenId
-    | (FA1(b), None) => b.contract == address
-    | _ => false
+    | FA1(b) => b.contract == address
     }
   )
 }
@@ -123,12 +122,6 @@ let matchAmount = (a: tradeAmount) =>
 
 let isCredit = (a: tradeAmount) => matchAmount(a) |> Js.Re.test_(%re("/^\+/i"))
 
-// let useLinkToTzkt = () => {
-//   let (network, _) = Store.useNetwork()
-//   let host = Endpoints.getTzktUrl(network)
-//   hash => ReactNative.Linking.openURL(`https://${host}/${hash}`)->ignore
-// }
-
 let useAliasDisplay = (
   ~textRender=text => <Text> {text->React.string} </Text>,
   ~addUserIconSize=?,
@@ -205,7 +198,7 @@ let useNavToTzkt = () => {
 module TransactionItem = {
   open Paper
   @react.component
-  let make = (~transaction) => {
+  let make = (~transaction,~myAddress) => {
     open Colors.Light
 
     // let goToTzktTransaction = useLinkToTzkt()
@@ -237,7 +230,7 @@ module TransactionItem = {
         {amountEl}
         <Paper.IconButton icon={Paper.Icon.name(statusIcon)} size={15} />
         <Paper.IconButton
-          onPress={_ => navToTzkt(transaction.hash)}
+          onPress={_ => navToTzkt(transaction.hash->Belt.Option.getWithDefault(myAddress->Pkh.toString))}
           // goToTzktTransaction(transaction.hash)
 
           icon={Paper.Icon.name("open-in-new")}
@@ -248,11 +241,6 @@ module TransactionItem = {
   }
 }
 
-let makePrettyOperations = (~myTz1: Pkh.t, ~operations, ~tokens, ~indexerLastBlock) => {
-  operations
-  ->Belt.Array.map(el => makeDisplayElement(el, myTz1, indexerLastBlock, tokens))
-  ->Helpers.filterNone
-}
 module HistoryDisplay = {
   @react.component
   let make = (~tz1, ~operations: array<Operation.t>, ~indexerLastBlock: int, ~tokens) => {
@@ -261,7 +249,7 @@ module HistoryDisplay = {
       ->Belt.Array.map(el => makeDisplayElement(el, tz1, indexerLastBlock, tokens))
       ->Helpers.filterNone
       ->Belt.Array.mapWithIndex((i, t) =>
-        <TransactionItem key={t.hash ++ t.date ++ Js.Int.toString(i)} transaction=t />
+        <TransactionItem key={t.hash->Belt.Option.getWithDefault("") ++ t.date ++ Js.Int.toString(i)} transaction=t myAddress=tz1 />
       )
 
     if operationEls == [] {
@@ -367,22 +355,3 @@ let make = (~route, ~navigation as _) => {
     <Display account assetBalance />
   })
 }
-
-// UMAMI DESKTOP SNIPET
-// let status = (operation: Operation.t, currentLevel, config: ConfigContext.env) => {
-//   let (txt, colorStyle) =
-//     switch (operation.status) {
-//     | Mempool => (I18n.state_mempool, Some(`negative))
-//     | Chain =>
-//       let minConfirmations = config.confirmations;
-//       let currentConfirmations = currentLevel - operation.level;
-//       currentConfirmations > minConfirmations
-//         ? (I18n.state_confirmed, None)
-//         : (
-//           I18n.state_levels(currentConfirmations, minConfirmations),
-//           Some(`negative),
-//         );
-//     };
-
-//   <Typography.Body1 ?colorStyle> txt->React.string </Typography.Body1>;
-// };

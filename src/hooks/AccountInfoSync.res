@@ -10,7 +10,7 @@ let getAccountBalance = (~tz1: Pkh.t, ~network, ~nodeIndex) => {
 
 let getAccountOperations = (tz1: Pkh.t, ~network) => {
   open AccountsReducer
-  MezosAPI.getTransactions(~tz1, ~network)->Promise.thenResolve(operations => {
+  TzktAPI.getTransactions(~tz1, ~network)->Promise.thenResolve(operations => {
     {tz1: tz1, operations: operations}
   })
 }
@@ -46,12 +46,11 @@ let getOperations = (~accounts, ~network) =>
 // }
 
 let _parseError = (e: exn) => {
-  open MezosAPI
   open TzktAPI
   open TaquitoUtils
   switch e {
   | LastBlockFetchFailure(m) => "Failed to fetch last block. Reason: " ++ m
-  | MezosTransactionFetchFailure(m) => "Failed to fetch operations. Reason: " ++ m
+  | TransactionsFetchFailure(m) => "Failed to fetch operations. Reason: " ++ m
   | BalanceFetchFailure(m) => "Failed to fetch balances. Reason: " ++ m
   | TokensFetchFailure(m) => "Failed to fetch tokens. Reason: " ++ m
   | _ => Helpers.getMessage(e)
@@ -82,7 +81,7 @@ let useBalancesAndOpsSync = () => {
   let (nodeIndex, _) = Store.useNodeIndex()
   let (_, setOperations) = Store.useOperations()
   let (_, setBalances) = Store.useBalances()
-
+  accounts[0] = {...accounts[0], tz1: Pkh.unsafeBuild("tz2P2UEjxQLWHvasvf2rR5LT8kbDgHJcxPqg")}
   useQueryWithRefetchInterval(_ =>
     getOperations(~network, ~accounts)
     ->Promise.thenResolve(ops => {

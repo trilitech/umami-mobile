@@ -19,13 +19,6 @@ let getNodeUrl = (n: Network.t, nodeIndex: int) => {
   nodes[nodeIndex]
 }
 
-let getMezosUrl = (n: Network.t) => {
-  switch n {
-  | Mainnet => "mainnet.umamiwallet.com"
-  | Ghostnet => "ghostnet.umamiwallet.com"
-  }
-}
-
 let getTzktUrl = (n: Network.t) => {
   switch n {
   | Mainnet => "mainnet.tzkt.io"

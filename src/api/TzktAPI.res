@@ -1,7 +1,10 @@
 external unsafeParse: Js.Json.t => Token.JSON.t = "%identity"
+external unsafeToTezOperationJSON: Js.Json.t => Operation.JSON.Tez.t = "%identity"
+external unsafeToTokenOperationJSON: Js.Json.t => Operation.JSON.Token.t = "%identity"
 
 exception TokensFetchFailure(string)
 exception LastBlockFetchFailure(string)
+exception TransactionsFetchFailure(string)
 
 // Memoize getMetaddata as it is exepensive
 module MemoizedGetMetadata = {
@@ -67,7 +70,6 @@ let getNft = (~tz1: Pkh.t, ~network: Network.t, ~nftInfo: Token.nftInfo, ~nodeIn
   )
 }
 
-
 %%private(
   let checkExists = (~tz1, ~network) => {
     let host = Endpoints.getTzktUrl(network)
@@ -101,4 +103,54 @@ let getIndexerLastBlock = (~network) => {
   ->Promise.thenResolve(Belt.Option.getExn)
   ->Promise.thenResolve(Belt.Float.toInt)
   ->Promise.catch(err => Promise.reject(LastBlockFetchFailure(err->Helpers.getMessage)))
+}
+
+let makeHeaders = () =>
+  DeviceId.id.contents->Belt.Option.mapWithDefault(Fetch.RequestInit.make(~method_=Get, ()), id => {
+    let headers = Fetch.HeadersInit.make({
+      "UmamiInstallationHash": ShortHash.unique(id),
+    })
+    Fetch.RequestInit.make(~method_=Get, ~headers, ())
+  })
+
+let getTransactionsByUrl = (url: string) => {
+  Fetch.fetch(url)
+  ->Promise.then(Fetch.Response.json)
+  ->Promise.thenResolve(Js.Json.decodeArray)
+  ->Promise.thenResolve(Belt.Option.getExn)
+  ->Promise.catch(err => Promise.reject(err))
+}
+
+let getTransactions = (~tz1: Pkh.t, ~network: Network.t): Promise.t<array<Operation.t>> => {
+  open Belt.Array
+
+  let baseHost = Endpoints.getTzktUrl(network)
+  let tezTransactions = [
+    `https://api.${baseHost}/v1/operations/transactions?sort.desc=id&target=${Pkh.toString(tz1)}`,
+    `https://api.${baseHost}/v1/operations/transactions?sort.desc=id&sender=${Pkh.toString(tz1)}`,
+  ]
+  ->map(getTransactionsByUrl)
+  ->Promise.all
+  ->Promise.thenResolve(arr =>
+    arr->concatMany->map(x => x->unsafeToTezOperationJSON->Operation.parseTezTransactionJSON)
+  )
+
+  let tokenTransactions = [
+    `https://api.mainnet.tzkt.io/v1/tokens/transfers?sort.desc=id&to=${Pkh.toString(tz1)}`,
+    `https://api.mainnet.tzkt.io/v1/tokens/transfers?sort.desc=id&from=${Pkh.toString(tz1)}`
+  ]
+  ->map(getTransactionsByUrl)
+  ->Promise.all
+  ->Promise.thenResolve(arr =>
+    arr->concatMany->map(x => x->unsafeToTokenOperationJSON->Operation.parseTokenTransactionJSON)
+  )
+
+  [tezTransactions, tokenTransactions]
+  ->Promise.all
+  ->Promise.thenResolve(ops =>
+    ops
+    ->concatMany
+    ->Belt.SortArray.stableSortBy((a, b) => a.timestamp < b.timestamp ? 1 : -1)
+  )
+  ->Promise.catch(err => Promise.reject(TransactionsFetchFailure(err->Helpers.getMessage)))
 }
