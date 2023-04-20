@@ -58,6 +58,13 @@ module JSON = {
   }
 }
 
+let isToken = (op: t): bool => {
+  switch op.amount {
+  | Contract(_) => true
+  | _ => false
+  }
+}
+
 let parseTokenTransactionJSON = (transaction: JSON.Token.t): t => {
   let src = transaction.from->Belt.Option.getWithDefault(transaction.token.contract)
   {

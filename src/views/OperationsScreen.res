@@ -21,14 +21,22 @@ let makePrettyDate = (date: string) =>
 
 let minConfirmations = 2
 
-let getStatus = (op: Operation.t, indexorLevel) => {
-  let currentConfirmations = indexorLevel - op.level
-  if {op.blockHash->Belt.Option.isNone} {
-    Mempool
-  } else if currentConfirmations > 2 {
-    Done
+let getStatus = (op: Operation.t, indexerLevel) => {
+  let currentConfirmations = indexerLevel - op.level
+  if (Operation.isToken(op)) {
+    if currentConfirmations > 2 {
+      Done
+    } else {
+      Processing
+    }
   } else {
-    Processing
+    if {op.blockHash->Belt.Option.isNone} {
+      Mempool
+    } else if currentConfirmations > 2 {
+      Done
+    } else {
+      Processing
+    }
   }
 }
 
@@ -75,10 +83,10 @@ let makeTradeAmount = (a: Asset.t, incoming: bool) => {
 let makeDisplayElement = (
   op: Operation.t,
   myAddress: Pkh.t,
-  indexorLevel: int,
+  indexerLevel: int,
   tokens: array<Token.t>,
 ) => {
-  let status = getStatus(op, indexorLevel)
+  let status = getStatus(op, indexerLevel)
   let date = makePrettyDate(op.timestamp)
   let asset = operationAmountToAsset(op.amount, tokens)
 
