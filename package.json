@@ -19,6 +19,8 @@
     "@hawkingnetwork/ed25519-hd-key-rn": "^1.0.1",
     "@nomadic-labs/rescript-beacon-sdk": "^1.0.8",
     "@react-native-async-storage/async-storage": "^1.6.0",
+    "@react-native-firebase/analytics": "^17.4.2",
+    "@react-native-firebase/app": "^17.4.2",
     "@react-native-picker/picker": "^2.4.1",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.1",
