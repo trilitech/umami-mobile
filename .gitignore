@@ -69,3 +69,5 @@ buck-out/
 .bsb.lock
 .merlin
 debug.log
+
+android/app/google-services.json

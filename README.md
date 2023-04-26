@@ -59,6 +59,10 @@ In order to run the app you need to attach necessary google analytics settings
 - Open the project in XCode
 - Place the file under UmamiMobile target (next to `Info.plist`)
 
+### Android
+- Download `google-services.json` from your GA account
+- Move the file into `android/app` folder
+
 ## iOS build errors
 
 When archiving the app after a fresh `pod install`, you probably will get the following error:
