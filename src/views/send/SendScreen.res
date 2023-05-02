@@ -1,5 +1,6 @@
 open Belt
 open SendTypes
+@module("../../analytics") external logSend: () => Promise.t<()> = "logSend" 
 
 module SendAndConfirmForm = {
   @react.component
@@ -103,6 +104,7 @@ module PureSendScreen = {
         send(~password)
         ->Promise.thenResolve(hash => {
           hash->makeNotif->Some->notifyAdvanced
+          logSend()->ignore
           navigate("Home")->ignore
         })
         ->Promise.catch(e => {
