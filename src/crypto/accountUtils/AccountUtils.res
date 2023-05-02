@@ -16,5 +16,5 @@ let generateKeys = (~mnemonic, ~password, ~derivationPathIndex=0, ()) =>
 
 include PureAccountUtils.Make({
   let generateKeys = generateKeys
-  let checkExists = MezosAPI.checkExistsAllNetworks
+  let checkExists = TzktAPI.checkExistsAllNetworks
 })

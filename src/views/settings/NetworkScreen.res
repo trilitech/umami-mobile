@@ -35,14 +35,6 @@ let make = (~navigation as _, ~route as _) => {
       })
       ->React.array}
     </List.Section>
-    <List.Section title="Mezos host">
-      <CustomListItem
-        selected={false}
-        center={<Wrapper>
-          <Paper.Caption> {Endpoints.getMezosUrl(network)->React.string} </Paper.Caption>
-        </Wrapper>}
-      />
-    </List.Section>
     <List.Section title="Tzkt host">
       <CustomListItem
         selected={false}

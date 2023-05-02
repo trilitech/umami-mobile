@@ -2,422 +2,73 @@ open Jest
 open Operation
 
 @scope("JSON") @val
-external parseJSON: string => array<JSON.t> = "parse"
+external parseTezJSON: string => array<JSON.Tez.t> = "parse"
+
+@scope("JSON") @val
+external parseTokenJSON: string => array<JSON.Token.t> = "parse"
 
 describe("Operation functions", () => {
   open Expect
 
-  test("handleJSONarray returns the right value (nominal case TEZ + FA2)", () => {
-    let input = parseJSON(`
-    [
-  {
-    "hash": "op4LvXr33jDwo1bBFXpv3UJqQsohKR6JvLW2Y6xq6LmgX3yAchY",
-    "id": "0",
-    "block_hash": null,
-    "op_timestamp": "2022-05-25T10:34:18Z",
-    "level": "586915",
-    "kind": "transaction",
-    "src": "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-    "status": "applied",
-    "fee": "445",
-    "data": {
-      "amount": "100000000",
-      "token": "tez",
-      "destination": "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
-      "contract": null,
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null
-    },
-    "counter": "10315981",
-    "gas_limit": "1521",
-    "storage_limit": "0"
-  },
-   {
-    "hash": "oniXhaqU7eev5P3sJm6FyvcS72VQDkPV7x23qpqr4s9aGDA2ZuQ",
-    "id": "0",
-    "block_hash": "mockBlockHash1",
-    "op_timestamp": "2022-05-18T08:35:35Z",
-    "level": "549850",
-    "internal": 0,
-    "kind": "transaction",
-    "src": "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-    "status": "applied",
-    "fee": "1229",
-    "data": {
-      "amount": "0",
-      "token_amount": "1",
-      "token": "fa2",
-      "destination": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
-      "contract": "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob",
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null,
-      "token_id": "5",
-      "internal_op_id": 0
-    },
-    "counter": "10315978",
-    "gas_limit": "67",
-    "storage_limit": "8233"
-  },
-    {
-    "hash": "opSLAFTwZj25fZ79uJQrJicea2ZVWHQyRhhRPHidifytRBj4V2d",
-    "id": "0",
-    "block_hash": "mockBlockHash2",
-    "op_timestamp": "2022-05-25T17:07:20Z",
-    "level": "588389",
-    "internal": 0,
-    "kind": "transaction",
-    "src": "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-    "status": "applied",
-    "fee": "808",
-    "data": {
-      "amount": "0",
-      "token_amount": "1000000",
-      "token": "fa2",
-      "destination": "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t",
-      "contract": "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null,
-      "token_id": "0",
-      "internal_op_id": 0
-    },
-    "counter": "10315995",
-    "gas_limit": "69",
-    "storage_limit": "4009"
-  }
+  test("parseTezTransactionJSON can parse transactions", () => {
+    let result =
+      OperationJSON.tezTransactionsRaw
+      ->parseTezJSON
+      ->Belt.Array.map(Operation.parseTezTransactionJSON)
 
-  ]
-    `)
-    let result = handleJSONArray(input)
     expect(result)->toEqual([
       {
-        hash: "op4LvXr33jDwo1bBFXpv3UJqQsohKR6JvLW2Y6xq6LmgX3yAchY",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
-        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild,
-        level: 586915,
-        timestamp: "2022-05-25T10:34:18Z",
-        amount: Tez(100000000),
+        hash: Some("ooVDmsrcnqjBYVfYxSujpcZBMCqhwoHNr4xoh4Le4McbdSnhk3m"),
+        src: "tz1SgK78wg4ug6Y6P5R2DH5j8BAeVMfHcNaC"->Pkh.unsafeBuild,
+        destination: "tz1beW9AVJjE9QpTGYVPdtZCF5w1NPknMJ3T"->Pkh.unsafeBuild,
+        level: 3340021,
+        timestamp: "2023-04-11T07:13:43Z",
+        amount: Tez(1398580),
         kind: "transaction",
-        blockHash: None,
+        blockHash: Some("BLMF3QfBipTiZg4D8o7q35Rz4mZ1cG2wNKeqcrKN38dTVx2ktTJ"),
       },
       {
-        hash: "oniXhaqU7eev5P3sJm6FyvcS72VQDkPV7x23qpqr4s9aGDA2ZuQ",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
-        destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"->Pkh.unsafeBuild,
-        level: 549850,
-        timestamp: "2022-05-18T08:35:35Z",
-        amount: Contract({
-          amount: 1,
-          tokenId: "5"->Some,
-          contract: "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob",
-        }),
+        hash: Some("oooRbGcps3F7zv3gcvo52EYPuboX2N4wNV7if1adTcxFi38Tr83"),
+        src: "tz1VreUox3xqG7o5xbU1U69APw1hj1Y4xKCt"->Pkh.unsafeBuild,
+        destination: "tz1beW9AVJjE9QpTGYVPdtZCF5w1NPknMJ3T"->Pkh.unsafeBuild,
+        level: 3339993,
+        timestamp: "2023-04-11T07:06:20Z",
+        amount: Tez(414528974),
         kind: "transaction",
-        blockHash: Some("mockBlockHash1"),
+        blockHash: Some("BM3LUdjsTMw6mt9upGf4nFHg1KNk1VHPRjmXeTKJ5tnyeMoKgqx"),
       },
       {
-        hash: "opSLAFTwZj25fZ79uJQrJicea2ZVWHQyRhhRPHidifytRBj4V2d",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
-        destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t"->Pkh.unsafeBuild,
-        level: 588389,
-        timestamp: "2022-05-25T17:07:20Z",
-        amount: Contract({
-          amount: 1000000,
-          tokenId: "0"->Some,
-          contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
-        }),
+        hash: Some("ontw4Sb7ikohCUDcYhHfY8fuBCA9oExjDSRdT2w4JrnBZRzpBxc"),
+        src: "tz1PwVFw6GjLyVmz3uM3tthLRmQZf6xZiH93"->Pkh.unsafeBuild,
+        destination: "tz1beW9AVJjE9QpTGYVPdtZCF5w1NPknMJ3T"->Pkh.unsafeBuild,
+        level: 3339992,
+        timestamp: "2023-04-11T07:06:05Z",
+        amount: Tez(75997159),
         kind: "transaction",
-        blockHash: Some("mockBlockHash2"),
+        blockHash: Some("BM1XRWJB9nD1kgJa4SvtZWfTFGYdGbCrpZzncYd9BETkMBBPTgf"),
       },
     ])
   })
 
-  test("handleJSONarray returns the right value (nominal case FA1.2)", () => {
-    let input = parseJSON(`
-    [
-        {
-    "hash": "opUU1cokKoxbBQBJu6VsXR6g6CA66gnuUcvF7hGAYxwYGxPE8jZ",
-    "id": "0",
-    "block_hash": "BLXLjVGys2XWpzxGmguF4oVve9F43xthWiLu5R2RAcJ1UcAFsTk",
-    "op_timestamp": "2022-06-01T13:14:35Z",
-    "level": "624184",
-    "internal": 0,
-    "kind": "transaction",
-    "src": "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3",
-    "status": "applied",
-    "fee": "792",
-    "data": {
-      "amount": "0",
-      "token_amount": "100000",
-      "token": "fa1-2",
-      "destination": "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
-      "contract": "KT1UCPcXExqEYRnfoXWYvBkkn5uPjn8TBTEe",
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null
-    },
-    "counter": "133965",
-    "gas_limit": "0",
-    "storage_limit": "3997"
-  }
-  ]
-    `)
-    let result = handleJSONArray(input)
+  test("parseTokenTransactionJSON can parse transactions", () => {
+    let result =
+      OperationJSON.tokenTransactionsRaw
+      ->parseTokenJSON
+      ->Belt.Array.map(Operation.parseTokenTransactionJSON)
     expect(result)->toEqual([
       {
-        hash: "opUU1cokKoxbBQBJu6VsXR6g6CA66gnuUcvF7hGAYxwYGxPE8jZ",
-        src: "tz1UNer1ijeE9ndjzSszRduR3CzX49hoBUB3"->Pkh.unsafeBuild,
-        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild,
-        level: 624184,
-        timestamp: "2022-06-01T13:14:35Z",
+        hash: None,
+        src: "KT1BRADdqGk2eLmMqvyWzqVmPQ1RCBCbW5dY"->Pkh.unsafeBuild,
+        destination: "tz2P2UEjxQLWHvasvf2rR5LT8kbDgHJcxPqg"->Pkh.unsafeBuild,
+        level: 3194247,
+        timestamp: "2023-03-03T16:43:14Z",
         amount: Contract({
-          amount: 100000,
-          tokenId: None,
-          contract: "KT1UCPcXExqEYRnfoXWYvBkkn5uPjn8TBTEe",
+          tokenId: "1",
+          amount: 1,
+          contract: "KT1BRADdqGk2eLmMqvyWzqVmPQ1RCBCbW5dY"
         }),
-        kind: "transaction",
-        blockHash: Some("BLXLjVGys2XWpzxGmguF4oVve9F43xthWiLu5R2RAcJ1UcAFsTk"),
-      },
-    ])
-  })
-
-  test("handleJSONarray ignores non transaction operations", () => {
-    let input = parseJSON(`
-    [
-        {
-    "hash": "opHFDksunqGYjTXbmcV9PnieDuTERnAtyN8cxK6TxfLq6agNktj",
-    "id": "2",
-    "block_hash": "BME3gJMJ8Ym5J87hJSxULuLqAiuc7auCwDKbFAF6a8JxEPoLPq4",
-    "op_timestamp": "2022-04-26T18:13:55Z",
-    "level": "445832",
-    "internal": 0,
-    "kind": "transaction",
-    "src": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
-    "status": "applied",
-    "fee": "1228",
-    "data": {
-      "amount": "0",
-      "token": "tez",
-      "destination": "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
-      "contract": null,
-      "parameters": [
-        {
-          "prim": "Pair",
-          "args": [
-            {
-              "string": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"
-            },
-            [
-              {
-                "prim": "Pair",
-                "args": [
-                  {
-                    "string": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"
-                  },
-                  {
-                    "prim": "Pair",
-                    "args": [
-                      {
-                        "int": "1"
-                      },
-                      {
-                        "int": "300000"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "prim": "Pair",
-                "args": [
-                  {
-                    "string": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"
-                  },
-                  {
-                    "prim": "Pair",
-                    "args": [
-                      {
-                        "int": "0"
-                      },
-                      {
-                        "int": "100000"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          ]
-        }
-      ],
-      "entrypoint": "transfer",
-      "storage_size": null,
-      "paid_storage_size_diff": null
-    },
-    "counter": "10303861",
-    "gas_limit": "0",
-    "storage_limit": "8561"
-  },
-        {
-    "hash": "oofr3UjREFAAtmdKBACpybCjQ3dpRs17h8oWdcTwp2JyzFa3K6h",
-    "id": "0",
-    "block_hash": "BKmpLA7Z5YPfEgWVpSVE5q7YZ5mMkRDeD8ucFXSDz2wGf9xgJfy",
-    "op_timestamp": "2022-04-26T18:29:35Z",
-    "level": "445875",
-    "internal": 0,
-    "kind": "delegation",
-    "src": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
-    "status": "applied",
-    "fee": "397",
-    "data": {
-      "contract": null,
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null,
-      "delegate": "tz1NiaviJwtMbpEcNqSP6neeoBYj8Brb3QPv"
-    },
-    "counter": "10303865",
-    "gas_limit": "0",
-    "storage_limit": "1100"
-  },
-  {
-    "hash": "op4LvXr33jDwo1bBFXpv3UJqQsohKR6JvLW2Y6xq6LmgX3yAchY",
-    "id": "0",
-    "block_hash": null,
-    "op_timestamp": "2022-05-25T10:34:18Z",
-    "level": "586915",
-    "kind": "transaction",
-    "src": "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-    "status": "applied",
-    "fee": "445",
-    "data": {
-      "amount": "100000000",
-      "token": "tez",
-      "destination": "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS",
-      "contract": null,
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null
-    },
-    "counter": "10315981",
-    "gas_limit": "1521",
-    "storage_limit": "0"
-  },
-   {
-    "hash": "oniXhaqU7eev5P3sJm6FyvcS72VQDkPV7x23qpqr4s9aGDA2ZuQ",
-    "id": "0",
-    "block_hash": "mockBlockHash1",
-    "op_timestamp": "2022-05-18T08:35:35Z",
-    "level": "549850",
-    "internal": 0,
-    "kind": "transaction",
-    "src": "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-    "status": "applied",
-    "fee": "1229",
-    "data": {
-      "amount": "0",
-      "token_amount": "1",
-      "token": "fa2",
-      "destination": "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6",
-      "contract": "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob",
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null,
-      "token_id": "5",
-      "internal_op_id": 0
-    },
-    "counter": "10315978",
-    "gas_limit": "67",
-    "storage_limit": "8233"
-  },
-    {
-    "hash": "opSLAFTwZj25fZ79uJQrJicea2ZVWHQyRhhRPHidifytRBj4V2d",
-    "id": "0",
-    "block_hash": "mockBlockHash2",
-    "op_timestamp": "2022-05-25T17:07:20Z",
-    "level": "588389",
-    "internal": 0,
-    "kind": "transaction",
-    "src": "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5",
-    "status": "applied",
-    "fee": "808",
-    "data": {
-      "amount": "0",
-      "token_amount": "1000000",
-      "token": "fa2",
-      "destination": "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t",
-      "contract": "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
-      "parameters": null,
-      "entrypoint": null,
-      "storage_size": null,
-      "paid_storage_size_diff": null,
-      "token_id": "0",
-      "internal_op_id": 0
-    },
-    "counter": "10315995",
-    "gas_limit": "69",
-    "storage_limit": "4009"
-  }
-
-  ]
-    `)
-    let result = handleJSONArray(input)
-    expect(result)->toEqual([
-      {
-        hash: "opHFDksunqGYjTXbmcV9PnieDuTERnAtyN8cxK6TxfLq6agNktj",
-        src: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"->Pkh.unsafeBuild,
-        destination: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ"->Pkh.unsafeBuild,
-        level: 445832,
-        timestamp: "2022-04-26T18:13:55Z",
-        amount: Tez(0),
-        kind: "transaction",
-        blockHash: "BME3gJMJ8Ym5J87hJSxULuLqAiuc7auCwDKbFAF6a8JxEPoLPq4"->Some,
-      },
-      {
-        hash: "op4LvXr33jDwo1bBFXpv3UJqQsohKR6JvLW2Y6xq6LmgX3yAchY",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
-        destination: "tz1g7Vk9dxDALJUp4w1UTnC41ssvRa7Q4XyS"->Pkh.unsafeBuild,
-        level: 586915,
-        timestamp: "2022-05-25T10:34:18Z",
-        amount: Tez(100000000),
         kind: "transaction",
         blockHash: None,
-      },
-      {
-        hash: "oniXhaqU7eev5P3sJm6FyvcS72VQDkPV7x23qpqr4s9aGDA2ZuQ",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
-        destination: "tz1Te4MXuNYxyyuPqmAQdnKwkD8ZgSF9M7d6"->Pkh.unsafeBuild,
-        level: 549850,
-        timestamp: "2022-05-18T08:35:35Z",
-        amount: Contract({
-          amount: 1,
-          tokenId: "5"->Some,
-          contract: "KT1GVhG7dQNjPAt4FNBNmc9P9zpiQex4Mxob",
-        }),
-        kind: "transaction",
-        blockHash: Some("mockBlockHash1"),
-      },
-      {
-        hash: "opSLAFTwZj25fZ79uJQrJicea2ZVWHQyRhhRPHidifytRBj4V2d",
-        src: "tz1Pi78RgQvhvCGWuWVzbkEKvY9SF8pSn3x5"->Pkh.unsafeBuild,
-        destination: "tz1g2iHDjnB6HeNkbmAt7B73AYhKgtuhSa7t"->Pkh.unsafeBuild,
-        level: 588389,
-        timestamp: "2022-05-25T17:07:20Z",
-        amount: Contract({
-          amount: 1000000,
-          tokenId: "0"->Some,
-          contract: "KT1XZoJ3PAidWVWRiKWESmPj64eKN7CEHuWZ",
-        }),
-        kind: "transaction",
-        blockHash: Some("mockBlockHash2"),
       },
     ])
   })
