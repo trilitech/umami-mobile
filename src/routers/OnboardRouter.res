@@ -25,7 +25,6 @@ module Base = {
         <Screen name="Send" options={headerStyles} component=SendScreen.make />
         <Screen name="Operations" options={headerStyles} component=OperationsScreen.make />
         <Screen name="OffboardWallet" options={headerStyles} component=OffboardWalletScreen.make />
-        <Screen name="Wert" options={headerStyles} component=WertScreen.make />
         <Screen name="ChangePassword" options={headerStyles} component=ChangePasswordScreen.make />
         <Screen name="Logs" options={noHeader} component=LogsScreen.make />
         <Screen name="NewRecipient" options={headerStyles} component=NewRecipientScreen.make />
