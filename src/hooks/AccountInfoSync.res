@@ -81,7 +81,7 @@ let useBalancesAndOpsSync = () => {
   let (nodeIndex, _) = Store.useNodeIndex()
   let (_, setOperations) = Store.useOperations()
   let (_, setBalances) = Store.useBalances()
-  accounts[0] = {...accounts[0], tz1: Pkh.unsafeBuild("tz2P2UEjxQLWHvasvf2rR5LT8kbDgHJcxPqg")}
+
   useQueryWithRefetchInterval(_ =>
     getOperations(~network, ~accounts)
     ->Promise.thenResolve(ops => {

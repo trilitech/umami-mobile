@@ -1,5 +1,7 @@
 # Umami Mobile
 
+Please refer to https://github.com/trilitech/umami-mobile for further developments.
+
 ## Overview
 
 A mobile version of the Umami Tezos wallet.
@@ -70,3 +72,8 @@ When archiving the app after a fresh `pod install`, you probably will get the fo
 > Multiple commands produce 'path/AccessibilityResources.bundle
 
 To fix this error, just delete `React-Core.common-AccessibilityResources` in the Pods project as described [here](https://stackoverflow.com/a/65083990/6797267).
+
+
+# Deprecation
+Further development will be performed in the this repository: 
+https://github.com/trilitech/umami-mobile
