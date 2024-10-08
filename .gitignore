@@ -29,6 +29,7 @@ build/
 local.properties
 *.iml
 *.hprof
+android/app/
 
 # node.js
 #
@@ -71,3 +72,4 @@ buck-out/
 debug.log
 
 android/app/google-services.json
+.yarn/

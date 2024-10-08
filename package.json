@@ -104,5 +104,6 @@
     "rescript-hooks-testing-library": "^0.1.0",
     "rescript-react-native": "^0.68.1",
     "rescript-react-navigation": "^6.0.1"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

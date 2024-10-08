@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>416631670644-4k1i1t765q0425gbv1ptskqavs3pvq8i.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.416631670644-4k1i1t765q0425gbv1ptskqavs3pvq8i</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBfW19mpTUrh7ZTdxfyPcW6oLdBOKDkUZ4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>416631670644</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.nomadiclabs.umamiMobile</string>
+	<key>PROJECT_ID</key>
+	<string>mobile-analytics-f7e3b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mobile-analytics-f7e3b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:416631670644:ios:a7e2e9b0db4b12195f0e21</string>
+</dict>
+</plist>
